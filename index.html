@@ -5,15 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>코스트코 진열·연출 점검 PPT 생성기</title>
   <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <style>
     :root {
       --bg: #f3f5f9;
       --card: #ffffff;
       --line: #cfd7e6;
-      --line-dark: #9aa6bc;
+      --line-dark: #222222;
       --text: #111827;
       --muted: #667085;
-      --primary: #2563eb;
+      --primary: #172033;
+      --blue: #2563eb;
       --danger: #dc2626;
       --soft-blue: #eff6ff;
       --soft-red: #fee2e2;
@@ -51,14 +54,14 @@
     }
 
     main {
-      max-width: 1500px;
+      max-width: 1520px;
       margin: 0 auto;
       padding: 18px;
     }
 
     .toolbar {
       display: grid;
-      grid-template-columns: 1.2fr 0.65fr 0.7fr 0.6fr auto auto;
+      grid-template-columns: 0.55fr 0.75fr 0.75fr 0.65fr auto auto auto;
       gap: 10px;
       align-items: end;
       background: var(--card);
@@ -100,9 +103,24 @@
     }
 
     button.primary { background: var(--primary); color: #fff; }
+    button.blue { background: var(--blue); color: #fff; }
     button.ghost { background: var(--soft-blue); color: #1e40af; }
     button.danger { background: var(--soft-red); color: var(--danger); }
     button.small { padding: 6px 9px; font-size: 12px; border-radius: 8px; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .filename-box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .filename-box strong { color: #111827; }
 
     .store-tabs {
       display: flex;
@@ -188,7 +206,7 @@
     }
 
     .big-drop.dragover, .drop-cell.dragover, .pool.dragover {
-      border-color: var(--primary) !important;
+      border-color: var(--blue) !important;
       background: #eff6ff !important;
       color: #1e40af !important;
     }
@@ -227,7 +245,7 @@
       border-radius: 14px;
       padding: 10px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
 
@@ -243,17 +261,27 @@
       line-height: 1.5;
     }
 
-    .thumb {
+    .thumb, .sheet-thumb {
       position: relative;
-      aspect-ratio: 1 / 1;
       border: 1px solid var(--line);
       border-radius: 10px;
       overflow: hidden;
       background: #fff;
       cursor: grab;
+      min-width: 0;
+      min-height: 0;
     }
 
-    .thumb img {
+    .thumb {
+      aspect-ratio: 1 / 1;
+    }
+
+    .sheet-thumb {
+      width: 100%;
+      height: 100%;
+    }
+
+    .thumb img, .sheet-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -261,7 +289,7 @@
       pointer-events: none;
     }
 
-    .thumb .tag {
+    .thumb .tag, .sheet-thumb .tag {
       position: absolute;
       left: 4px;
       top: 4px;
@@ -276,7 +304,7 @@
       white-space: nowrap;
     }
 
-    .thumb .x {
+    .thumb .x, .sheet-thumb .x {
       position: absolute;
       right: 4px;
       top: 4px;
@@ -290,6 +318,7 @@
       justify-content: center;
       font-size: 14px;
       cursor: pointer;
+      z-index: 2;
     }
 
     .ppt-wrap {
@@ -316,16 +345,47 @@
       letter-spacing: -0.4px;
     }
 
+    .ppt-title-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .page-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 6px;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .page-control button {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
     .ppt-stage {
       padding: 16px;
       overflow: auto;
+      background: #eef2f7;
     }
 
     .ppt-sheet {
-      min-width: 1040px;
+      width: 1040px;
       background: #fff;
       border: 2px solid #333;
       padding: 0;
+      margin: 0 auto;
+      transform-origin: top left;
     }
 
     table.ppt-table {
@@ -333,6 +393,7 @@
       border-collapse: collapse;
       table-layout: fixed;
       font-size: 13px;
+      background: #fff;
     }
 
     .ppt-table th,
@@ -351,6 +412,7 @@
       padding-left: 16px;
       font-size: 22px;
       font-weight: 900;
+      background: #fff;
     }
 
     .item-head th {
@@ -369,23 +431,31 @@
       white-space: pre-line;
     }
 
-    .photo-row td { height: 410px; }
-    .content-row td { height: 58px; }
+    .photo-row td {
+      height: 410px;
+    }
+
+    .content-row td {
+      height: 58px;
+    }
 
     .drop-cell {
-      min-height: 410px;
+      height: 410px;
       padding: 8px;
       border: 2px dashed transparent;
       background: #fff;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-auto-rows: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
       gap: 8px;
       align-items: stretch;
+      justify-items: stretch;
+      overflow: hidden;
     }
 
     .drop-cell-empty {
       grid-column: 1 / -1;
+      grid-row: 1 / -1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -395,14 +465,15 @@
       min-height: 370px;
     }
 
-    .more {
-      grid-column: 1 / -1;
-      color: #64748b;
+    .footer-title {
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 14px;
+      color: #555;
       font-size: 12px;
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 7px;
+      background: #fff;
     }
 
     .status {
@@ -424,11 +495,20 @@
     .progress > div {
       height: 100%;
       width: 0%;
-      background: var(--primary);
+      background: var(--blue);
       transition: width 0.2s ease;
     }
 
-    @media (max-width: 1100px) {
+    .export-host {
+      position: fixed;
+      left: -99999px;
+      top: 0;
+      width: 1040px;
+      background: #fff;
+      z-index: -1;
+    }
+
+    @media (max-width: 1200px) {
       .toolbar { grid-template-columns: 1fr 1fr; }
       .layout { grid-template-columns: 1fr; }
     }
@@ -437,14 +517,14 @@
 <body>
   <header>
     <h1>코스트코 진열·연출 점검 PPT 생성기</h1>
-    <p>담당 선택 → 점포 선택 → 사진 10~20장 한번에 업로드 → 위치 배정 → 용량 압축 PPT 생성</p>
+    <p>담당 선택 → 점포 선택 → 사진 10~20장 한번에 업로드 → 위치 배정 → 용량 압축 PPT/PDF 생성</p>
   </header>
 
   <main>
     <section class="toolbar">
       <label>
-        보고 주차 / 파일명
-        <input id="reportTitle" value="W22_코스트코_진열연출점검" />
+        주차
+        <input id="weekInput" value="W22" />
       </label>
 
       <label>
@@ -460,21 +540,27 @@
       <label>
         사진 압축
         <select id="maxSize">
-          <option value="1000">1000px / 용량 최소</option>
-          <option value="1200" selected>1200px / 보고용</option>
-          <option value="1600">1600px / 선명도</option>
+          <option value="900">900px / 용량 최소</option>
+          <option value="1100" selected>1100px / 보고용</option>
+          <option value="1400">1400px / 선명도</option>
         </select>
       </label>
 
       <button class="ghost" onclick="clearCurrentStore()">현재 점포 초기화</button>
+      <button class="blue" onclick="downloadAllPdf()">전체 PDF</button>
       <button class="primary" onclick="makePpt()">PPT 생성</button>
     </section>
+
+    <div class="filename-box">
+      다운로드 파일명: <strong id="fileNamePreview">-</strong><br />
+      PPT 좌측 상단 점포명은 담당자별 점포 목록에 맞춰 자동 변경됩니다.
+    </div>
 
     <div id="storeTabs" class="store-tabs"></div>
 
     <p class="notice">
       사진은 먼저 <b>대기 사진함</b>으로 한 번에 넣고, 필요한 사진을 오른쪽 PPT 화면의 품목 칸으로 드래그해서 배정하면 됩니다.
-      대기 사진함에 남아있는 사진은 PPT에 들어가지 않습니다. 한 품목에 4장 초과 시 같은 점포의 다음 슬라이드로 자동 분리됩니다.
+      대기 사진함에 남아있는 사진은 PPT/PDF에 들어가지 않습니다. 한 품목에 4장 초과 시 같은 점포의 다음 장면으로 자동 분리됩니다.
     </p>
 
     <section class="layout">
@@ -489,7 +575,7 @@
         <div class="panel-body">
           <label class="big-drop" id="uploadDrop">
             <input type="file" id="fileInput" multiple accept="image/*" />
-            <strong>카톡 사진을 여기에 끌어넣기</strong>
+            <strong>사진을 여기에 끌어넣기</strong>
             10~20장 한번에 가능<br />
             또는 클릭해서 사진 선택
           </label>
@@ -510,43 +596,26 @@
 
       <section class="ppt-wrap">
         <div class="ppt-title">
-          <h2 id="pptStoreTitle">코스트코 대구점</h2>
-          <span id="pptCountText">배정 0장</span>
+          <h2 id="pptStoreTitle">코스트코 세종점</h2>
+          <div class="ppt-title-actions">
+            <span class="page-control">
+              <button onclick="changePage(-1)">이전</button>
+              <b id="pageText">1 / 1</b>
+              <button onclick="changePage(1)">다음</button>
+            </span>
+            <button class="ghost small" onclick="downloadCurrentScenePdf()">현재 장면 PDF</button>
+            <button class="ghost small" onclick="downloadCurrentStorePdf()">현재 점포 PDF</button>
+            <span id="pptCountText">배정 0장</span>
+          </div>
         </div>
         <div class="ppt-stage">
-          <div class="ppt-sheet">
-            <table class="ppt-table">
-              <tr class="store-name-row">
-                <td colspan="7" id="tableStoreName">코스트코 대구점</td>
-              </tr>
-              <tr class="item-head">
-                <th class="row-label">품목</th>
-                <th>TV<br />(2단 집기)</th>
-                <th>냉장고 / 김치냉장고 / 세건<br />(비네트/추가 진열)</th>
-                <th>에어컨<br />(스탠드/벽걸이/창문형/시스템)</th>
-                <th>모니터<br />(무빙스타일/게이밍)</th>
-                <th>조리기기<br />(큐커/인덕션/전자레인지/식기세척기)</th>
-                <th>기타 품목<br />(AV/청소기)</th>
-              </tr>
-              <tr class="photo-row">
-                <td class="row-label">현장\n사진</td>
-                <td><div class="drop-cell" data-category="TV"></div></td>
-                <td><div class="drop-cell" data-category="REF"></div></td>
-                <td><div class="drop-cell" data-category="AC"></div></td>
-                <td><div class="drop-cell" data-category="MONITOR"></div></td>
-                <td><div class="drop-cell" data-category="COOK"></div></td>
-                <td><div class="drop-cell" data-category="ETC"></div></td>
-              </tr>
-              <tr class="content-row">
-                <td class="row-label">내용</td>
-                <td colspan="6"></td>
-              </tr>
-            </table>
-          </div>
+          <div id="sheetHost"></div>
         </div>
       </section>
     </section>
   </main>
+
+  <div id="exportHost" class="export-host"></div>
 
   <script>
     const MANAGER_STORES = {
@@ -558,12 +627,12 @@
     };
 
     const CATEGORIES = [
-      { key: "TV", label: "TV", pptLabel: "TV\n(2단 집기)" },
-      { key: "REF", label: "냉장고/김치냉장고/세건", pptLabel: "냉장고 / 김치냉장고 / 세건\n(비네트/추가 진열)" },
-      { key: "AC", label: "에어컨", pptLabel: "에어컨\n(스탠드/벽걸이/창문형/시스템)" },
-      { key: "MONITOR", label: "모니터", pptLabel: "모니터\n(무빙스타일/게이밍)" },
-      { key: "COOK", label: "조리기기", pptLabel: "조리기기\n(큐커/인덕션/전자레인지/식기세척기)" },
-      { key: "ETC", label: "기타 품목", pptLabel: "기타 품목\n(AV/청소기)" }
+      { key: "TV", label: "TV", pptLabel: "TV\n(2단 집기)", htmlLabel: "TV<br />(2단 집기)" },
+      { key: "REF", label: "냉장고/김치냉장고/세건", pptLabel: "냉장고 / 김치냉장고 / 세건\n(비네트/추가 진열)", htmlLabel: "냉장고 / 김치냉장고 / 세건<br />(비네트/추가 진열)" },
+      { key: "AC", label: "에어컨", pptLabel: "에어컨\n(스탠드/벽걸이/창문형/시스템)", htmlLabel: "에어컨<br />(스탠드/벽걸이/창문형/시스템)" },
+      { key: "MONITOR", label: "모니터", pptLabel: "모니터\n(무빙스타일/게이밍)", htmlLabel: "모니터<br />(무빙스타일/게이밍)" },
+      { key: "COOK", label: "조리기기", pptLabel: "조리기기\n(큐커/인덕션/전자레인지/식기세척기)", htmlLabel: "조리기기<br />(큐커/인덕션/전자레인지/식기세척기)" },
+      { key: "ETC", label: "기타 품목", pptLabel: "기타 품목\n(AV/청소기)", htmlLabel: "기타 품목<br />(AV/청소기)" }
     ];
 
     const ALL_STORES = Object.values(MANAGER_STORES).flat();
@@ -571,6 +640,7 @@
 
     let currentManager = "김영언";
     let currentStore = MANAGER_STORES[currentManager][0];
+    let currentPage = 0;
     let draggedPhotoId = null;
     let draggedFrom = null;
 
@@ -582,6 +652,8 @@
     const photoPool = document.getElementById("photoPool");
     const statusText = document.getElementById("statusText");
     const progressBar = document.getElementById("progressBar");
+    const sheetHost = document.getElementById("sheetHost");
+    const exportHost = document.getElementById("exportHost");
 
     init();
 
@@ -599,13 +671,17 @@
       managerSelect.addEventListener("change", () => {
         currentManager = managerSelect.value;
         currentStore = MANAGER_STORES[currentManager][0];
+        currentPage = 0;
         renderManagerStores();
       });
 
       storeSelect.addEventListener("change", () => {
         currentStore = storeSelect.value;
+        currentPage = 0;
         renderAll();
       });
+
+      document.getElementById("weekInput").addEventListener("input", updateFileNamePreview);
 
       fileInput.addEventListener("change", e => {
         handleFiles([...e.target.files], null);
@@ -614,7 +690,6 @@
 
       setupExternalDrop(uploadDrop, files => handleFiles(files, null));
       setupPoolDrop();
-      setupCategoryCells();
 
       document.addEventListener("paste", e => {
         const files = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith("image/"));
@@ -628,24 +703,45 @@
       const stores = MANAGER_STORES[currentManager];
       storeSelect.innerHTML = stores.map(store => `<option value="${store}">${store}</option>`).join("");
       storeSelect.value = currentStore;
-      storeTabs.innerHTML = stores.map(store => `<button class="store-tab ${store === currentStore ? "active" : ""}" onclick="selectStore('${store}')">${store}</button>`).join("");
       renderAll();
     }
 
     function selectStore(store) {
       currentStore = store;
       storeSelect.value = store;
+      currentPage = 0;
       renderAll();
     }
 
     function renderAll() {
+      const pageCount = getStorePageCount(currentStore);
+      currentPage = Math.min(currentPage, pageCount - 1);
+      currentPage = Math.max(0, currentPage);
+
       document.getElementById("activeInfo").textContent = `${currentManager} 담당 / 코스트코 ${currentStore}`;
       document.getElementById("pptStoreTitle").textContent = `코스트코 ${currentStore}`;
-      document.getElementById("tableStoreName").textContent = `코스트코 ${currentStore}`;
-      storeTabs.innerHTML = MANAGER_STORES[currentManager].map(store => `<button class="store-tab ${store === currentStore ? "active" : ""}" onclick="selectStore('${store}')">${store}</button>`).join("");
+      document.getElementById("pageText").textContent = `${currentPage + 1} / ${pageCount}`;
+      storeTabs.innerHTML = MANAGER_STORES[currentManager]
+        .map(store => `<button class="store-tab ${store === currentStore ? "active" : ""}" onclick="selectStore('${store}')">${store}</button>`).join("");
+
       renderPool();
-      renderCategoryCells();
+      renderSheet();
       updateSummary();
+      updateFileNamePreview();
+    }
+
+    function updateFileNamePreview() {
+      document.getElementById("fileNamePreview").textContent = `${getBaseFileName()}.pptx`;
+    }
+
+    function getBaseFileName() {
+      const week = (document.getElementById("weekInput").value || "W22").trim();
+      const stores = MANAGER_STORES[currentManager].map(removeStoreSuffix).join(", ");
+      return `(CE)${week}_코스트코_진열연출점검_(${stores})`;
+    }
+
+    function removeStoreSuffix(store) {
+      return store.replace(/점$/, "");
     }
 
     function setupExternalDrop(element, onFiles) {
@@ -659,7 +755,7 @@
         element.classList.remove("dragover");
         const files = getImageFilesFromDrop(e);
         if (!files.length) {
-          alert("이미지 파일로 인식되지 않았습니다. 카톡 사진을 바탕화면에 저장한 뒤 다시 넣어보세요.");
+          alert("이미지 파일로 인식되지 않았습니다. 카톡 사진을 PC에 저장한 뒤 다시 넣어보세요.");
           return;
         }
         onFiles(files);
@@ -682,23 +778,18 @@
           return;
         }
 
-        if (draggedPhotoId) {
-          movePhoto(draggedPhotoId, draggedFrom, "pool");
-        }
+        if (draggedPhotoId) movePhoto(draggedPhotoId, draggedFrom, "pool");
       });
     }
 
-    function setupCategoryCells() {
-      document.querySelectorAll(".drop-cell").forEach(cell => {
+    function attachCellDropHandlers(root = document) {
+      root.querySelectorAll(".drop-cell").forEach(cell => {
         const category = cell.dataset.category;
-
         cell.addEventListener("dragover", e => {
           e.preventDefault();
           cell.classList.add("dragover");
         });
-
         cell.addEventListener("dragleave", () => cell.classList.remove("dragover"));
-
         cell.addEventListener("drop", e => {
           e.preventDefault();
           cell.classList.remove("dragover");
@@ -709,9 +800,7 @@
             return;
           }
 
-          if (draggedPhotoId) {
-            movePhoto(draggedPhotoId, draggedFrom, category);
-          }
+          if (draggedPhotoId) movePhoto(draggedPhotoId, draggedFrom, category);
         });
       });
     }
@@ -735,7 +824,7 @@
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const compressed = await compressImage(file, maxSize, 0.75);
+        const compressed = await compressImage(file, maxSize, 0.72);
         const photo = {
           id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
           dataUrl: compressed.dataUrl,
@@ -753,7 +842,7 @@
       renderAll();
     }
 
-    function compressImage(file, maxSize = 1200, quality = 0.75) {
+    function compressImage(file, maxSize = 1100, quality = 0.72) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -771,7 +860,10 @@
             const canvas = document.createElement("canvas");
             canvas.width = width;
             canvas.height = height;
-            canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
             const dataUrl = canvas.toDataURL("image/jpeg", quality);
             resolve({ dataUrl, size: estimateDataUrlSize(dataUrl) });
           };
@@ -786,65 +878,95 @@
     function renderPool() {
       const pool = storeData[currentStore].pool;
       photoPool.innerHTML = "";
-
       if (!pool.length) {
         photoPool.innerHTML = `<div class="pool-empty">사진 10~20장을 한 번에 넣으면<br />여기에 대기 사진으로 표시됩니다.</div>`;
         return;
       }
-
-      pool.forEach(photo => photoPool.appendChild(makeThumb(photo, "pool")));
+      pool.forEach(photo => photoPool.appendChild(makeThumb(photo, "pool", "thumb")));
     }
 
-    function renderCategoryCells() {
-      document.querySelectorAll(".drop-cell").forEach(cell => {
-        const category = cell.dataset.category;
-        const photos = storeData[currentStore].categories[category];
-        cell.innerHTML = "";
+    function renderSheet() {
+      sheetHost.innerHTML = "";
+      const sheet = buildSheetElement(currentStore, currentPage, true);
+      sheetHost.appendChild(sheet);
+      attachCellDropHandlers(sheet);
+    }
 
+    function buildSheetElement(store, pageIndex, interactive) {
+      const sheet = document.createElement("div");
+      sheet.className = "ppt-sheet";
+
+      const table = document.createElement("table");
+      table.className = "ppt-table";
+
+      table.innerHTML = `
+        <tr class="store-name-row">
+          <td colspan="7">코스트코 ${store}</td>
+        </tr>
+        <tr class="item-head">
+          <th class="row-label">품목</th>
+          ${CATEGORIES.map(c => `<th>${c.htmlLabel}</th>`).join("")}
+        </tr>
+        <tr class="photo-row">
+          <td class="row-label">현장\n사진</td>
+          ${CATEGORIES.map(c => `<td><div class="drop-cell" data-category="${c.key}"></div></td>`).join("")}
+        </tr>
+        <tr class="content-row">
+          <td class="row-label">내용</td>
+          <td colspan="6"></td>
+        </tr>
+      `;
+
+      sheet.appendChild(table);
+      const footer = document.createElement("div");
+      footer.className = "footer-title";
+      footer.textContent = "코스트코 진열 · 연출 점검";
+      sheet.appendChild(footer);
+
+      table.querySelectorAll(".drop-cell").forEach(cell => {
+        const category = cell.dataset.category;
+        const photos = storeData[store].categories[category].slice(pageIndex * 4, pageIndex * 4 + 4);
+        cell.innerHTML = "";
         if (!photos.length) {
           cell.innerHTML = `<div class="drop-cell-empty">여기로 사진 드래그</div>`;
           return;
         }
-
-        photos.slice(0, 4).forEach(photo => cell.appendChild(makeThumb(photo, category)));
-
-        if (photos.length > 4) {
-          const more = document.createElement("div");
-          more.className = "more";
-          more.textContent = `+${photos.length - 4}장 추가 / PPT 다음 슬라이드 자동 반영`;
-          cell.appendChild(more);
-        }
+        photos.forEach(photo => cell.appendChild(makeThumb(photo, category, "sheet-thumb", interactive)));
       });
+
+      return sheet;
     }
 
-    function makeThumb(photo, from) {
+    function makeThumb(photo, from, className, interactive = true) {
       const div = document.createElement("div");
-      div.className = "thumb";
-      div.draggable = true;
+      div.className = className;
       div.dataset.id = photo.id;
       div.dataset.from = from;
       div.innerHTML = `
         <img src="${photo.dataUrl}" alt="${escapeHtml(photo.originalName)}" />
         <span class="tag">${formatBytes(photo.compressedSize)}</span>
-        <span class="x" title="삭제">×</span>
+        ${interactive ? `<span class="x" title="삭제">×</span>` : ""}
       `;
 
-      div.addEventListener("dragstart", e => {
-        draggedPhotoId = photo.id;
-        draggedFrom = from;
-        e.dataTransfer.setData("text/plain", photo.id);
-      });
-
-      div.addEventListener("dragend", () => {
-        draggedPhotoId = null;
-        draggedFrom = null;
-      });
-
-      div.querySelector(".x").addEventListener("click", e => {
-        e.stopPropagation();
-        deletePhoto(photo.id, from);
-      });
-
+      if (interactive) {
+        div.draggable = true;
+        div.addEventListener("dragstart", e => {
+          draggedPhotoId = photo.id;
+          draggedFrom = from;
+          e.dataTransfer.setData("text/plain", photo.id);
+        });
+        div.addEventListener("dragend", () => {
+          draggedPhotoId = null;
+          draggedFrom = null;
+        });
+        const x = div.querySelector(".x");
+        if (x) {
+          x.addEventListener("click", e => {
+            e.stopPropagation();
+            deletePhoto(photo.id, from);
+          });
+        }
+      }
       return div;
     }
 
@@ -852,10 +974,8 @@
       if (from === to) return;
       const photo = removePhotoFromSource(photoId, from);
       if (!photo) return;
-
       if (to === "pool") storeData[currentStore].pool.push(photo);
       else storeData[currentStore].categories[to].push(photo);
-
       renderAll();
     }
 
@@ -879,6 +999,13 @@
     function clearCurrentStore() {
       if (!confirm(`코스트코 ${currentStore} 사진을 모두 삭제할까요?`)) return;
       storeData[currentStore] = createEmptyStoreData();
+      currentPage = 0;
+      renderAll();
+    }
+
+    function changePage(delta) {
+      const pageCount = getStorePageCount(currentStore);
+      currentPage = Math.min(pageCount - 1, Math.max(0, currentPage + delta));
       renderAll();
     }
 
@@ -903,17 +1030,8 @@
 
     async function makePpt() {
       const visibleStores = MANAGER_STORES[currentManager];
-      const storesWithPhotos = visibleStores.filter(store => getAssignedCount(store) > 0);
-
-      if (!storesWithPhotos.length) {
-        alert("PPT에 넣을 배정 사진이 없습니다. 대기 사진을 품목 칸으로 먼저 드래그하세요.");
-        return;
-      }
-
       const unassigned = visibleStores.reduce((sum, store) => sum + storeData[store].pool.length, 0);
-      if (unassigned > 0 && !confirm(`대기 사진함에 남은 사진 ${unassigned}장은 PPT에 들어가지 않습니다. 그대로 생성할까요?`)) {
-        return;
-      }
+      if (unassigned > 0 && !confirm(`대기 사진함에 남은 사진 ${unassigned}장은 PPT에 들어가지 않습니다. 그대로 생성할까요?`)) return;
 
       statusText.textContent = "PPT 생성 중...";
       progressBar.style.width = "5%";
@@ -923,29 +1041,23 @@
       pptx.author = "Costco Display Check App";
       pptx.company = "Samsung Electronics";
       pptx.subject = "코스트코 진열·연출 점검";
-      pptx.title = document.getElementById("reportTitle").value || "코스트코 진열연출점검";
+      pptx.title = getBaseFileName();
       pptx.lang = "ko-KR";
       pptx.theme = { headFontFace: "Arial", bodyFontFace: "Arial", lang: "ko-KR" };
 
-      for (let i = 0; i < storesWithPhotos.length; i++) {
-        const store = storesWithPhotos[i];
+      for (let i = 0; i < visibleStores.length; i++) {
+        const store = visibleStores[i];
         const pages = getStorePageCount(store);
         for (let page = 0; page < pages; page++) {
           const slide = pptx.addSlide();
-          drawPptLikeSlide(slide, store, page, pages);
+          drawTemplateSlide(slide, store, page, pages);
         }
-        progressBar.style.width = `${Math.round(((i + 1) / storesWithPhotos.length) * 95)}%`;
+        progressBar.style.width = `${Math.round(((i + 1) / visibleStores.length) * 95)}%`;
       }
 
-      const fileName = sanitizeFileName(`${document.getElementById("reportTitle").value}_${currentManager}` || "코스트코_진열연출점검");
-      await pptx.writeFile({ fileName: `${fileName}.pptx` });
-
+      await pptx.writeFile({ fileName: `${sanitizeFileName(getBaseFileName())}.pptx` });
       progressBar.style.width = "100%";
-      statusText.textContent = `완료: ${currentManager} 담당 / ${storesWithPhotos.length}개 점포 PPT 생성`;
-    }
-
-    function getAssignedCount(store) {
-      return CATEGORIES.reduce((sum, c) => sum + storeData[store].categories[c.key].length, 0);
+      statusText.textContent = `완료: ${currentManager} 담당 / ${visibleStores.length}개 점포 PPT 생성`;
     }
 
     function getStorePageCount(store) {
@@ -953,35 +1065,34 @@
       return Math.max(1, ...counts.map(count => Math.ceil(count / 4)));
     }
 
-    function drawPptLikeSlide(slide, store, pageIndex, totalPages) {
+    function drawTemplateSlide(slide, store, pageIndex, totalPages) {
       slide.background = { color: "FFFFFF" };
 
       const x0 = 0.25;
-      const y0 = 0.35;
+      const y0 = 0.26;
       const totalW = 12.85;
-      const titleH = 0.45;
+      const titleH = 0.47;
       const headH = 0.67;
-      const photoH = 5.25;
+      const photoH = 5.35;
       const contentH = 0.55;
-      const labelW = 0.65;
+      const labelW = 0.68;
       const colW = (totalW - labelW) / 6;
+      const headY = y0 + titleH;
+      const photoY = headY + headH;
+      const contentY = photoY + photoH;
 
-      slide.addShape(pptx.ShapeType.rect, { x: x0, y: y0, w: totalW, h: titleH, fill: { color: "FFFFFF", transparency: 100 }, line: { color: "222222", width: 1.2 } });
+      drawCell(slide, x0, y0, totalW, titleH, "", false, 8);
       slide.addText(`코스트코 ${store}`, {
-        x: x0 + 0.08, y: y0 + 0.09, w: totalW - 0.16, h: 0.28,
-        fontFace: "Arial", fontSize: 18, bold: true, color: "111827"
+        x: x0 + 0.1, y: y0 + 0.11, w: totalW - 0.2, h: 0.25,
+        fontFace: "Arial", fontSize: 18, bold: true, color: "111827", fit: "shrink"
       });
 
       if (totalPages > 1) {
         slide.addText(`${pageIndex + 1}/${totalPages}`, {
-          x: x0 + totalW - 0.55, y: y0 + 0.11, w: 0.42, h: 0.22,
+          x: x0 + totalW - 0.55, y: y0 + 0.13, w: 0.42, h: 0.2,
           fontFace: "Arial", fontSize: 8.5, color: "666666", align: "right"
         });
       }
-
-      const headY = y0 + titleH;
-      const photoY = headY + headH;
-      const contentY = photoY + photoH;
 
       drawCell(slide, x0, headY, labelW, headH, "품목", true, 10);
       CATEGORIES.forEach((cat, idx) => {
@@ -1001,7 +1112,7 @@
       drawCell(slide, x0 + labelW, contentY, colW * 6, contentH, "", false, 8);
 
       slide.addText("코스트코 진열 · 연출 점검", {
-        x: 8.95, y: 7.1, w: 4.0, h: 0.22,
+        x: 8.95, y: 7.05, w: 4.0, h: 0.22,
         fontFace: "Arial", fontSize: 10, color: "555555", align: "right"
       });
     }
@@ -1038,9 +1149,68 @@
           x: x + col * (imgW + gap),
           y: y + row * (imgH + gap),
           w: imgW,
-          h: imgH
+          h: imgH,
+          sizing: { type: "cover", x: x + col * (imgW + gap), y: y + row * (imgH + gap), w: imgW, h: imgH }
         });
       });
+    }
+
+    async function downloadCurrentScenePdf() {
+      await exportSheetsToPdf([{ store: currentStore, page: currentPage }], `${getBaseFileName()}_${removeStoreSuffix(currentStore)}_${currentPage + 1}.pdf`);
+    }
+
+    async function downloadCurrentStorePdf() {
+      const pages = getStorePageCount(currentStore);
+      const jobs = Array.from({ length: pages }, (_, page) => ({ store: currentStore, page }));
+      await exportSheetsToPdf(jobs, `${getBaseFileName()}_${removeStoreSuffix(currentStore)}.pdf`);
+    }
+
+    async function downloadAllPdf() {
+      const visibleStores = MANAGER_STORES[currentManager];
+      const jobs = [];
+      visibleStores.forEach(store => {
+        const pages = getStorePageCount(store);
+        for (let page = 0; page < pages; page++) jobs.push({ store, page });
+      });
+      await exportSheetsToPdf(jobs, `${getBaseFileName()}.pdf`);
+    }
+
+    async function exportSheetsToPdf(jobs, fileName) {
+      if (!jobs.length) return;
+      statusText.textContent = "PDF 생성 중...";
+      progressBar.style.width = "0%";
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 18;
+      let first = true;
+
+      for (let i = 0; i < jobs.length; i++) {
+        const { store, page } = jobs[i];
+        exportHost.innerHTML = "";
+        const sheet = buildSheetElement(store, page, false);
+        exportHost.appendChild(sheet);
+
+        await new Promise(resolve => setTimeout(resolve, 50));
+        const canvas = await html2canvas(sheet, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+        const img = canvas.toDataURL("image/jpeg", 0.9);
+        const ratio = Math.min((pageW - margin * 2) / canvas.width, (pageH - margin * 2) / canvas.height);
+        const w = canvas.width * ratio;
+        const h = canvas.height * ratio;
+        const x = (pageW - w) / 2;
+        const y = (pageH - h) / 2;
+
+        if (!first) pdf.addPage();
+        first = false;
+        pdf.addImage(img, "JPEG", x, y, w, h);
+        progressBar.style.width = `${Math.round(((i + 1) / jobs.length) * 100)}%`;
+      }
+
+      exportHost.innerHTML = "";
+      pdf.save(sanitizeFileName(fileName));
+      statusText.textContent = `PDF 완료: ${fileName}`;
     }
 
     function estimateDataUrlSize(dataUrl) {
