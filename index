@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>코스트코 진열·연출 점검 PPT 생성기</title>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --line: #d9dee8;
+      --text: #172033;
+      --muted: #667085;
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --danger: #ef4444;
+      --ok: #16a34a;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255,255,255,0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+      padding: 16px 22px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.4px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 10px;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      margin-bottom: 16px;
+    }
+
+    .toolbar label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0 10px;
+      font-size: 14px;
+      background: white;
+      color: var(--text);
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 15px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      transition: 0.15s ease;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    button.primary:hover { background: var(--primary-dark); }
+
+    button.ghost {
+      background: #eef2ff;
+      color: #1e3a8a;
+    }
+
+    button.danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .notice {
+      margin: 0 0 16px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(390px, 1fr));
+      gap: 14px;
+    }
+
+    .store-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+    }
+
+    .store-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcff;
+    }
+
+    .store-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .store-title strong {
+      font-size: 17px;
+    }
+
+    .store-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .store-body {
+      padding: 14px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #b8c2d6;
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.dragover {
+      border-color: var(--primary);
+      background: #eff6ff;
+      color: var(--primary-dark);
+    }
+
+    .drop-zone input { display: none; }
+
+    .category-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .category-row select,
+    .category-row input {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0 10px;
+      font-size: 13px;
+      background: white;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .thumb {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f8fafc;
+      aspect-ratio: 1 / 1;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumb .badge {
+      position: absolute;
+      left: 5px;
+      top: 5px;
+      background: rgba(15, 23, 42, 0.82);
+      color: white;
+      border-radius: 999px;
+      padding: 3px 7px;
+      font-size: 10px;
+      max-width: 92%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .thumb button {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-radius: 999px;
+      background: rgba(239, 68, 68, 0.92);
+      color: white;
+      font-size: 14px;
+      line-height: 24px;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #98a2b3;
+      font-size: 11px;
+      background: #fcfcfd;
+    }
+
+    .status {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress > div {
+      width: 0%;
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.2s ease;
+    }
+
+    @media (max-width: 800px) {
+      .toolbar { grid-template-columns: 1fr; }
+      .store-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>코스트코 진열·연출 점검 PPT 생성기</h1>
+    <p>점포별 사진 업로드 → 자동 압축 → 4×4 배치 → PPT 다운로드</p>
+  </header>
+
+  <main>
+    <section class="toolbar">
+      <label>
+        보고 주차 / 파일명
+        <input id="reportTitle" value="W22_코스트코_진열연출점검" />
+      </label>
+
+      <label>
+        사진 압축 기준
+        <select id="maxSize">
+          <option value="1000">긴 쪽 1000px / 용량 최소</option>
+          <option value="1200" selected>긴 쪽 1200px / 보고용 추천</option>
+          <option value="1600">긴 쪽 1600px / 선명도 우선</option>
+        </select>
+      </label>
+
+      <button class="ghost" onclick="clearAll()">전체 초기화</button>
+      <button class="primary" onclick="makePpt()">PPT 생성</button>
+    </section>
+
+    <p class="notice">
+      현재 샘플은 품목을 AI가 자동 판별하지 않고, 업로드할 때 선택한 품목명을 사진에 붙여 PPT에 넣는 방식입니다.
+      그래서 여러 사람이 사용해도 오류가 적습니다. 점포별 16장까지 한 슬라이드에 4×4로 들어가고, 16장을 초과하면 같은 점포명으로 다음 슬라이드가 자동 생성됩니다.
+    </p>
+
+    <section id="storeGrid" class="store-grid"></section>
+
+    <div class="status" id="statusText">대기 중</div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </main>
+
+  <script>
+    const STORES = [
+      "대구점", "혁신점", "대전점", "세종점",
+      "공세점", "광명점", "양재점", "고척점", "송도점", "부산점",
+      "울산점", "하남점", "일산점", "상봉점", "의정부점", "천안점",
+      "김해점", "청라점", "동탄점", "군산점"
+    ];
+
+    const CATEGORIES = [
+      "TV",
+      "냉장고/김치냉장고/세건",
+      "에어컨",
+      "모니터",
+      "조리기기",
+      "기타"
+    ];
+
+    // storePhotos 구조:
+    // { "대구점": [{ dataUrl, category, memo, originalName, originalSize, compressedSize }] }
+    const storePhotos = Object.fromEntries(STORES.map(store => [store, []]));
+
+    const storeGrid = document.getElementById("storeGrid");
+    const statusText = document.getElementById("statusText");
+    const progressBar = document.getElementById("progressBar");
+
+    renderStores();
+
+    function renderStores() {
+      storeGrid.innerHTML = "";
+
+      STORES.forEach(store => {
+        const card = document.createElement("article");
+        card.className = "store-card";
+
+        const categoryOptions = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join("");
+
+        card.innerHTML = `
+          <div class="store-head">
+            <div class="store-title">
+              <strong>코스트코 ${store}</strong>
+              <span id="count-${store}">사진 0장</span>
+            </div>
+            <button class="danger" onclick="clearStore('${store}')">점포 초기화</button>
+          </div>
+          <div class="store-body">
+            <div class="category-row">
+              <select id="cat-${store}">${categoryOptions}</select>
+              <input id="memo-${store}" placeholder="메모 선택 입력" />
+            </div>
+            <label class="drop-zone" id="drop-${store}">
+              <input type="file" id="file-${store}" multiple accept="image/*" />
+              사진 선택 또는 드래그<br />
+              <small>선택한 품목으로 사진이 등록됩니다.</small>
+            </label>
+            <div class="preview-grid" id="preview-${store}"></div>
+          </div>
+        `;
+
+        storeGrid.appendChild(card);
+
+        const input = card.querySelector(`#file-${cssEscape(store)}`);
+        const drop = card.querySelector(`#drop-${cssEscape(store)}`);
+
+        input.addEventListener("change", e => handleFiles(store, [...e.target.files]));
+
+        drop.addEventListener("dragover", e => {
+          e.preventDefault();
+          drop.classList.add("dragover");
+        });
+
+        drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
+
+        drop.addEventListener("drop", e => {
+          e.preventDefault();
+          drop.classList.remove("dragover");
+          handleFiles(store, [...e.dataTransfer.files].filter(f => f.type.startsWith("image/")));
+        });
+
+        renderPreview(store);
+      });
+    }
+
+    async function handleFiles(store, files) {
+      if (!files.length) return;
+
+      const category = document.getElementById(`cat-${store}`).value;
+      const memo = document.getElementById(`memo-${store}`).value.trim();
+      const maxSize = Number(document.getElementById("maxSize").value);
+
+      statusText.textContent = `${store} 사진 압축 중...`;
+      progressBar.style.width = "0%";
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const compressed = await compressImage(file, maxSize, 0.75);
+
+        storePhotos[store].push({
+          dataUrl: compressed.dataUrl,
+          category,
+          memo,
+          originalName: file.name,
+          originalSize: file.size,
+          compressedSize: compressed.size
+        });
+
+        progressBar.style.width = `${Math.round(((i + 1) / files.length) * 100)}%`;
+      }
+
+      renderPreview(store);
+      updateTotalStatus();
+      document.getElementById(`file-${store}`).value = "";
+    }
+
+    function compressImage(file, maxSize = 1200, quality = 0.75) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            let { width, height } = img;
+
+            if (width > height && width > maxSize) {
+              height = Math.round(height * (maxSize / width));
+              width = maxSize;
+            } else if (height >= width && height > maxSize) {
+              width = Math.round(width * (maxSize / height));
+              height = maxSize;
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const dataUrl = canvas.toDataURL("image/jpeg", quality);
+            const size = estimateDataUrlSize(dataUrl);
+            resolve({ dataUrl, size });
+          };
+          img.onerror = reject;
+          img.src = reader.result;
+        };
+
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function estimateDataUrlSize(dataUrl) {
+      const base64 = dataUrl.split(",")[1] || "";
+      return Math.round((base64.length * 3) / 4);
+    }
+
+    function renderPreview(store) {
+      const preview = document.getElementById(`preview-${store}`);
+      const count = document.getElementById(`count-${store}`);
+      const photos = storePhotos[store];
+
+      count.textContent = `사진 ${photos.length}장`;
+      preview.innerHTML = "";
+
+      photos.slice(0, 16).forEach((photo, index) => {
+        const div = document.createElement("div");
+        div.className = "thumb";
+        div.innerHTML = `
+          <img src="${photo.dataUrl}" alt="${photo.originalName}" />
+          <span class="badge">${index + 1}. ${photo.category}</span>
+          <button onclick="removePhoto('${store}', ${index})">×</button>
+        `;
+        preview.appendChild(div);
+      });
+
+      const emptyCount = Math.max(0, 16 - Math.min(16, photos.length));
+      for (let i = 0; i < emptyCount; i++) {
+        const div = document.createElement("div");
+        div.className = "empty";
+        div.textContent = "빈칸";
+        preview.appendChild(div);
+      }
+
+      if (photos.length > 16) {
+        const over = document.createElement("div");
+        over.className = "empty";
+        over.textContent = `+${photos.length - 16}장`;
+        preview.appendChild(over);
+      }
+    }
+
+    function removePhoto(store, index) {
+      storePhotos[store].splice(index, 1);
+      renderPreview(store);
+      updateTotalStatus();
+    }
+
+    function clearStore(store) {
+      storePhotos[store] = [];
+      renderPreview(store);
+      updateTotalStatus();
+    }
+
+    function clearAll() {
+      if (!confirm("전체 점포 사진을 모두 삭제할까요?")) return;
+      STORES.forEach(store => {
+        storePhotos[store] = [];
+        renderPreview(store);
+      });
+      updateTotalStatus();
+    }
+
+    function updateTotalStatus() {
+      const total = STORES.reduce((sum, store) => sum + storePhotos[store].length, 0);
+      const original = STORES.flatMap(s => storePhotos[s]).reduce((sum, p) => sum + p.originalSize, 0);
+      const compressed = STORES.flatMap(s => storePhotos[s]).reduce((sum, p) => sum + p.compressedSize, 0);
+
+      const rate = original ? Math.round((1 - compressed / original) * 100) : 0;
+      statusText.textContent = `총 ${total}장 / 원본 ${formatBytes(original)} → 압축 ${formatBytes(compressed)} / 약 ${rate}% 감소`;
+    }
+
+    async function makePpt() {
+      const selectedStores = STORES.filter(store => storePhotos[store].length > 0);
+      if (!selectedStores.length) {
+        alert("사진을 먼저 업로드해주세요.");
+        return;
+      }
+
+      statusText.textContent = "PPT 생성 중...";
+      progressBar.style.width = "5%";
+
+      const pptx = new pptxgen();
+      pptx.layout = "LAYOUT_WIDE"; // 13.333 × 7.5 inch
+      pptx.author = "Costco Display Check App";
+      pptx.subject = "코스트코 진열·연출 점검";
+      pptx.title = document.getElementById("reportTitle").value || "코스트코 진열연출점검";
+      pptx.company = "Samsung Electronics";
+      pptx.lang = "ko-KR";
+      pptx.theme = {
+        headFontFace: "Arial",
+        bodyFontFace: "Arial",
+        lang: "ko-KR"
+      };
+
+      const titleSlide = pptx.addSlide();
+      titleSlide.background = { color: "F6F7FB" };
+      titleSlide.addText("코스트코 진열 · 연출 점검", {
+        x: 0.6, y: 2.55, w: 12.1, h: 0.6,
+        fontFace: "Arial", fontSize: 30, bold: true,
+        color: "172033", align: "center"
+      });
+      titleSlide.addText(document.getElementById("reportTitle").value || "Weekly Report", {
+        x: 0.6, y: 3.25, w: 12.1, h: 0.35,
+        fontFace: "Arial", fontSize: 14,
+        color: "667085", align: "center"
+      });
+
+      let slideCount = 1;
+      for (let s = 0; s < selectedStores.length; s++) {
+        const store = selectedStores[s];
+        const chunks = chunkArray(storePhotos[store], 16);
+
+        chunks.forEach((photos, chunkIndex) => {
+          const slide = pptx.addSlide();
+          slide.background = { color: "FFFFFF" };
+          slideCount++;
+
+          drawStoreSlide(slide, store, photos, chunkIndex + 1, chunks.length);
+        });
+
+        progressBar.style.width = `${Math.round(((s + 1) / selectedStores.length) * 90)}%`;
+      }
+
+      const fileNameBase = sanitizeFileName(document.getElementById("reportTitle").value || "코스트코_진열연출점검");
+      await pptx.writeFile({ fileName: `${fileNameBase}.pptx` });
+
+      progressBar.style.width = "100%";
+      statusText.textContent = `완료: ${selectedStores.length}개 점포 / ${slideCount}개 슬라이드 생성`;
+    }
+
+    function drawStoreSlide(slide, store, photos, pageNo, pageTotal) {
+      const slideW = 13.333;
+      const slideH = 7.5;
+
+      slide.addShape(pptx.ShapeType.rect, {
+        x: 0, y: 0, w: slideW, h: 0.72,
+        fill: { color: "172033" }, line: { color: "172033" }
+      });
+
+      slide.addText(`코스트코 ${store}`, {
+        x: 0.35, y: 0.18, w: 4.5, h: 0.32,
+        fontFace: "Arial", fontSize: 18, bold: true, color: "FFFFFF"
+      });
+
+      slide.addText("진열 · 연출 점검", {
+        x: 9.5, y: 0.22, w: 3.4, h: 0.28,
+        fontFace: "Arial", fontSize: 11, color: "CBD5E1", align: "right"
+      });
+
+      if (pageTotal > 1) {
+        slide.addText(`${pageNo}/${pageTotal}`, {
+          x: 12.78, y: 0.22, w: 0.35, h: 0.28,
+          fontFace: "Arial", fontSize: 9, color: "FFFFFF", align: "right"
+        });
+      }
+
+      // 4×4 사진 배치 영역
+      const marginX = 0.38;
+      const startY = 0.92;
+      const gap = 0.12;
+      const cols = 4;
+      const rows = 4;
+      const labelH = 0.22;
+      const gridW = slideW - marginX * 2;
+      const gridH = slideH - startY - 0.35;
+      const cellW = (gridW - gap * (cols - 1)) / cols;
+      const cellH = (gridH - gap * (rows - 1)) / rows;
+
+      for (let i = 0; i < 16; i++) {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = marginX + col * (cellW + gap);
+        const y = startY + row * (cellH + gap);
+
+        slide.addShape(pptx.ShapeType.roundRect, {
+          x, y, w: cellW, h: cellH,
+          rectRadius: 0.07,
+          fill: { color: "F8FAFC" },
+          line: { color: "D9DEE8", width: 0.6 }
+        });
+
+        const photo = photos[i];
+        if (!photo) {
+          slide.addText("", { x, y, w: cellW, h: cellH });
+          continue;
+        }
+
+        slide.addImage({
+          data: photo.dataUrl,
+          x: x + 0.03,
+          y: y + 0.03,
+          w: cellW - 0.06,
+          h: cellH - labelH - 0.06,
+          sizing: { type: "cover", x: x + 0.03, y: y + 0.03, w: cellW - 0.06, h: cellH - labelH - 0.06 }
+        });
+
+        const label = photo.memo ? `${photo.category} · ${photo.memo}` : photo.category;
+        slide.addShape(pptx.ShapeType.rect, {
+          x: x + 0.03,
+          y: y + cellH - labelH - 0.03,
+          w: cellW - 0.06,
+          h: labelH,
+          fill: { color: "111827", transparency: 6 },
+          line: { color: "111827", transparency: 100 }
+        });
+
+        slide.addText(label, {
+          x: x + 0.08,
+          y: y + cellH - labelH + 0.01,
+          w: cellW - 0.16,
+          h: labelH - 0.03,
+          fontFace: "Arial",
+          fontSize: 7.5,
+          color: "FFFFFF",
+          bold: true,
+          fit: "shrink"
+        });
+      }
+    }
+
+    function chunkArray(arr, size) {
+      const result = [];
+      for (let i = 0; i < arr.length; i += size) result.push(arr.slice(i, i + size));
+      return result;
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return "0MB";
+      const mb = bytes / 1024 / 1024;
+      if (mb >= 1) return `${mb.toFixed(1)}MB`;
+      return `${Math.round(bytes / 1024)}KB`;
+    }
+
+    function sanitizeFileName(name) {
+      return name.replace(/[\\/:*?"<>|]/g, "_").trim();
+    }
+
+    function cssEscape(value) {
+      if (window.CSS && CSS.escape) return CSS.escape(value);
+      return value.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+    }
+  </script>
+</body>
+</html>
