@@ -7,18 +7,21 @@
   <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
   <style>
     :root {
-      --bg: #f6f7fb;
+      --bg: #f3f5f9;
       --card: #ffffff;
-      --line: #d9dee8;
-      --text: #172033;
+      --line: #cfd7e6;
+      --line-dark: #9aa6bc;
+      --text: #111827;
       --muted: #667085;
       --primary: #2563eb;
-      --primary-dark: #1e40af;
-      --danger: #ef4444;
-      --ok: #16a34a;
+      --danger: #dc2626;
+      --soft-blue: #eff6ff;
+      --soft-red: #fee2e2;
+      --head: #eef2f7;
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, "Noto Sans KR", sans-serif;
@@ -27,196 +30,227 @@
     }
 
     header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 20px;
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(255,255,255,0.94);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(8px);
-      padding: 16px 22px;
     }
 
     header h1 {
       margin: 0;
       font-size: 22px;
-      letter-spacing: -0.4px;
+      letter-spacing: -0.5px;
     }
 
     header p {
-      margin: 6px 0 0;
+      margin: 5px 0 0;
       color: var(--muted);
       font-size: 13px;
     }
 
     main {
-      max-width: 1380px;
+      max-width: 1500px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 18px;
     }
 
     .toolbar {
       display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: 1.2fr 0.65fr 0.7fr 0.6fr auto auto;
       gap: 10px;
-      align-items: center;
+      align-items: end;
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 14px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      margin-bottom: 16px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 12px;
     }
 
-    .toolbar label {
+    label {
       display: flex;
       flex-direction: column;
       gap: 6px;
       color: var(--muted);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
-    .toolbar input,
-    .toolbar select {
+    input, select {
       min-height: 38px;
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 0 10px;
-      font-size: 14px;
-      background: white;
+      background: #fff;
       color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
     }
 
     button {
       border: 0;
-      border-radius: 12px;
+      border-radius: 11px;
       padding: 11px 15px;
       cursor: pointer;
       font-weight: 800;
       font-size: 14px;
-      transition: 0.15s ease;
+      white-space: nowrap;
     }
 
-    button.primary {
-      background: var(--primary);
-      color: white;
+    button.primary { background: var(--primary); color: #fff; }
+    button.ghost { background: var(--soft-blue); color: #1e40af; }
+    button.danger { background: var(--soft-red); color: var(--danger); }
+    button.small { padding: 6px 9px; font-size: 12px; border-radius: 8px; }
+
+    .store-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
-    button.primary:hover { background: var(--primary-dark); }
-
-    button.ghost {
-      background: #eef2ff;
-      color: #1e3a8a;
+    .store-tab {
+      background: #fff;
+      color: #334155;
+      border: 1px solid var(--line);
+      padding: 9px 13px;
+      border-radius: 999px;
     }
 
-    button.danger {
-      background: #fee2e2;
-      color: #b91c1c;
+    .store-tab.active {
+      background: #172033;
+      border-color: #172033;
+      color: #fff;
     }
 
     .notice {
-      margin: 0 0 16px;
       background: #fff7ed;
       border: 1px solid #fed7aa;
       color: #9a3412;
-      border-radius: 14px;
-      padding: 12px 14px;
+      border-radius: 13px;
+      padding: 11px 13px;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.55;
+      margin-bottom: 12px;
     }
 
-    .store-grid {
+    .layout {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(390px, 1fr));
+      grid-template-columns: 360px 1fr;
       gap: 14px;
+      align-items: start;
     }
 
-    .store-card {
-      background: var(--card);
+    .panel {
+      background: #fff;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
       overflow: hidden;
     }
 
-    .store-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
+    .panel-head {
+      padding: 13px 15px;
       border-bottom: 1px solid var(--line);
       background: #fbfcff;
-    }
-
-    .store-title {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
 
-    .store-title strong {
-      font-size: 17px;
-    }
+    .panel-head strong { font-size: 16px; }
+    .panel-head span { color: var(--muted); font-size: 12px; }
+    .panel-body { padding: 14px; }
 
-    .store-title span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .store-body {
-      padding: 14px;
-    }
-
-    .drop-zone {
-      border: 2px dashed #b8c2d6;
+    .big-drop {
+      min-height: 150px;
+      border: 2px dashed #94a3b8;
       background: #f8fafc;
       border-radius: 16px;
-      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
+      padding: 16px;
       color: var(--muted);
       cursor: pointer;
       margin-bottom: 12px;
     }
 
-    .drop-zone:hover,
-    .drop-zone.dragover {
-      border-color: var(--primary);
-      background: #eff6ff;
-      color: var(--primary-dark);
+    .big-drop strong {
+      color: var(--text);
+      font-size: 18px;
+      margin-bottom: 6px;
     }
 
-    .drop-zone input { display: none; }
+    .big-drop.dragover, .drop-cell.dragover, .pool.dragover {
+      border-color: var(--primary) !important;
+      background: #eff6ff !important;
+      color: #1e40af !important;
+    }
 
-    .category-row {
+    .big-drop input { display: none; }
+
+    .summary {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-top: 10px;
     }
 
-    .category-row select,
-    .category-row input {
-      min-height: 38px;
+    .summary div {
+      background: #f8fafc;
       border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 0 10px;
-      font-size: 13px;
-      background: white;
+      border-radius: 12px;
+      padding: 9px;
     }
 
-    .preview-grid {
+    .summary span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .summary strong { font-size: 15px; }
+
+    .pool {
+      min-height: 190px;
+      max-height: 430px;
+      overflow: auto;
+      border: 2px dashed #d8dfeb;
+      background: #fcfdff;
+      border-radius: 14px;
+      padding: 10px;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
+    }
+
+    .pool-empty {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 130px;
+      color: #98a2b3;
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.5;
     }
 
     .thumb {
       position: relative;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      overflow: hidden;
-      background: #f8fafc;
       aspect-ratio: 1 / 1;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      cursor: grab;
     }
 
     .thumb img {
@@ -224,53 +258,157 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      pointer-events: none;
     }
 
-    .thumb .badge {
+    .thumb .tag {
       position: absolute;
-      left: 5px;
-      top: 5px;
+      left: 4px;
+      top: 4px;
       background: rgba(15, 23, 42, 0.82);
-      color: white;
+      color: #fff;
       border-radius: 999px;
-      padding: 3px 7px;
+      padding: 2px 6px;
       font-size: 10px;
-      max-width: 92%;
+      max-width: calc(100% - 8px);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .thumb button {
+    .thumb .x {
       position: absolute;
-      right: 5px;
-      top: 5px;
-      width: 24px;
-      height: 24px;
-      padding: 0;
+      right: 4px;
+      top: 4px;
+      width: 22px;
+      height: 22px;
       border-radius: 999px;
-      background: rgba(239, 68, 68, 0.92);
-      color: white;
+      background: rgba(220, 38, 38, 0.92);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 14px;
-      line-height: 24px;
+      cursor: pointer;
     }
 
-    .empty {
-      border: 1px dashed var(--line);
-      border-radius: 12px;
-      aspect-ratio: 1 / 1;
+    .ppt-wrap {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+      overflow: hidden;
+    }
+
+    .ppt-title {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: #fbfcff;
+    }
+
+    .ppt-title h2 {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: -0.4px;
+    }
+
+    .ppt-stage {
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .ppt-sheet {
+      min-width: 1040px;
+      background: #fff;
+      border: 2px solid #333;
+      padding: 0;
+    }
+
+    table.ppt-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13px;
+    }
+
+    .ppt-table th,
+    .ppt-table td {
+      border: 1.4px solid #333;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .store-name-row td {
+      border-left: 0;
+      border-right: 0;
+      border-top: 0;
+      height: 46px;
+      text-align: left;
+      padding-left: 16px;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .item-head th {
+      background: #f1f3f6;
+      height: 56px;
+      font-size: 12.5px;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .row-label {
+      width: 72px;
+      background: #f1f3f6;
+      font-weight: 900;
+      line-height: 1.35;
+      white-space: pre-line;
+    }
+
+    .photo-row td { height: 410px; }
+    .content-row td { height: 58px; }
+
+    .drop-cell {
+      min-height: 410px;
+      padding: 8px;
+      border: 2px dashed transparent;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 1fr;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .drop-cell-empty {
+      grid-column: 1 / -1;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #98a2b3;
-      font-size: 11px;
-      background: #fcfcfd;
+      font-size: 13px;
+      line-height: 1.4;
+      min-height: 370px;
+    }
+
+    .more {
+      grid-column: 1 / -1;
+      color: #64748b;
+      font-size: 12px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 7px;
     }
 
     .status {
-      margin-top: 14px;
       color: var(--muted);
       font-size: 13px;
+      margin-top: 10px;
       line-height: 1.5;
     }
 
@@ -284,22 +422,22 @@
     }
 
     .progress > div {
-      width: 0%;
       height: 100%;
+      width: 0%;
       background: var(--primary);
       transition: width 0.2s ease;
     }
 
-    @media (max-width: 800px) {
-      .toolbar { grid-template-columns: 1fr; }
-      .store-grid { grid-template-columns: 1fr; }
+    @media (max-width: 1100px) {
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .layout { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <header>
     <h1>코스트코 진열·연출 점검 PPT 생성기</h1>
-    <p>점포별 사진 업로드 → 자동 압축 → 4×4 배치 → PPT 다운로드</p>
+    <p>담당 선택 → 점포 선택 → 사진 10~20장 한번에 업로드 → 위치 배정 → 용량 압축 PPT 생성</p>
   </header>
 
   <main>
@@ -310,151 +448,319 @@
       </label>
 
       <label>
-        사진 압축 기준
+        담당
+        <select id="managerSelect"></select>
+      </label>
+
+      <label>
+        현재 점포
+        <select id="storeSelect"></select>
+      </label>
+
+      <label>
+        사진 압축
         <select id="maxSize">
-          <option value="1000">긴 쪽 1000px / 용량 최소</option>
-          <option value="1200" selected>긴 쪽 1200px / 보고용 추천</option>
-          <option value="1600">긴 쪽 1600px / 선명도 우선</option>
+          <option value="1000">1000px / 용량 최소</option>
+          <option value="1200" selected>1200px / 보고용</option>
+          <option value="1600">1600px / 선명도</option>
         </select>
       </label>
 
-      <button class="ghost" onclick="clearAll()">전체 초기화</button>
+      <button class="ghost" onclick="clearCurrentStore()">현재 점포 초기화</button>
       <button class="primary" onclick="makePpt()">PPT 생성</button>
     </section>
 
+    <div id="storeTabs" class="store-tabs"></div>
+
     <p class="notice">
-      현재 샘플은 품목을 AI가 자동 판별하지 않고, 업로드할 때 선택한 품목명을 사진에 붙여 PPT에 넣는 방식입니다.
-      그래서 여러 사람이 사용해도 오류가 적습니다. 점포별 16장까지 한 슬라이드에 4×4로 들어가고, 16장을 초과하면 같은 점포명으로 다음 슬라이드가 자동 생성됩니다.
+      사진은 먼저 <b>대기 사진함</b>으로 한 번에 넣고, 필요한 사진을 오른쪽 PPT 화면의 품목 칸으로 드래그해서 배정하면 됩니다.
+      대기 사진함에 남아있는 사진은 PPT에 들어가지 않습니다. 한 품목에 4장 초과 시 같은 점포의 다음 슬라이드로 자동 분리됩니다.
     </p>
 
-    <section id="storeGrid" class="store-grid"></section>
+    <section class="layout">
+      <aside class="panel">
+        <div class="panel-head">
+          <div>
+            <strong>사진 대기함</strong><br />
+            <span id="activeInfo">-</span>
+          </div>
+          <button class="danger small" onclick="clearPool()">대기함 비우기</button>
+        </div>
+        <div class="panel-body">
+          <label class="big-drop" id="uploadDrop">
+            <input type="file" id="fileInput" multiple accept="image/*" />
+            <strong>카톡 사진을 여기에 끌어넣기</strong>
+            10~20장 한번에 가능<br />
+            또는 클릭해서 사진 선택
+          </label>
 
-    <div class="status" id="statusText">대기 중</div>
-    <div class="progress"><div id="progressBar"></div></div>
+          <div class="pool" id="photoPool"></div>
+
+          <div class="summary">
+            <div><span>현재 점포 전체</span><strong id="sumCurrent">0장</strong></div>
+            <div><span>배정 완료</span><strong id="sumAssigned">0장</strong></div>
+            <div><span>원본 용량</span><strong id="sumOriginal">0MB</strong></div>
+            <div><span>압축 후</span><strong id="sumCompressed">0MB</strong></div>
+          </div>
+
+          <div class="status" id="statusText">대기 중</div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+      </aside>
+
+      <section class="ppt-wrap">
+        <div class="ppt-title">
+          <h2 id="pptStoreTitle">코스트코 대구점</h2>
+          <span id="pptCountText">배정 0장</span>
+        </div>
+        <div class="ppt-stage">
+          <div class="ppt-sheet">
+            <table class="ppt-table">
+              <tr class="store-name-row">
+                <td colspan="7" id="tableStoreName">코스트코 대구점</td>
+              </tr>
+              <tr class="item-head">
+                <th class="row-label">품목</th>
+                <th>TV<br />(2단 집기)</th>
+                <th>냉장고 / 김치냉장고 / 세건<br />(비네트/추가 진열)</th>
+                <th>에어컨<br />(스탠드/벽걸이/창문형/시스템)</th>
+                <th>모니터<br />(무빙스타일/게이밍)</th>
+                <th>조리기기<br />(큐커/인덕션/전자레인지/식기세척기)</th>
+                <th>기타 품목<br />(AV/청소기)</th>
+              </tr>
+              <tr class="photo-row">
+                <td class="row-label">현장\n사진</td>
+                <td><div class="drop-cell" data-category="TV"></div></td>
+                <td><div class="drop-cell" data-category="REF"></div></td>
+                <td><div class="drop-cell" data-category="AC"></div></td>
+                <td><div class="drop-cell" data-category="MONITOR"></div></td>
+                <td><div class="drop-cell" data-category="COOK"></div></td>
+                <td><div class="drop-cell" data-category="ETC"></div></td>
+              </tr>
+              <tr class="content-row">
+                <td class="row-label">내용</td>
+                <td colspan="6"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
   </main>
 
   <script>
-    const STORES = [
-      "대구점", "혁신점", "대전점", "세종점",
-      "공세점", "광명점", "양재점", "고척점", "송도점", "부산점",
-      "울산점", "하남점", "일산점", "상봉점", "의정부점", "천안점",
-      "김해점", "청라점", "동탄점", "군산점"
-    ];
+    const MANAGER_STORES = {
+      "윤재경": ["송도점", "일산점", "고척점", "청라점", "천안점"],
+      "조재현": ["양재점", "광명점", "공세점", "평택점"],
+      "김현래": ["하남점", "상봉점", "의정부점", "양평점"],
+      "김영언": ["세종점", "대전점", "대구점", "혁신점"],
+      "심창보": ["부산점", "울산점", "김해점"]
+    };
 
     const CATEGORIES = [
-      "TV",
-      "냉장고/김치냉장고/세건",
-      "에어컨",
-      "모니터",
-      "조리기기",
-      "기타"
+      { key: "TV", label: "TV", pptLabel: "TV\n(2단 집기)" },
+      { key: "REF", label: "냉장고/김치냉장고/세건", pptLabel: "냉장고 / 김치냉장고 / 세건\n(비네트/추가 진열)" },
+      { key: "AC", label: "에어컨", pptLabel: "에어컨\n(스탠드/벽걸이/창문형/시스템)" },
+      { key: "MONITOR", label: "모니터", pptLabel: "모니터\n(무빙스타일/게이밍)" },
+      { key: "COOK", label: "조리기기", pptLabel: "조리기기\n(큐커/인덕션/전자레인지/식기세척기)" },
+      { key: "ETC", label: "기타 품목", pptLabel: "기타 품목\n(AV/청소기)" }
     ];
 
-    // storePhotos 구조:
-    // { "대구점": [{ dataUrl, category, memo, originalName, originalSize, compressedSize }] }
-    const storePhotos = Object.fromEntries(STORES.map(store => [store, []]));
+    const ALL_STORES = Object.values(MANAGER_STORES).flat();
+    const storeData = Object.fromEntries(ALL_STORES.map(store => [store, createEmptyStoreData()]));
 
-    const storeGrid = document.getElementById("storeGrid");
+    let currentManager = "김영언";
+    let currentStore = MANAGER_STORES[currentManager][0];
+    let draggedPhotoId = null;
+    let draggedFrom = null;
+
+    const managerSelect = document.getElementById("managerSelect");
+    const storeSelect = document.getElementById("storeSelect");
+    const storeTabs = document.getElementById("storeTabs");
+    const uploadDrop = document.getElementById("uploadDrop");
+    const fileInput = document.getElementById("fileInput");
+    const photoPool = document.getElementById("photoPool");
     const statusText = document.getElementById("statusText");
     const progressBar = document.getElementById("progressBar");
 
-    renderStores();
+    init();
 
-    function renderStores() {
-      storeGrid.innerHTML = "";
+    function createEmptyStoreData() {
+      return {
+        pool: [],
+        categories: Object.fromEntries(CATEGORIES.map(c => [c.key, []]))
+      };
+    }
 
-      STORES.forEach(store => {
-        const card = document.createElement("article");
-        card.className = "store-card";
+    function init() {
+      managerSelect.innerHTML = Object.keys(MANAGER_STORES).map(name => `<option value="${name}">${name}</option>`).join("");
+      managerSelect.value = currentManager;
 
-        const categoryOptions = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join("");
+      managerSelect.addEventListener("change", () => {
+        currentManager = managerSelect.value;
+        currentStore = MANAGER_STORES[currentManager][0];
+        renderManagerStores();
+      });
 
-        card.innerHTML = `
-          <div class="store-head">
-            <div class="store-title">
-              <strong>코스트코 ${store}</strong>
-              <span id="count-${store}">사진 0장</span>
-            </div>
-            <button class="danger" onclick="clearStore('${store}')">점포 초기화</button>
-          </div>
-          <div class="store-body">
-            <div class="category-row">
-              <select id="cat-${store}">${categoryOptions}</select>
-              <input id="memo-${store}" placeholder="메모 선택 입력" />
-            </div>
-            <label class="drop-zone" id="drop-${store}">
-              <input type="file" id="file-${store}" multiple accept="image/*" />
-              사진 선택 또는 드래그<br />
-              <small>선택한 품목으로 사진이 등록됩니다.</small>
-            </label>
-            <div class="preview-grid" id="preview-${store}"></div>
-          </div>
-        `;
+      storeSelect.addEventListener("change", () => {
+        currentStore = storeSelect.value;
+        renderAll();
+      });
 
-        storeGrid.appendChild(card);
+      fileInput.addEventListener("change", e => {
+        handleFiles([...e.target.files], null);
+        fileInput.value = "";
+      });
 
-        const input = card.querySelector(`#file-${cssEscape(store)}`);
-        const drop = card.querySelector(`#drop-${cssEscape(store)}`);
+      setupExternalDrop(uploadDrop, files => handleFiles(files, null));
+      setupPoolDrop();
+      setupCategoryCells();
 
-        input.addEventListener("change", e => handleFiles(store, [...e.target.files]));
+      document.addEventListener("paste", e => {
+        const files = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith("image/"));
+        if (files.length) handleFiles(files, null);
+      });
 
-        drop.addEventListener("dragover", e => {
-          e.preventDefault();
-          drop.classList.add("dragover");
-        });
+      renderManagerStores();
+    }
 
-        drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
+    function renderManagerStores() {
+      const stores = MANAGER_STORES[currentManager];
+      storeSelect.innerHTML = stores.map(store => `<option value="${store}">${store}</option>`).join("");
+      storeSelect.value = currentStore;
+      storeTabs.innerHTML = stores.map(store => `<button class="store-tab ${store === currentStore ? "active" : ""}" onclick="selectStore('${store}')">${store}</button>`).join("");
+      renderAll();
+    }
 
-        drop.addEventListener("drop", e => {
-          e.preventDefault();
-          drop.classList.remove("dragover");
-          handleFiles(store, [...e.dataTransfer.files].filter(f => f.type.startsWith("image/")));
-        });
+    function selectStore(store) {
+      currentStore = store;
+      storeSelect.value = store;
+      renderAll();
+    }
 
-        renderPreview(store);
+    function renderAll() {
+      document.getElementById("activeInfo").textContent = `${currentManager} 담당 / 코스트코 ${currentStore}`;
+      document.getElementById("pptStoreTitle").textContent = `코스트코 ${currentStore}`;
+      document.getElementById("tableStoreName").textContent = `코스트코 ${currentStore}`;
+      storeTabs.innerHTML = MANAGER_STORES[currentManager].map(store => `<button class="store-tab ${store === currentStore ? "active" : ""}" onclick="selectStore('${store}')">${store}</button>`).join("");
+      renderPool();
+      renderCategoryCells();
+      updateSummary();
+    }
+
+    function setupExternalDrop(element, onFiles) {
+      element.addEventListener("dragover", e => {
+        e.preventDefault();
+        element.classList.add("dragover");
+      });
+      element.addEventListener("dragleave", () => element.classList.remove("dragover"));
+      element.addEventListener("drop", e => {
+        e.preventDefault();
+        element.classList.remove("dragover");
+        const files = getImageFilesFromDrop(e);
+        if (!files.length) {
+          alert("이미지 파일로 인식되지 않았습니다. 카톡 사진을 바탕화면에 저장한 뒤 다시 넣어보세요.");
+          return;
+        }
+        onFiles(files);
       });
     }
 
-    async function handleFiles(store, files) {
+    function setupPoolDrop() {
+      photoPool.addEventListener("dragover", e => {
+        e.preventDefault();
+        photoPool.classList.add("dragover");
+      });
+      photoPool.addEventListener("dragleave", () => photoPool.classList.remove("dragover"));
+      photoPool.addEventListener("drop", e => {
+        e.preventDefault();
+        photoPool.classList.remove("dragover");
+
+        const files = getImageFilesFromDrop(e);
+        if (files.length) {
+          handleFiles(files, null);
+          return;
+        }
+
+        if (draggedPhotoId) {
+          movePhoto(draggedPhotoId, draggedFrom, "pool");
+        }
+      });
+    }
+
+    function setupCategoryCells() {
+      document.querySelectorAll(".drop-cell").forEach(cell => {
+        const category = cell.dataset.category;
+
+        cell.addEventListener("dragover", e => {
+          e.preventDefault();
+          cell.classList.add("dragover");
+        });
+
+        cell.addEventListener("dragleave", () => cell.classList.remove("dragover"));
+
+        cell.addEventListener("drop", e => {
+          e.preventDefault();
+          cell.classList.remove("dragover");
+
+          const files = getImageFilesFromDrop(e);
+          if (files.length) {
+            handleFiles(files, category);
+            return;
+          }
+
+          if (draggedPhotoId) {
+            movePhoto(draggedPhotoId, draggedFrom, category);
+          }
+        });
+      });
+    }
+
+    function getImageFilesFromDrop(e) {
+      const fromFiles = [...(e.dataTransfer?.files || [])].filter(f => f.type.startsWith("image/"));
+      if (fromFiles.length) return fromFiles;
+      return [...(e.dataTransfer?.items || [])]
+        .filter(item => item.kind === "file")
+        .map(item => item.getAsFile())
+        .filter(file => file && file.type.startsWith("image/"));
+    }
+
+    async function handleFiles(files, targetCategory) {
+      files = files.filter(file => file.type.startsWith("image/"));
       if (!files.length) return;
 
-      const category = document.getElementById(`cat-${store}`).value;
-      const memo = document.getElementById(`memo-${store}`).value.trim();
       const maxSize = Number(document.getElementById("maxSize").value);
-
-      statusText.textContent = `${store} 사진 압축 중...`;
+      statusText.textContent = `${currentStore} 사진 압축 중...`;
       progressBar.style.width = "0%";
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const compressed = await compressImage(file, maxSize, 0.75);
-
-        storePhotos[store].push({
+        const photo = {
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
           dataUrl: compressed.dataUrl,
-          category,
-          memo,
-          originalName: file.name,
-          originalSize: file.size,
+          originalName: file.name || "카톡사진",
+          originalSize: file.size || 0,
           compressedSize: compressed.size
-        });
+        };
+
+        if (targetCategory) storeData[currentStore].categories[targetCategory].push(photo);
+        else storeData[currentStore].pool.push(photo);
 
         progressBar.style.width = `${Math.round(((i + 1) / files.length) * 100)}%`;
       }
 
-      renderPreview(store);
-      updateTotalStatus();
-      document.getElementById(`file-${store}`).value = "";
+      renderAll();
     }
 
     function compressImage(file, maxSize = 1200, quality = 0.75) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-
         reader.onload = () => {
           const img = new Image();
           img.onload = () => {
-            let { width, height } = img;
-
+            let width = img.width;
+            let height = img.height;
             if (width > height && width > maxSize) {
               height = Math.round(height * (maxSize / width));
               width = maxSize;
@@ -462,101 +768,150 @@
               width = Math.round(width * (maxSize / height));
               height = maxSize;
             }
-
             const canvas = document.createElement("canvas");
             canvas.width = width;
             canvas.height = height;
-
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, width, height);
-
+            canvas.getContext("2d").drawImage(img, 0, 0, width, height);
             const dataUrl = canvas.toDataURL("image/jpeg", quality);
-            const size = estimateDataUrlSize(dataUrl);
-            resolve({ dataUrl, size });
+            resolve({ dataUrl, size: estimateDataUrlSize(dataUrl) });
           };
           img.onerror = reject;
           img.src = reader.result;
         };
-
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
     }
 
-    function estimateDataUrlSize(dataUrl) {
-      const base64 = dataUrl.split(",")[1] || "";
-      return Math.round((base64.length * 3) / 4);
-    }
+    function renderPool() {
+      const pool = storeData[currentStore].pool;
+      photoPool.innerHTML = "";
 
-    function renderPreview(store) {
-      const preview = document.getElementById(`preview-${store}`);
-      const count = document.getElementById(`count-${store}`);
-      const photos = storePhotos[store];
-
-      count.textContent = `사진 ${photos.length}장`;
-      preview.innerHTML = "";
-
-      photos.slice(0, 16).forEach((photo, index) => {
-        const div = document.createElement("div");
-        div.className = "thumb";
-        div.innerHTML = `
-          <img src="${photo.dataUrl}" alt="${photo.originalName}" />
-          <span class="badge">${index + 1}. ${photo.category}</span>
-          <button onclick="removePhoto('${store}', ${index})">×</button>
-        `;
-        preview.appendChild(div);
-      });
-
-      const emptyCount = Math.max(0, 16 - Math.min(16, photos.length));
-      for (let i = 0; i < emptyCount; i++) {
-        const div = document.createElement("div");
-        div.className = "empty";
-        div.textContent = "빈칸";
-        preview.appendChild(div);
+      if (!pool.length) {
+        photoPool.innerHTML = `<div class="pool-empty">사진 10~20장을 한 번에 넣으면<br />여기에 대기 사진으로 표시됩니다.</div>`;
+        return;
       }
 
-      if (photos.length > 16) {
-        const over = document.createElement("div");
-        over.className = "empty";
-        over.textContent = `+${photos.length - 16}장`;
-        preview.appendChild(over);
-      }
+      pool.forEach(photo => photoPool.appendChild(makeThumb(photo, "pool")));
     }
 
-    function removePhoto(store, index) {
-      storePhotos[store].splice(index, 1);
-      renderPreview(store);
-      updateTotalStatus();
-    }
+    function renderCategoryCells() {
+      document.querySelectorAll(".drop-cell").forEach(cell => {
+        const category = cell.dataset.category;
+        const photos = storeData[currentStore].categories[category];
+        cell.innerHTML = "";
 
-    function clearStore(store) {
-      storePhotos[store] = [];
-      renderPreview(store);
-      updateTotalStatus();
-    }
+        if (!photos.length) {
+          cell.innerHTML = `<div class="drop-cell-empty">여기로 사진 드래그</div>`;
+          return;
+        }
 
-    function clearAll() {
-      if (!confirm("전체 점포 사진을 모두 삭제할까요?")) return;
-      STORES.forEach(store => {
-        storePhotos[store] = [];
-        renderPreview(store);
+        photos.slice(0, 4).forEach(photo => cell.appendChild(makeThumb(photo, category)));
+
+        if (photos.length > 4) {
+          const more = document.createElement("div");
+          more.className = "more";
+          more.textContent = `+${photos.length - 4}장 추가 / PPT 다음 슬라이드 자동 반영`;
+          cell.appendChild(more);
+        }
       });
-      updateTotalStatus();
     }
 
-    function updateTotalStatus() {
-      const total = STORES.reduce((sum, store) => sum + storePhotos[store].length, 0);
-      const original = STORES.flatMap(s => storePhotos[s]).reduce((sum, p) => sum + p.originalSize, 0);
-      const compressed = STORES.flatMap(s => storePhotos[s]).reduce((sum, p) => sum + p.compressedSize, 0);
+    function makeThumb(photo, from) {
+      const div = document.createElement("div");
+      div.className = "thumb";
+      div.draggable = true;
+      div.dataset.id = photo.id;
+      div.dataset.from = from;
+      div.innerHTML = `
+        <img src="${photo.dataUrl}" alt="${escapeHtml(photo.originalName)}" />
+        <span class="tag">${formatBytes(photo.compressedSize)}</span>
+        <span class="x" title="삭제">×</span>
+      `;
+
+      div.addEventListener("dragstart", e => {
+        draggedPhotoId = photo.id;
+        draggedFrom = from;
+        e.dataTransfer.setData("text/plain", photo.id);
+      });
+
+      div.addEventListener("dragend", () => {
+        draggedPhotoId = null;
+        draggedFrom = null;
+      });
+
+      div.querySelector(".x").addEventListener("click", e => {
+        e.stopPropagation();
+        deletePhoto(photo.id, from);
+      });
+
+      return div;
+    }
+
+    function movePhoto(photoId, from, to) {
+      if (from === to) return;
+      const photo = removePhotoFromSource(photoId, from);
+      if (!photo) return;
+
+      if (to === "pool") storeData[currentStore].pool.push(photo);
+      else storeData[currentStore].categories[to].push(photo);
+
+      renderAll();
+    }
+
+    function removePhotoFromSource(photoId, from) {
+      const source = from === "pool" ? storeData[currentStore].pool : storeData[currentStore].categories[from];
+      const idx = source.findIndex(p => p.id === photoId);
+      if (idx < 0) return null;
+      return source.splice(idx, 1)[0];
+    }
+
+    function deletePhoto(photoId, from) {
+      removePhotoFromSource(photoId, from);
+      renderAll();
+    }
+
+    function clearPool() {
+      storeData[currentStore].pool = [];
+      renderAll();
+    }
+
+    function clearCurrentStore() {
+      if (!confirm(`코스트코 ${currentStore} 사진을 모두 삭제할까요?`)) return;
+      storeData[currentStore] = createEmptyStoreData();
+      renderAll();
+    }
+
+    function updateSummary() {
+      const data = storeData[currentStore];
+      const assigned = CATEGORIES.flatMap(c => data.categories[c.key]);
+      const all = [...data.pool, ...assigned];
+      const original = all.reduce((sum, p) => sum + p.originalSize, 0);
+      const compressed = all.reduce((sum, p) => sum + p.compressedSize, 0);
+
+      document.getElementById("sumCurrent").textContent = `${all.length}장`;
+      document.getElementById("sumAssigned").textContent = `${assigned.length}장`;
+      document.getElementById("sumOriginal").textContent = formatBytes(original);
+      document.getElementById("sumCompressed").textContent = formatBytes(compressed);
+      document.getElementById("pptCountText").textContent = `배정 ${assigned.length}장 / 대기 ${data.pool.length}장`;
 
       const rate = original ? Math.round((1 - compressed / original) * 100) : 0;
-      statusText.textContent = `총 ${total}장 / 원본 ${formatBytes(original)} → 압축 ${formatBytes(compressed)} / 약 ${rate}% 감소`;
+      statusText.textContent = all.length
+        ? `현재 점포 ${all.length}장 / 원본 ${formatBytes(original)} → 압축 ${formatBytes(compressed)} / 약 ${Math.max(0, rate)}% 감소`
+        : "대기 중";
     }
 
     async function makePpt() {
-      const selectedStores = STORES.filter(store => storePhotos[store].length > 0);
-      if (!selectedStores.length) {
-        alert("사진을 먼저 업로드해주세요.");
+      const visibleStores = MANAGER_STORES[currentManager];
+      const storesWithPhotos = visibleStores.filter(store => getAssignedCount(store) > 0);
+
+      if (!storesWithPhotos.length) {
+        alert("PPT에 넣을 배정 사진이 없습니다. 대기 사진을 품목 칸으로 먼저 드래그하세요.");
+        return;
+      }
+
+      const unassigned = visibleStores.reduce((sum, store) => sum + storeData[store].pool.length, 0);
+      if (unassigned > 0 && !confirm(`대기 사진함에 남은 사진 ${unassigned}장은 PPT에 들어가지 않습니다. 그대로 생성할까요?`)) {
         return;
       }
 
@@ -564,148 +919,133 @@
       progressBar.style.width = "5%";
 
       const pptx = new pptxgen();
-      pptx.layout = "LAYOUT_WIDE"; // 13.333 × 7.5 inch
+      pptx.layout = "LAYOUT_WIDE";
       pptx.author = "Costco Display Check App";
+      pptx.company = "Samsung Electronics";
       pptx.subject = "코스트코 진열·연출 점검";
       pptx.title = document.getElementById("reportTitle").value || "코스트코 진열연출점검";
-      pptx.company = "Samsung Electronics";
       pptx.lang = "ko-KR";
-      pptx.theme = {
-        headFontFace: "Arial",
-        bodyFontFace: "Arial",
-        lang: "ko-KR"
-      };
+      pptx.theme = { headFontFace: "Arial", bodyFontFace: "Arial", lang: "ko-KR" };
 
-      const titleSlide = pptx.addSlide();
-      titleSlide.background = { color: "F6F7FB" };
-      titleSlide.addText("코스트코 진열 · 연출 점검", {
-        x: 0.6, y: 2.55, w: 12.1, h: 0.6,
-        fontFace: "Arial", fontSize: 30, bold: true,
-        color: "172033", align: "center"
-      });
-      titleSlide.addText(document.getElementById("reportTitle").value || "Weekly Report", {
-        x: 0.6, y: 3.25, w: 12.1, h: 0.35,
-        fontFace: "Arial", fontSize: 14,
-        color: "667085", align: "center"
-      });
-
-      let slideCount = 1;
-      for (let s = 0; s < selectedStores.length; s++) {
-        const store = selectedStores[s];
-        const chunks = chunkArray(storePhotos[store], 16);
-
-        chunks.forEach((photos, chunkIndex) => {
+      for (let i = 0; i < storesWithPhotos.length; i++) {
+        const store = storesWithPhotos[i];
+        const pages = getStorePageCount(store);
+        for (let page = 0; page < pages; page++) {
           const slide = pptx.addSlide();
-          slide.background = { color: "FFFFFF" };
-          slideCount++;
-
-          drawStoreSlide(slide, store, photos, chunkIndex + 1, chunks.length);
-        });
-
-        progressBar.style.width = `${Math.round(((s + 1) / selectedStores.length) * 90)}%`;
+          drawPptLikeSlide(slide, store, page, pages);
+        }
+        progressBar.style.width = `${Math.round(((i + 1) / storesWithPhotos.length) * 95)}%`;
       }
 
-      const fileNameBase = sanitizeFileName(document.getElementById("reportTitle").value || "코스트코_진열연출점검");
-      await pptx.writeFile({ fileName: `${fileNameBase}.pptx` });
+      const fileName = sanitizeFileName(`${document.getElementById("reportTitle").value}_${currentManager}` || "코스트코_진열연출점검");
+      await pptx.writeFile({ fileName: `${fileName}.pptx` });
 
       progressBar.style.width = "100%";
-      statusText.textContent = `완료: ${selectedStores.length}개 점포 / ${slideCount}개 슬라이드 생성`;
+      statusText.textContent = `완료: ${currentManager} 담당 / ${storesWithPhotos.length}개 점포 PPT 생성`;
     }
 
-    function drawStoreSlide(slide, store, photos, pageNo, pageTotal) {
-      const slideW = 13.333;
-      const slideH = 7.5;
+    function getAssignedCount(store) {
+      return CATEGORIES.reduce((sum, c) => sum + storeData[store].categories[c.key].length, 0);
+    }
 
-      slide.addShape(pptx.ShapeType.rect, {
-        x: 0, y: 0, w: slideW, h: 0.72,
-        fill: { color: "172033" }, line: { color: "172033" }
-      });
+    function getStorePageCount(store) {
+      const counts = CATEGORIES.map(c => storeData[store].categories[c.key].length);
+      return Math.max(1, ...counts.map(count => Math.ceil(count / 4)));
+    }
 
+    function drawPptLikeSlide(slide, store, pageIndex, totalPages) {
+      slide.background = { color: "FFFFFF" };
+
+      const x0 = 0.25;
+      const y0 = 0.35;
+      const totalW = 12.85;
+      const titleH = 0.45;
+      const headH = 0.67;
+      const photoH = 5.25;
+      const contentH = 0.55;
+      const labelW = 0.65;
+      const colW = (totalW - labelW) / 6;
+
+      slide.addShape(pptx.ShapeType.rect, { x: x0, y: y0, w: totalW, h: titleH, fill: { color: "FFFFFF", transparency: 100 }, line: { color: "222222", width: 1.2 } });
       slide.addText(`코스트코 ${store}`, {
-        x: 0.35, y: 0.18, w: 4.5, h: 0.32,
-        fontFace: "Arial", fontSize: 18, bold: true, color: "FFFFFF"
+        x: x0 + 0.08, y: y0 + 0.09, w: totalW - 0.16, h: 0.28,
+        fontFace: "Arial", fontSize: 18, bold: true, color: "111827"
       });
 
-      slide.addText("진열 · 연출 점검", {
-        x: 9.5, y: 0.22, w: 3.4, h: 0.28,
-        fontFace: "Arial", fontSize: 11, color: "CBD5E1", align: "right"
-      });
-
-      if (pageTotal > 1) {
-        slide.addText(`${pageNo}/${pageTotal}`, {
-          x: 12.78, y: 0.22, w: 0.35, h: 0.28,
-          fontFace: "Arial", fontSize: 9, color: "FFFFFF", align: "right"
+      if (totalPages > 1) {
+        slide.addText(`${pageIndex + 1}/${totalPages}`, {
+          x: x0 + totalW - 0.55, y: y0 + 0.11, w: 0.42, h: 0.22,
+          fontFace: "Arial", fontSize: 8.5, color: "666666", align: "right"
         });
       }
 
-      // 4×4 사진 배치 영역
-      const marginX = 0.38;
-      const startY = 0.92;
-      const gap = 0.12;
-      const cols = 4;
-      const rows = 4;
-      const labelH = 0.22;
-      const gridW = slideW - marginX * 2;
-      const gridH = slideH - startY - 0.35;
-      const cellW = (gridW - gap * (cols - 1)) / cols;
-      const cellH = (gridH - gap * (rows - 1)) / rows;
+      const headY = y0 + titleH;
+      const photoY = headY + headH;
+      const contentY = photoY + photoH;
 
-      for (let i = 0; i < 16; i++) {
-        const col = i % cols;
-        const row = Math.floor(i / cols);
-        const x = marginX + col * (cellW + gap);
-        const y = startY + row * (cellH + gap);
+      drawCell(slide, x0, headY, labelW, headH, "품목", true, 10);
+      CATEGORIES.forEach((cat, idx) => {
+        const x = x0 + labelW + idx * colW;
+        drawCell(slide, x, headY, colW, headH, cat.pptLabel, true, 8.5);
+      });
 
-        slide.addShape(pptx.ShapeType.roundRect, {
-          x, y, w: cellW, h: cellH,
-          rectRadius: 0.07,
-          fill: { color: "F8FAFC" },
-          line: { color: "D9DEE8", width: 0.6 }
+      drawCell(slide, x0, photoY, labelW, photoH, "현장\n사진", true, 10);
+      CATEGORIES.forEach((cat, idx) => {
+        const x = x0 + labelW + idx * colW;
+        drawCell(slide, x, photoY, colW, photoH, "", false, 8);
+        const photos = storeData[store].categories[cat.key].slice(pageIndex * 4, pageIndex * 4 + 4);
+        drawPhotosInCell(slide, photos, x + 0.04, photoY + 0.04, colW - 0.08, photoH - 0.08);
+      });
+
+      drawCell(slide, x0, contentY, labelW, contentH, "내용", true, 10);
+      drawCell(slide, x0 + labelW, contentY, colW * 6, contentH, "", false, 8);
+
+      slide.addText("코스트코 진열 · 연출 점검", {
+        x: 8.95, y: 7.1, w: 4.0, h: 0.22,
+        fontFace: "Arial", fontSize: 10, color: "555555", align: "right"
+      });
+    }
+
+    function drawCell(slide, x, y, w, h, text, isHead, fontSize) {
+      slide.addShape(pptx.ShapeType.rect, {
+        x, y, w, h,
+        fill: { color: isHead ? "F1F3F6" : "FFFFFF" },
+        line: { color: "222222", width: 0.9 }
+      });
+      if (text) {
+        slide.addText(text, {
+          x: x + 0.03, y: y + 0.04, w: w - 0.06, h: h - 0.08,
+          fontFace: "Arial", fontSize, bold: isHead,
+          color: "111827", align: "center", valign: "mid",
+          fit: "shrink", breakLine: false
         });
+      }
+    }
 
-        const photo = photos[i];
-        if (!photo) {
-          slide.addText("", { x, y, w: cellW, h: cellH });
-          continue;
-        }
+    function drawPhotosInCell(slide, photos, x, y, w, h) {
+      if (!photos.length) return;
+      const gap = 0.04;
+      const cols = photos.length === 1 ? 1 : 2;
+      const rows = photos.length <= 2 ? 1 : 2;
+      const imgW = (w - gap * (cols - 1)) / cols;
+      const imgH = (h - gap * (rows - 1)) / rows;
 
+      photos.forEach((photo, index) => {
+        const col = index % cols;
+        const row = Math.floor(index / cols);
         slide.addImage({
           data: photo.dataUrl,
-          x: x + 0.03,
-          y: y + 0.03,
-          w: cellW - 0.06,
-          h: cellH - labelH - 0.06,
-          sizing: { type: "cover", x: x + 0.03, y: y + 0.03, w: cellW - 0.06, h: cellH - labelH - 0.06 }
+          x: x + col * (imgW + gap),
+          y: y + row * (imgH + gap),
+          w: imgW,
+          h: imgH
         });
-
-        const label = photo.memo ? `${photo.category} · ${photo.memo}` : photo.category;
-        slide.addShape(pptx.ShapeType.rect, {
-          x: x + 0.03,
-          y: y + cellH - labelH - 0.03,
-          w: cellW - 0.06,
-          h: labelH,
-          fill: { color: "111827", transparency: 6 },
-          line: { color: "111827", transparency: 100 }
-        });
-
-        slide.addText(label, {
-          x: x + 0.08,
-          y: y + cellH - labelH + 0.01,
-          w: cellW - 0.16,
-          h: labelH - 0.03,
-          fontFace: "Arial",
-          fontSize: 7.5,
-          color: "FFFFFF",
-          bold: true,
-          fit: "shrink"
-        });
-      }
+      });
     }
 
-    function chunkArray(arr, size) {
-      const result = [];
-      for (let i = 0; i < arr.length; i += size) result.push(arr.slice(i, i + size));
-      return result;
+    function estimateDataUrlSize(dataUrl) {
+      const base64 = dataUrl.split(",")[1] || "";
+      return Math.round((base64.length * 3) / 4);
     }
 
     function formatBytes(bytes) {
@@ -716,12 +1056,16 @@
     }
 
     function sanitizeFileName(name) {
-      return name.replace(/[\\/:*?"<>|]/g, "_").trim();
+      return String(name).replace(/[\\/:*?"<>|]/g, "_").trim();
     }
 
-    function cssEscape(value) {
-      if (window.CSS && CSS.escape) return CSS.escape(value);
-      return value.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
   </script>
 </body>
