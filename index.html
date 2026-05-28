@@ -4,97 +4,238 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>코스트코 진열·연출 점검 PPT 생성기</title>
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="./pptxgen.min.js"></script>
   <style>
-    :root{--bg:#f3f5f9;--card:#fff;--line:#cfd7e6;--text:#111827;--muted:#667085;--primary:#14213d;--blue:#2563eb;--danger:#dc2626;--soft:#eef2ff;--head:#eef2f7}
-    *{box-sizing:border-box} body{margin:0;font-family:Arial,"Noto Sans KR",sans-serif;background:var(--bg);color:var(--text)}
-    header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:14px 20px} h1{margin:0;font-size:22px;letter-spacing:-.5px} header p{margin:5px 0 0;color:var(--muted);font-size:13px}
-    main{max-width:1500px;margin:0 auto;padding:16px}.toolbar{display:grid;grid-template-columns:1.25fr .65fr .65fr .55fr auto auto auto;gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06);margin-bottom:12px}
-    label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:12px;font-weight:800}input,select{min-height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;color:var(--text);font-size:14px;font-family:inherit}
-    button{border:0;border-radius:11px;padding:11px 14px;cursor:pointer;font-weight:900;font-size:14px;white-space:nowrap}button.primary{background:var(--primary);color:#fff}button.blue{background:var(--blue);color:#fff}button.ghost{background:var(--soft);color:#1e40af}button.danger{background:#fee2e2;color:var(--danger)}button.small{padding:6px 9px;font-size:12px;border-radius:8px}.sticky-actions{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 10px 28px rgba(15,23,42,.18)}
-    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.tab{background:#fff;color:#334155;border:1px solid var(--line);padding:9px 13px;border-radius:999px}.tab.active{background:#172033;border-color:#172033;color:#fff}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:13px;padding:11px 13px;font-size:13px;line-height:1.55;margin-bottom:12px}.layout{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start}.panel,.ppt-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 22px rgba(15,23,42,.05);overflow:hidden}.panel-head,.ppt-title{padding:13px 15px;border-bottom:1px solid var(--line);background:#fbfcff;display:flex;justify-content:space-between;align-items:center;gap:10px}.panel-head strong,.ppt-title h2{font-size:17px;margin:0}.panel-head span,.ppt-title span{color:var(--muted);font-size:12px}.panel-body{padding:14px}
-    .drop{min-height:142px;border:2px dashed #94a3b8;background:#f8fafc;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:16px;color:var(--muted);cursor:pointer;margin-bottom:12px}.drop strong{color:var(--text);font-size:18px;margin-bottom:6px}.dragover{border-color:#2563eb!important;background:#eff6ff!important;color:#1e40af!important}.drop input{display:none}.pool{min-height:210px;max-height:430px;overflow:auto;border:2px dashed #d8dfeb;background:#fcfdff;border-radius:14px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pool-empty{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:150px;color:#98a2b3;font-size:13px;text-align:center;line-height:1.5}.thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;cursor:grab}.thumb img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.thumb .tag{position:absolute;left:4px;top:4px;background:rgba(15,23,42,.82);color:#fff;border-radius:999px;padding:2px 6px;font-size:10px}.thumb .x{position:absolute;right:4px;top:4px;width:21px;height:21px;border-radius:999px;background:rgba(220,38,38,.92);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer}.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.summary div{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:9px}.summary span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}.summary strong{font-size:15px}.status{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5}.progress{width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:8px}.progress>div{height:100%;width:0%;background:#2563eb;transition:width .2s ease}
-    .ppt-stage{padding:16px;overflow:auto}.scene-nav{display:flex;gap:7px;align-items:center}.ppt-sheet{width:1120px;background:#fff;border:2px solid #333;padding:0;transform-origin:top left}table{border-collapse:collapse;table-layout:fixed;width:100%;font-size:13px}.ppt-table th,.ppt-table td{border:1.4px solid #333;vertical-align:middle;text-align:center}.store-row td{border-left:0;border-right:0;border-top:0;height:44px;text-align:left;padding-left:16px;font-size:22px;font-weight:900}.item-head th{background:#f1f3f6;height:56px;font-size:12.5px;line-height:1.25;font-weight:900}.row-label{width:72px;background:#f1f3f6;font-weight:900;line-height:1.35;white-space:pre-line}.photo-row td{height:410px}.content-row td{height:58px}.cell-drop{height:410px;padding:5px;border:2px dashed transparent;background:#fff;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5px;align-items:stretch;overflow:hidden}.cell-empty{grid-column:1/-1;grid-row:1/-1;display:flex;align-items:center;justify-content:center;color:#98a2b3;font-size:13px;line-height:1.4;min-height:100%}.cell-drop .thumb{width:100%;height:100%;aspect-ratio:auto}.more{grid-column:1/-1;color:#64748b;font-size:12px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:7px}.footer-note{text-align:right;color:#555;font-size:12px;margin-top:7px;padding-right:5px}@media(max-width:1100px){.toolbar{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.sticky-actions{left:10px;right:10px;justify-content:center}}
+    :root{
+      --bg:#f3f5f9;--card:#fff;--line:#cfd7e6;--text:#111827;--muted:#667085;
+      --primary:#111827;--blue:#1d4ed8;--danger:#dc2626;--soft:#eef2ff;
+      --navy:#172033;--head:#d9d9d9;--grid:#222;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,"Malgun Gothic","Noto Sans KR",sans-serif;background:var(--bg);color:var(--text)}
+    header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:14px 20px}
+    h1{margin:0;font-size:22px;letter-spacing:-.5px} header p{margin:5px 0 0;color:var(--muted);font-size:13px}
+    main{max-width:1560px;margin:0 auto;padding:16px}
+    .toolbar{display:grid;grid-template-columns:.55fr .7fr .7fr .85fr .65fr auto auto;gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06);margin-bottom:12px}
+    label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:12px;font-weight:800}
+    input,select{min-height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;color:var(--text);font-size:14px;font-family:inherit;max-width:100%}
+    input[type=file]{padding:8px 10px;font-size:12px}
+    button{border:0;border-radius:11px;padding:11px 14px;cursor:pointer;font-weight:900;font-size:14px;white-space:nowrap;font-family:inherit}
+    button.primary{background:var(--primary);color:#fff}button.blue{background:var(--blue);color:#fff}button.ghost{background:var(--soft);color:#1e40af}button.danger{background:#fee2e2;color:var(--danger)}button.small{padding:6px 9px;font-size:12px;border-radius:8px}
+    .sticky-actions{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 10px 28px rgba(15,23,42,.18)}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.tab{background:#fff;color:#334155;border:1px solid var(--line);padding:9px 13px;border-radius:999px}.tab.active{background:#172033;border-color:#172033;color:#fff}
+    .notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:13px;padding:11px 13px;font-size:13px;line-height:1.55;margin-bottom:12px}
+    .layout{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start}.panel,.ppt-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 22px rgba(15,23,42,.05);overflow:hidden}
+    .panel-head,.ppt-title{padding:13px 15px;border-bottom:1px solid var(--line);background:#fbfcff;display:flex;justify-content:space-between;align-items:center;gap:10px}.panel-head strong,.ppt-title h2{font-size:17px;margin:0}.panel-head span,.ppt-title span{color:var(--muted);font-size:12px}.panel-body{padding:14px}
+    .drop{min-height:142px;border:2px dashed #94a3b8;background:#f8fafc;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:16px;color:var(--muted);cursor:pointer;margin-bottom:12px}.drop strong{color:var(--text);font-size:18px;margin-bottom:6px}.dragover{outline:3px solid #93c5fd!important;background:#eff6ff!important;color:#1e40af!important}.drop input{display:none}
+    .pool{min-height:210px;max-height:430px;overflow:auto;border:2px dashed #d8dfeb;background:#fcfdff;border-radius:14px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pool-empty{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:150px;color:#98a2b3;font-size:13px;text-align:center;line-height:1.5}
+    .thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;cursor:grab}.thumb img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.thumb .tag{position:absolute;left:4px;top:4px;background:rgba(15,23,42,.82);color:#fff;border-radius:999px;padding:2px 6px;font-size:10px}.thumb .x{position:absolute;right:4px;top:4px;width:21px;height:21px;border-radius:999px;background:rgba(220,38,38,.92);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer}
+    .summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.summary div{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:9px}.summary span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}.summary strong{font-size:15px}.status{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5}.progress{width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:8px}.progress>div{height:100%;width:0%;background:#2563eb;transition:width .2s ease}
+    .ppt-stage{padding:16px;overflow:auto}.scene-nav{display:flex;gap:7px;align-items:center}
+    .ppt-sheet{width:1200px;height:675px;background:#fff;border:1px solid #111;transform-origin:top left;overflow:hidden}
+    .topbar{height:32px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-weight:900}
+    .topbar .store{font-size:23px;text-decoration:underline;text-underline-offset:3px}.topbar .title{font-size:17px}
+    table.check-table{border-collapse:collapse;table-layout:fixed;width:100%;height:643px;font-size:13px}.check-table th,.check-table td{border:1.5px solid var(--grid);vertical-align:middle;text-align:center;padding:0}.check-table .label{width:41.4px;background:var(--head);font-weight:900;color:#111}.check-table .head{height:47px;background:var(--head);font-weight:900;line-height:1.22}.check-table .head .main{font-size:12px;color:#111}.check-table .head .sub{font-size:11px;color:#1f5aa6;text-decoration:underline;font-weight:900}.check-table .photo-label{background:var(--head);font-weight:900;white-space:pre-line;line-height:1.25}.check-table .photo-row{height:154px}.check-table .content-row{height:103px;background:#f3f3f3}.check-table .content-label{background:var(--head);font-weight:900}.photo-slot{height:100%;min-height:154px;display:flex;align-items:center;justify-content:center;background:#fff;position:relative;padding:5px}.photo-slot .cell-empty{color:#a3aab8;font-size:12px}.photo-slot .thumb{width:100%;height:100%;aspect-ratio:auto;border-radius:4px}.photo-slot .thumb img{object-fit:contain;background:#fff}.print-pages{display:none}
+    @media(max-width:1100px){.toolbar{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.sticky-actions{left:10px;right:10px;justify-content:center}.ppt-sheet{transform:scale(.78);transform-origin:top left}.ppt-stage{height:560px}}
+    @media print{
+      body{background:#fff!important;margin:0!important}.no-print,header,main,.sticky-actions{display:none!important}.print-pages{display:block!important}.print-sheet{width:100vw;height:56.25vw;max-height:100vh;page-break-after:always;break-after:page}.print-sheet .ppt-sheet{width:100%;height:100%;border:0}.print-sheet table.check-table{height:calc(100% - 32px)}
+      @page{size:landscape;margin:0}
+    }
   </style>
 </head>
 <body>
-  <header><h1>코스트코 진열·연출 점검 PPT 생성기</h1><p>담당 선택 → 점포 선택 → 사진 업로드 → 위치 배정 → PPT/PDF 다운로드</p></header>
-  <main>
+  <header class="no-print"><h1>코스트코 진열·연출 점검 PPT 생성기</h1><p>담당 선택 → 점포 선택 → PPT 양식 확인 → 사진 업로드 → 위치 배정 → PPT/PDF 생성</p></header>
+  <main class="no-print">
     <section class="toolbar">
       <label>보고 주차<input id="weekInput" value="W22" /></label>
       <label>담당<select id="managerSelect"></select></label>
       <label>현재 점포<select id="storeSelect"></select></label>
-      <label>압축<select id="maxSize"><option value="700">700px / 매우 가볍게</option><option value="900" selected>900px / 추천</option><option value="1200">1200px / 선명도</option></select></label>
+      <label>PPT 양식 업로드<input id="templateInput" type="file" accept=".pptx" /></label>
+      <label>사진 압축<select id="maxSize"><option value="700">700px / 매우 가볍게</option><option value="900" selected>900px / 추천</option><option value="1200">1200px / 선명도</option></select></label>
       <button class="ghost" onclick="autoDistribute()">대기사진 자동배치</button>
-      <button class="blue" onclick="downloadCurrentPdf()">현재 장면 PDF</button>
       <button class="primary" onclick="makePpt()">PPT 생성</button>
     </section>
     <div id="storeTabs" class="tabs"></div>
-    <p class="notice">사진은 먼저 <b>대기 사진함</b>에 한 번에 넣고, 필요한 사진을 오른쪽 양식의 품목 칸으로 드래그해서 배정하세요. <b>PPT 생성이 멈춘 것처럼 보이면 아래 상태 문구를 확인</b>하세요. 오류가 나면 바로 표시되게 수정했습니다.</p>
+    <p class="notice"><b>중요:</b> PPT 생성 오류는 외부 CDN 차단 때문에 난 겁니다. 이제 PPT는 같은 폴더의 <b>pptxgen.min.js</b>를 사용합니다. GitHub에는 <b>index.html</b>과 <b>pptxgen.min.js</b> 두 파일을 반드시 같이 올리세요. 양식 업로드 칸은 기준 양식 확인용이고, 생성되는 PPT는 업로드한 양식과 같은 표 구조로 새로 만들어집니다.</p>
     <section class="layout">
       <aside class="panel">
         <div class="panel-head"><div><strong>사진 대기함</strong><br><span id="activeInfo">-</span></div><button class="danger small" onclick="clearPool()">대기함 비우기</button></div>
         <div class="panel-body">
-          <label class="drop" id="uploadDrop"><input type="file" id="fileInput" multiple accept="image/*"><strong>사진을 여기에 넣기</strong>10~20장 한번에 가능<br>클릭해서 선택도 가능</label>
+          <label class="drop" id="uploadDrop"><input type="file" id="fileInput" multiple accept="image/*"><strong>사진을 여기에 넣기</strong>드래그가 안 되면 여기를 클릭해서 선택<br>복사한 사진은 Ctrl+V도 가능</label>
           <div class="pool" id="photoPool"></div>
           <div class="summary"><div><span>현재 점포 전체</span><strong id="sumCurrent">0장</strong></div><div><span>배정 완료</span><strong id="sumAssigned">0장</strong></div><div><span>원본 용량</span><strong id="sumOriginal">0MB</strong></div><div><span>압축 후</span><strong id="sumCompressed">0MB</strong></div></div>
+          <div class="status" id="templateStatus">PPT 양식: 미업로드</div>
           <div class="status" id="statusText">대기 중</div><div class="progress"><div id="progressBar"></div></div>
         </div>
       </aside>
       <section class="ppt-wrap">
         <div class="ppt-title"><h2 id="pptStoreTitle">코스트코 세종점</h2><div class="scene-nav"><button class="ghost small" onclick="prevScene()">이전</button><span id="sceneInfo">1 / 1</span><button class="ghost small" onclick="nextScene()">다음</button><span id="pptCountText">배정 0장</span></div></div>
-        <div class="ppt-stage"><div id="pdfScene" class="ppt-sheet">
-          <table class="ppt-table">
-            <colgroup><col style="width:72px"><col span="6" style="width:174px"></colgroup>
-            <tr class="store-row"><td colspan="7" id="tableStoreName">코스트코 세종점</td></tr>
-            <tr class="item-head"><th class="row-label">품목</th><th>TV<br>(2단 집기)</th><th>냉장고 / 김치냉장고 / 세건<br>(비네트/추가 진열)</th><th>에어컨<br>(스탠드/벽걸이/창문형/시스템)</th><th>모니터<br>(무빙스타일/게이밍)</th><th>조리기기<br>(큐커/인덕션/전자레인지/식기세척기)</th><th>기타 품목<br>(AV/청소기)</th></tr>
-            <tr class="photo-row"><td class="row-label">현장\n사진</td><td><div class="cell-drop" data-category="TV"></div></td><td><div class="cell-drop" data-category="REF"></div></td><td><div class="cell-drop" data-category="AC"></div></td><td><div class="cell-drop" data-category="MONITOR"></div></td><td><div class="cell-drop" data-category="COOK"></div></td><td><div class="cell-drop" data-category="ETC"></div></td></tr>
-            <tr class="content-row"><td class="row-label">내용</td><td colspan="6"></td></tr>
-          </table><div class="footer-note">코스트코 진열 · 연출 점검</div>
-        </div></div>
+        <div class="ppt-stage"><div id="pdfScene" class="ppt-sheet"></div></div>
       </section>
     </section>
   </main>
-  <div class="sticky-actions"><button class="ghost" onclick="downloadCurrentPdf()">현재 PDF</button><button class="blue" onclick="downloadAllPdf()">담당 전체 PDF</button><button class="primary" onclick="makePpt()">PPT 생성</button></div>
+  <div class="sticky-actions no-print"><button class="ghost" onclick="printCurrentPdf()">현재 PDF 저장</button><button class="blue" onclick="printAllPdf()">담당 전체 PDF 저장</button><button class="primary" onclick="makePpt()">PPT 생성</button></div>
+  <div id="printPages" class="print-pages"></div>
 <script>
-const MANAGER_STORES={"윤재경":["송도점","일산점","고척점","청라점","천안점"],"조재현":["양재점","광명점","공세점","평택점"],"김현래":["하남점","상봉점","의정부점","양평점"],"김영언":["세종점","대전점","대구점","혁신점"],"심창보":["부산점","울산점","김해점"]};
-const CATEGORIES=[{key:"TV",label:"TV",ppt:"TV\n(2단 집기)"},{key:"REF",label:"냉장고 / 김치냉장고 / 세건",ppt:"냉장고 / 김치냉장고 / 세건\n(비네트/추가 진열)"},{key:"AC",label:"에어컨",ppt:"에어컨\n(스탠드/벽걸이/창문형/시스템)"},{key:"MONITOR",label:"모니터",ppt:"모니터\n(무빙스타일/게이밍)"},{key:"COOK",label:"조리기기",ppt:"조리기기\n(큐커/인덕션/전자레인지/식기세척기)"},{key:"ETC",label:"기타 품목",ppt:"기타 품목\n(AV/청소기)"}];
+const MANAGER_STORES={
+  "윤재경":["송도점","일산점","고척점","청라점","천안점"],
+  "김현래":["하남점","상봉점","의정부점","양평점"],
+  "조재현":["양재점","광명점","공세점","평택점"],
+  "김영언":["세종점","대전점","대구점","혁신점"],
+  "심창보":["부산점","울산점","김해점"]
+};
+const CATEGORIES=[
+  {key:"TV",main:"TV",sub:"(2단 집기)",ppt:"TV\n(2단 집기)"},
+  {key:"REF",main:"냉장고 / 김치냉장고 / 세건",sub:"(비네트/추가 진열)",ppt:"냉장고 / 김치냉장고 / 세건\n(비네트/추가 진열)"},
+  {key:"AC",main:"에어컨",sub:"(스탠드/벽걸이/창문형/시스템)",ppt:"에어컨\n(스탠드/벽걸이/창문형/시스템)"},
+  {key:"MONITOR",main:"모니터",sub:"(무빙스타일/게이밍)",ppt:"모니터\n(무빙스타일/게이밍)"},
+  {key:"COOK",main:"조리기기",sub:"(큐커/인덕션/전자레인지/식기세척기)",ppt:"조리기기\n(큐커/인덕션/전자레인지/식기세척기)"},
+  {key:"ETC",main:"기타 품목",sub:"(AV/청소기)",ppt:"기타 품목\n(AV/청소기)"}
+];
 const ALL_STORES=Object.values(MANAGER_STORES).flat();
 const storeData=Object.fromEntries(ALL_STORES.map(s=>[s,{pool:[],categories:Object.fromEntries(CATEGORIES.map(c=>[c.key,[]]))}]));
-let currentManager="김영언",currentStore="세종점",currentPage=0,draggedPhotoId=null,draggedFrom=null;
-const $=id=>document.getElementById(id);const managerSelect=$("managerSelect"),storeSelect=$("storeSelect"),storeTabs=$("storeTabs"),photoPool=$("photoPool"),statusText=$("statusText"),progressBar=$("progressBar"),fileInput=$("fileInput");
+let currentManager="김영언",currentStore="세종점",currentPage=0,draggedPhotoId=null,draggedFrom=null,templateName="";
+const $=id=>document.getElementById(id);
+const managerSelect=$("managerSelect"),storeSelect=$("storeSelect"),storeTabs=$("storeTabs"),photoPool=$("photoPool"),statusText=$("statusText"),progressBar=$("progressBar"),fileInput=$("fileInput"),templateInput=$("templateInput");
 init();
-function init(){managerSelect.innerHTML=Object.keys(MANAGER_STORES).map(n=>`<option>${n}</option>`).join("");managerSelect.value=currentManager;managerSelect.onchange=()=>{currentManager=managerSelect.value;currentStore=MANAGER_STORES[currentManager][0];currentPage=0;renderManager()};storeSelect.onchange=()=>{currentStore=storeSelect.value;currentPage=0;renderAll()};fileInput.onchange=e=>{handleFiles([...e.target.files],null);fileInput.value=""};setupExternalDrop($("uploadDrop"),files=>handleFiles(files,null));setupPoolDrop();setupCells();document.addEventListener("paste",e=>{const files=[...(e.clipboardData?.files||[])].filter(f=>f.type.startsWith("image/"));if(files.length)handleFiles(files,null)});renderManager()}
+function init(){
+  managerSelect.innerHTML=Object.keys(MANAGER_STORES).map(n=>`<option>${n}</option>`).join("");
+  managerSelect.value=currentManager;
+  managerSelect.onchange=()=>{currentManager=managerSelect.value;currentStore=MANAGER_STORES[currentManager][0];currentPage=0;renderManager()};
+  storeSelect.onchange=()=>{currentStore=storeSelect.value;currentPage=0;renderAll()};
+  fileInput.onchange=e=>{handleFiles([...e.target.files],null);fileInput.value=""};
+  templateInput.onchange=e=>{const f=e.target.files?.[0];templateName=f?f.name:"";$("templateStatus").textContent=templateName?`PPT 양식: ${templateName} 확인됨`:"PPT 양식: 미업로드"};
+  setupExternalDrop($("uploadDrop"),files=>handleFiles(files,null));
+  $("uploadDrop").addEventListener("click",()=>fileInput.click());
+  setupPoolDrop();
+  document.addEventListener("paste",e=>{const files=[...(e.clipboardData?.files||[])].filter(f=>f.type.startsWith("image/"));if(files.length)handleFiles(files,null)});
+  renderManager();
+}
 function renderManager(){const stores=MANAGER_STORES[currentManager];storeSelect.innerHTML=stores.map(s=>`<option>${s}</option>`).join("");storeSelect.value=currentStore;renderAll()}
 function selectStore(s){currentStore=s;storeSelect.value=s;currentPage=0;renderAll()}
-function renderAll(){const stores=MANAGER_STORES[currentManager];storeTabs.innerHTML=stores.map(s=>`<button class="tab ${s===currentStore?'active':''}" onclick="selectStore('${s}')">${s.replace('점','')}</button>`).join("");$("activeInfo").textContent=`${currentManager} 담당 / 코스트코 ${currentStore}`;$("pptStoreTitle").textContent=`코스트코 ${currentStore}`;$("tableStoreName").textContent=`코스트코 ${currentStore}`;const maxPages=getStorePageCount(currentStore);if(currentPage>=maxPages)currentPage=maxPages-1;$("sceneInfo").textContent=`${currentPage+1} / ${maxPages}`;renderPool();renderCells();updateSummary()}
-function setupExternalDrop(el,onFiles){el.addEventListener("dragover",e=>{e.preventDefault();el.classList.add("dragover")});el.addEventListener("dragleave",()=>el.classList.remove("dragover"));el.addEventListener("drop",e=>{e.preventDefault();el.classList.remove("dragover");const files=getFiles(e);if(!files.length)return alert("사진 파일로 인식되지 않았습니다. 파일 선택 버튼으로 넣어보세요.");onFiles(files)})}
-function setupPoolDrop(){photoPool.addEventListener("dragover",e=>{e.preventDefault();photoPool.classList.add("dragover")});photoPool.addEventListener("dragleave",()=>photoPool.classList.remove("dragover"));photoPool.addEventListener("drop",e=>{e.preventDefault();photoPool.classList.remove("dragover");const files=getFiles(e);if(files.length){handleFiles(files,null);return}if(draggedPhotoId)movePhoto(draggedPhotoId,draggedFrom,"pool")})}
-function setupCells(){document.querySelectorAll(".cell-drop").forEach(cell=>{const cat=cell.dataset.category;cell.addEventListener("dragover",e=>{e.preventDefault();cell.classList.add("dragover")});cell.addEventListener("dragleave",()=>cell.classList.remove("dragover"));cell.addEventListener("drop",e=>{e.preventDefault();cell.classList.remove("dragover");const files=getFiles(e);if(files.length){handleFiles(files,cat);return}if(draggedPhotoId)movePhoto(draggedPhotoId,draggedFrom,cat)})})}
+function renderAll(){
+  const stores=MANAGER_STORES[currentManager];
+  storeTabs.innerHTML=stores.map(s=>`<button class="tab ${s===currentStore?'active':''}" onclick="selectStore('${s}')">${s.replace('점','')}</button>`).join("");
+  $("activeInfo").textContent=`${currentManager} 담당 / 코스트코 ${currentStore}`;
+  $("pptStoreTitle").textContent=`코스트코 ${currentStore}`;
+  const maxPages=getStorePageCount(currentStore);if(currentPage>=maxPages)currentPage=maxPages-1;if(currentPage<0)currentPage=0;
+  $("sceneInfo").textContent=`${currentPage+1} / ${maxPages}`;
+  renderPool();renderPreview();updateSummary();
+}
+function renderPreview(){
+  $("pdfScene").innerHTML=sheetHtml(currentStore,currentPage,true);
+  document.querySelectorAll(".photo-slot").forEach(slot=>setupSlotDrop(slot));
+}
+function sheetHtml(store,page,interactive){
+  const head=CATEGORIES.map(c=>`<th class="head"><div class="main">${c.main}</div><div class="sub">${c.sub}</div></th>`).join("");
+  let rows="";
+  for(let r=0;r<3;r++){
+    rows+=`<tr class="photo-row">${r===0?'<td class="photo-label" rowspan="3">현장\n사진</td>':''}`;
+    for(const c of CATEGORIES){
+      const p=storeData[store].categories[c.key][page*3+r];
+      rows+=`<td>${slotHtml(c.key,r,p,interactive)}</td>`;
+    }
+    rows+="</tr>";
+  }
+  return `<div class="topbar"><div class="store">코스트코 ${store}</div><div class="title">코스트코 진열·연출점검</div></div>
+    <table class="check-table"><colgroup><col style="width:41.4px"><col span="6"></colgroup>
+    <tr><th class="label">품목</th>${head}</tr>${rows}
+    <tr class="content-row"><td class="content-label">내용</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>`;
+}
+function slotHtml(cat,row,p,interactive){
+  const attrs=interactive?` data-category="${cat}" data-row="${row}"`:"";
+  if(!p)return `<div class="photo-slot"${attrs}><div class="cell-empty">사진 드래그</div></div>`;
+  if(!interactive)return `<div class="photo-slot"><img src="${p.dataUrl}" style="max-width:100%;max-height:100%;object-fit:contain"></div>`;
+  return `<div class="photo-slot"${attrs}>${thumbHtml(p,cat)}</div>`;
+}
+function thumbHtml(p,from){return `<div class="thumb" draggable="true" data-id="${p.id}" data-from="${from}"><img src="${p.dataUrl}"><span class="tag">${formatBytes(p.compressedSize)}</span><span class="x" data-del="${p.id}" data-from="${from}">×</span></div>`}
+function setupSlotDrop(slot){
+  slot.addEventListener("dragover",e=>{e.preventDefault();slot.classList.add("dragover")});
+  slot.addEventListener("dragleave",()=>slot.classList.remove("dragover"));
+  slot.addEventListener("drop",e=>{e.preventDefault();slot.classList.remove("dragover");const files=getFiles(e);const cat=slot.dataset.category;if(files.length){handleFiles(files,cat);return}if(draggedPhotoId)movePhoto(draggedPhotoId,draggedFrom,cat)});
+}
+function setupExternalDrop(el,onFiles){el.addEventListener("dragover",e=>{e.preventDefault();el.classList.add("dragover")});el.addEventListener("dragleave",()=>el.classList.remove("dragover"));el.addEventListener("drop",e=>{e.preventDefault();el.classList.remove("dragover");const files=getFiles(e);if(!files.length)return alert("사진 파일로 인식되지 않았습니다. 클릭해서 파일 선택으로 넣어보세요.");onFiles(files)})}
+function setupPoolDrop(){
+  photoPool.addEventListener("dragover",e=>{e.preventDefault();photoPool.classList.add("dragover")});
+  photoPool.addEventListener("dragleave",()=>photoPool.classList.remove("dragover"));
+  photoPool.addEventListener("drop",e=>{e.preventDefault();photoPool.classList.remove("dragover");const files=getFiles(e);if(files.length){handleFiles(files,null);return}if(draggedPhotoId)movePhoto(draggedPhotoId,draggedFrom,"pool")});
+  document.addEventListener("dragstart",e=>{const t=e.target.closest?.(".thumb");if(!t)return;draggedPhotoId=t.dataset.id;draggedFrom=t.dataset.from;e.dataTransfer.setData("text/plain",draggedPhotoId)});
+  document.addEventListener("dragend",()=>{draggedPhotoId=null;draggedFrom=null});
+  document.addEventListener("click",e=>{const x=e.target.closest?.(".x");if(!x)return;e.stopPropagation();deletePhoto(x.dataset.del,x.dataset.from)});
+}
 function getFiles(e){const f=[...(e.dataTransfer?.files||[])].filter(x=>x.type.startsWith("image/"));if(f.length)return f;return [...(e.dataTransfer?.items||[])].filter(i=>i.kind==="file").map(i=>i.getAsFile()).filter(x=>x&&x.type.startsWith("image/"))}
-async function handleFiles(files,targetCat){try{files=files.filter(f=>f.type.startsWith("image/"));if(!files.length)return;const maxSize=Number($("maxSize").value);statusText.textContent=`${currentStore} 사진 압축 중...`;progressBar.style.width="0%";for(let i=0;i<files.length;i++){const compressed=await compressImage(files[i],maxSize,.62);const p={id:randomId(),dataUrl:compressed.dataUrl,w:compressed.w,h:compressed.h,originalName:files[i].name||"사진",originalSize:files[i].size||0,compressedSize:compressed.size};if(targetCat)storeData[currentStore].categories[targetCat].push(p);else storeData[currentStore].pool.push(p);progressBar.style.width=`${Math.round((i+1)/files.length*100)}%`}renderAll()}catch(err){showError(err)}}
+async function handleFiles(files,targetCat){
+  try{files=files.filter(f=>f.type.startsWith("image/"));if(!files.length)return;const maxSize=Number($("maxSize").value);statusText.textContent=`${currentStore} 사진 압축 중...`;progressBar.style.width="0%";
+    for(let i=0;i<files.length;i++){const compressed=await compressImage(files[i],maxSize,.68);const p={id:randomId(),dataUrl:compressed.dataUrl,w:compressed.w,h:compressed.h,originalName:files[i].name||"사진",originalSize:files[i].size||0,compressedSize:compressed.size};if(targetCat)storeData[currentStore].categories[targetCat].push(p);else storeData[currentStore].pool.push(p);progressBar.style.width=`${Math.round((i+1)/files.length*100)}%`;}
+    renderAll();
+  }catch(err){showError(err)}
+}
 function compressImage(file,maxSize,quality){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(w>h&&w>maxSize){h=Math.round(h*maxSize/w);w=maxSize}else if(h>=w&&h>maxSize){w=Math.round(w*maxSize/h);h=maxSize}const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);const dataUrl=c.toDataURL("image/jpeg",quality);resolve({dataUrl,w,h,size:estimate(dataUrl)})};img.onerror=reject;img.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
-function renderPool(){const pool=storeData[currentStore].pool;photoPool.innerHTML="";if(!pool.length){photoPool.innerHTML='<div class="pool-empty">사진 10~20장을 넣으면<br>여기에 대기 사진으로 표시됩니다.</div>';return}pool.forEach(p=>photoPool.appendChild(thumb(p,"pool")))}
-function renderCells(){document.querySelectorAll(".cell-drop").forEach(cell=>{const cat=cell.dataset.category;const photos=storeData[currentStore].categories[cat].slice(currentPage*4,currentPage*4+4);cell.innerHTML="";if(!photos.length){cell.innerHTML='<div class="cell-empty">여기로 사진 드래그</div>';return}photos.forEach(p=>cell.appendChild(thumb(p,cat)))})}
-function thumb(p,from){const d=document.createElement("div");d.className="thumb";d.draggable=true;d.innerHTML=`<img src="${p.dataUrl}"><span class="tag">${formatBytes(p.compressedSize)}</span><span class="x">×</span>`;d.ondragstart=e=>{draggedPhotoId=p.id;draggedFrom=from;e.dataTransfer.setData("text/plain",p.id)};d.ondragend=()=>{draggedPhotoId=null;draggedFrom=null};d.querySelector(".x").onclick=e=>{e.stopPropagation();deletePhoto(p.id,from)};return d}
+function renderPool(){const pool=storeData[currentStore].pool;photoPool.innerHTML="";if(!pool.length){photoPool.innerHTML='<div class="pool-empty">사진을 넣으면<br>여기에 대기 사진으로 표시됩니다.</div>';return}pool.forEach(p=>{const wrap=document.createElement("div");wrap.innerHTML=thumbHtml(p,"pool");photoPool.appendChild(wrap.firstChild)})}
 function movePhoto(id,from,to){if(from===to)return;const p=removePhoto(id,from);if(!p)return;if(to==="pool")storeData[currentStore].pool.push(p);else storeData[currentStore].categories[to].push(p);renderAll()}
 function removePhoto(id,from){const arr=from==="pool"?storeData[currentStore].pool:storeData[currentStore].categories[from];const idx=arr.findIndex(p=>p.id===id);return idx>=0?arr.splice(idx,1)[0]:null}
-function deletePhoto(id,from){removePhoto(id,from);renderAll()}function clearPool(){storeData[currentStore].pool=[];renderAll()}function autoDistribute(){const data=storeData[currentStore];let idx=0;while(data.pool.length){const cat=CATEGORIES[idx%CATEGORIES.length].key;data.categories[cat].push(data.pool.shift());idx++}renderAll()}function prevScene(){if(currentPage>0){currentPage--;renderAll()}}function nextScene(){const max=getStorePageCount(currentStore);if(currentPage<max-1){currentPage++;renderAll()}}
+function deletePhoto(id,from){removePhoto(id,from);renderAll()}
+function clearPool(){storeData[currentStore].pool=[];renderAll()}
+function autoDistribute(){const data=storeData[currentStore];let idx=0;while(data.pool.length){const cat=CATEGORIES[idx%CATEGORIES.length].key;data.categories[cat].push(data.pool.shift());idx++}renderAll()}
+function prevScene(){if(currentPage>0){currentPage--;renderAll()}}
+function nextScene(){const max=getStorePageCount(currentStore);if(currentPage<max-1){currentPage++;renderAll()}}
 function updateSummary(){const d=storeData[currentStore];const assigned=CATEGORIES.flatMap(c=>d.categories[c.key]);const all=[...d.pool,...assigned];const orig=all.reduce((s,p)=>s+p.originalSize,0),comp=all.reduce((s,p)=>s+p.compressedSize,0);$("sumCurrent").textContent=`${all.length}장`;$("sumAssigned").textContent=`${assigned.length}장`;$("sumOriginal").textContent=formatBytes(orig);$("sumCompressed").textContent=formatBytes(comp);$("pptCountText").textContent=`배정 ${assigned.length}장 / 대기 ${d.pool.length}장`;const rate=orig?Math.round((1-comp/orig)*100):0;statusText.textContent=all.length?`현재 점포 ${all.length}장 / 원본 ${formatBytes(orig)} → 압축 ${formatBytes(comp)} / 약 ${Math.max(0,rate)}% 감소`:"대기 중"}
-async function makePpt(){try{await ensurePptx();const stores=MANAGER_STORES[currentManager].filter(s=>assignedCount(s)>0);if(!stores.length)return alert("배정된 사진이 없습니다. 대기 사진을 오른쪽 품목 칸으로 먼저 옮겨주세요.");const unassigned=MANAGER_STORES[currentManager].reduce((sum,s)=>sum+storeData[s].pool.length,0);if(unassigned&&!confirm(`대기 사진 ${unassigned}장은 PPT에 들어가지 않습니다. 그대로 생성할까요?`))return;statusText.textContent="PPT 생성 준비 중...";progressBar.style.width="3%";const pptx=new pptxgen();pptx.layout="LAYOUT_WIDE";pptx.author="Costco Display Check App";pptx.company="Samsung Electronics";pptx.subject="코스트코 진열·연출 점검";pptx.title=fileBaseName();pptx.lang="ko-KR";const totalSlides=stores.reduce((s,st)=>s+getStorePageCount(st),0);let made=0;for(const store of stores){const pages=getStorePageCount(store);for(let page=0;page<pages;page++){statusText.textContent=`PPT 생성 중... ${store} ${page+1}/${pages}`;const slide=pptx.addSlide();await drawPptSlide(pptx,slide,store,page,pages);made++;progressBar.style.width=`${Math.round(made/totalSlides*95)}%`;await wait(10)}}statusText.textContent="파일 다운로드 준비 중...";await pptx.writeFile({fileName:`${fileBaseName()}.pptx`});progressBar.style.width="100%";statusText.textContent=`완료: ${fileBaseName()}.pptx 다운로드됨`}catch(err){showError(err)}}
-async function ensurePptx(){if(typeof pptxgen!=="undefined")return;await loadScript("https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js");if(typeof pptxgen==="undefined")throw new Error("PPT 생성 라이브러리를 불러오지 못했습니다. 회사망 차단이면 다른 인터넷에서 다시 시도하세요.")}
-function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
-async function drawPptSlide(pptx,slide,store,pageIndex,totalPages){slide.background={color:"FFFFFF"};const RECT=pptx.ShapeType?.rect||"rect";const x0=.25,y0=.35,totalW=12.85,titleH=.45,headH=.67,photoH=5.25,contentH=.55,labelW=.65,colW=(totalW-labelW)/6;shape(slide,RECT,x0,y0,totalW,titleH,"FFFFFF",1.2);slide.addText(`코스트코 ${store}`,{x:x0+.08,y:y0+.09,w:totalW-.16,h:.28,fontFace:"Arial",fontSize:18,bold:true,color:"111827"});if(totalPages>1)slide.addText(`${pageIndex+1}/${totalPages}`,{x:x0+totalW-.55,y:y0+.11,w:.42,h:.22,fontFace:"Arial",fontSize:8.5,color:"666666",align:"right"});const headY=y0+titleH,photoY=headY+headH,contentY=photoY+photoH;cell(slide,RECT,x0,headY,labelW,headH,"품목",true,10);CATEGORIES.forEach((cat,i)=>cell(slide,RECT,x0+labelW+i*colW,headY,colW,headH,cat.ppt,true,8.4));cell(slide,RECT,x0,photoY,labelW,photoH,"현장\n사진",true,10);for(let i=0;i<CATEGORIES.length;i++){const cat=CATEGORIES[i],x=x0+labelW+i*colW;cell(slide,RECT,x,photoY,colW,photoH,"",false,8);const photos=storeData[store].categories[cat.key].slice(pageIndex*4,pageIndex*4+4);await drawPhotos(slide,photos,x+.04,photoY+.04,colW-.08,photoH-.08)}cell(slide,RECT,x0,contentY,labelW,contentH,"내용",true,10);cell(slide,RECT,x0+labelW,contentY,colW*6,contentH,"",false,8);slide.addText("코스트코 진열 · 연출 점검",{x:8.95,y:7.1,w:4,h:.22,fontFace:"Arial",fontSize:10,color:"555555",align:"right"})}
-function shape(slide,RECT,x,y,w,h,fill,width){slide.addShape(RECT,{x,y,w,h,fill:{color:fill},line:{color:"222222",width}})}
-function cell(slide,RECT,x,y,w,h,text,isHead,fontSize){shape(slide,RECT,x,y,w,h,isHead?"F1F3F6":"FFFFFF",.9);if(text)slide.addText(text,{x:x+.03,y:y+.04,w:w-.06,h:h-.08,fontFace:"Arial",fontSize,bold:isHead,color:"111827",align:"center",valign:"mid",fit:"shrink"})}
-async function drawPhotos(slide,photos,x,y,w,h){if(!photos.length)return;const gap=.04,cols=photos.length===1?1:2,rows=photos.length<=2?1:2,imgW=(w-gap*(cols-1))/cols,imgH=(h-gap*(rows-1))/rows;for(let i=0;i<photos.length;i++){const col=i%cols,row=Math.floor(i/cols);const data=await coverData(photos[i].dataUrl,Math.round(imgW*120),Math.round(imgH*120));slide.addImage({data,x:x+col*(imgW+gap),y:y+row*(imgH+gap),w:imgW,h:imgH})}}
-function coverData(src,tw,th){return new Promise(res=>{const img=new Image();img.onload=()=>{const c=document.createElement("canvas");c.width=tw;c.height=th;const ctx=c.getContext("2d");const scale=Math.max(tw/img.width,th/img.height);const sw=tw/scale,sh=th/scale,sx=(img.width-sw)/2,sy=(img.height-sh)/2;ctx.drawImage(img,sx,sy,sw,sh,0,0,tw,th);res(c.toDataURL("image/jpeg",.72))};img.src=src})}
-async function downloadCurrentPdf(){try{await ensurePdf();statusText.textContent="현재 장면 PDF 생성 중...";const canvas=await html2canvas($("pdfScene"),{scale:2,backgroundColor:"#ffffff"});const pdf=new jspdf.jsPDF("l","mm","a4");const img=canvas.toDataURL("image/jpeg",.85);pdf.addImage(img,"JPEG",5,5,287,200);pdf.save(`${fileBaseName()}_${currentStore.replace('점','')}_${currentPage+1}.pdf`);statusText.textContent="현재 장면 PDF 다운로드 완료"}catch(err){showError(err)}}
-async function downloadAllPdf(){try{await ensurePdf();const stores=MANAGER_STORES[currentManager].filter(s=>assignedCount(s)>0);if(!stores.length)return alert("PDF에 넣을 배정 사진이 없습니다.");const oldStore=currentStore,oldPage=currentPage;const pdf=new jspdf.jsPDF("l","mm","a4");let first=true;for(const s of stores){currentStore=s;const pages=getStorePageCount(s);for(let p=0;p<pages;p++){currentPage=p;renderAll();await wait(150);const canvas=await html2canvas($("pdfScene"),{scale:2,backgroundColor:"#ffffff"});if(!first)pdf.addPage();first=false;pdf.addImage(canvas.toDataURL("image/jpeg",.85),"JPEG",5,5,287,200)}}currentStore=oldStore;currentPage=oldPage;renderAll();pdf.save(`${fileBaseName()}.pdf`);statusText.textContent="담당 전체 PDF 다운로드 완료"}catch(err){showError(err)}}
-async function ensurePdf(){if(typeof html2canvas==="undefined")await loadScript("https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js");if(typeof jspdf==="undefined")await loadScript("https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js");if(typeof html2canvas==="undefined"||typeof jspdf==="undefined")throw new Error("PDF 생성 라이브러리를 불러오지 못했습니다.")}
-function assignedCount(store){return CATEGORIES.reduce((sum,c)=>sum+storeData[store].categories[c.key].length,0)}function getStorePageCount(store){return Math.max(1,...CATEGORIES.map(c=>Math.ceil(storeData[store].categories[c.key].length/4)))}function fileBaseName(){const week=$("weekInput").value.trim()||"W22";const stores=MANAGER_STORES[currentManager].map(s=>s.replace("점","")).join(", ");return `(CE)${week}_코스트코_진열연출점검_(${stores})`}function estimate(dataUrl){const b=dataUrl.split(",")[1]||"";return Math.round(b.length*3/4)}function formatBytes(bytes){if(!bytes)return"0MB";const mb=bytes/1024/1024;return mb>=1?`${mb.toFixed(1)}MB`:`${Math.round(bytes/1024)}KB`}function randomId(){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}function wait(ms){return new Promise(r=>setTimeout(r,ms))}function showError(err){console.error(err);progressBar.style.width="0%";statusText.textContent="오류: "+(err?.message||err);alert("오류가 발생했습니다. 화면 아래 상태 문구를 확인하세요.\n\n"+(err?.message||err))}
+async function makePpt(){
+  try{
+    await ensurePptx();
+    const stores=MANAGER_STORES[currentManager].filter(s=>assignedCount(s)>0);
+    if(!stores.length)return alert("배정된 사진이 없습니다. 대기 사진을 오른쪽 품목 칸으로 먼저 옮겨주세요.");
+    const unassigned=MANAGER_STORES[currentManager].reduce((sum,s)=>sum+storeData[s].pool.length,0);
+    if(unassigned&&!confirm(`대기 사진 ${unassigned}장은 PPT에 들어가지 않습니다. 그대로 생성할까요?`))return;
+    statusText.textContent="PPT 생성 준비 중...";progressBar.style.width="3%";
+    const pptx=new pptxgen();pptx.layout="LAYOUT_WIDE";pptx.author="Costco Display Check App";pptx.company="Samsung Electronics";pptx.subject="코스트코 진열·연출 점검";pptx.title=fileBaseName();pptx.lang="ko-KR";
+    const totalSlides=stores.reduce((s,st)=>s+getStorePageCount(st),0);let made=0;
+    for(const store of stores){const pages=getStorePageCount(store);for(let page=0;page<pages;page++){statusText.textContent=`PPT 생성 중... ${store} ${page+1}/${pages}`;const slide=pptx.addSlide();drawTemplateSlide(pptx,slide,store,page,pages);made++;progressBar.style.width=`${Math.round(made/totalSlides*95)}%`;await wait(20)}}
+    statusText.textContent="파일 다운로드 준비 중...";await pptx.writeFile({fileName:`${fileBaseName()}.pptx`});progressBar.style.width="100%";statusText.textContent=`완료: ${fileBaseName()}.pptx 다운로드됨`;
+  }catch(err){showError(err)}
+}
+async function ensurePptx(){
+  if(typeof pptxgen!=="undefined")return;
+  throw new Error("PPT 생성용 파일(pptxgen.min.js)을 못 찾았습니다. GitHub 저장소의 index.html과 같은 위치에 pptxgen.min.js도 같이 올려야 합니다.");
+}
+function drawTemplateSlide(pptx,slide,store,pageIndex,totalPages){
+  const RECT=pptx.ShapeType?.rect||"rect";slide.background={color:"FFFFFF"};
+  const W=13.333,H=7.5,topH=.356,tableY=.356,col0=.461,col=(W-col0)/6,headH=.521,photoH=1.793,contentH=1.246;
+  addRect(slide,RECT,0,0,W,topH,"172033",0,"172033");
+  slide.addText(`코스트코 ${store}`,{x:.07,y:.03,w:3.5,h:.28,fontFace:"Malgun Gothic",fontSize:15,bold:true,color:"FFFFFF",underline:true,margin:0});
+  slide.addText("코스트코 진열·연출점검",{x:10.75,y:.055,w:2.45,h:.24,fontFace:"Malgun Gothic",fontSize:11.5,bold:true,color:"FFFFFF",align:"right",margin:0});
+  if(totalPages>1)slide.addText(`${pageIndex+1}/${totalPages}`,{x:9.9,y:.07,w:.55,h:.18,fontFace:"Arial",fontSize:7.5,color:"D1D5DB",align:"right",margin:0});
+  let x=0,y=tableY;
+  addCell(slide,RECT,x,y,col0,headH,"품목",true,9);x+=col0;
+  for(const c of CATEGORIES){addRect(slide,RECT,x,y,col,headH,"D9D9D9",1,"222222");slide.addText(c.main,{x:x+.03,y:y+.10,w:col-.06,h:.18,fontFace:"Malgun Gothic",fontSize:7.4,bold:true,color:"111111",align:"center",margin:0,fit:"shrink"});slide.addText(c.sub,{x:x+.03,y:y+.30,w:col-.06,h:.16,fontFace:"Malgun Gothic",fontSize:7.1,bold:true,color:"1F5AA6",underline:true,align:"center",margin:0,fit:"shrink"});x+=col;}
+  const photoY=tableY+headH;
+  addCell(slide,RECT,0,photoY,col0,photoH*3,"현장\n사진",true,9);
+  for(let r=0;r<3;r++){
+    for(let i=0;i<CATEGORIES.length;i++){
+      const xx=col0+i*col, yy=photoY+r*photoH;
+      addRect(slide,RECT,xx,yy,col,photoH,"FFFFFF",1,"222222");
+      const p=storeData[store].categories[CATEGORIES[i].key][pageIndex*3+r];
+      if(p)addPhoto(slide,p,xx+.04,yy+.04,col-.08,photoH-.08);
+    }
+  }
+  const cy=photoY+photoH*3;addCell(slide,RECT,0,cy,col0,contentH,"내용",true,9);
+  for(let i=0;i<CATEGORIES.length;i++)addRect(slide,RECT,col0+i*col,cy,col,contentH,"F3F3F3",1,"222222");
+}
+function addRect(slide,RECT,x,y,w,h,fill,width,color){slide.addShape(RECT,{x,y,w,h,fill:{color:fill},line:{color:color||"222222",width:width}})}
+function addCell(slide,RECT,x,y,w,h,text,isHead,fontSize){addRect(slide,RECT,x,y,w,h,isHead?"D9D9D9":"FFFFFF",1,"222222");slide.addText(text,{x:x+.02,y:y+.02,w:w-.04,h:h-.04,fontFace:"Malgun Gothic",fontSize,bold:isHead,color:"111111",align:"center",valign:"mid",margin:0,breakLine:false,fit:"shrink"})}
+function addPhoto(slide,p,x,y,w,h){const fit=fitInside(p.w,p.h,w,h);slide.addImage({data:p.dataUrl,x:x+(w-fit.w)/2,y:y+(h-fit.h)/2,w:fit.w,h:fit.h})}
+function fitInside(iw,ih,w,h){const r=Math.min(w/iw,h/ih);return {w:iw*r,h:ih*r}}
+function printCurrentPdf(){buildPrintPages([{store:currentStore,page:currentPage}]);setTimeout(()=>window.print(),100)}
+function printAllPdf(){const pages=[];for(const s of MANAGER_STORES[currentManager].filter(st=>assignedCount(st)>0)){for(let p=0;p<getStorePageCount(s);p++)pages.push({store:s,page:p})}if(!pages.length)return alert("PDF에 넣을 배정 사진이 없습니다.");buildPrintPages(pages);setTimeout(()=>window.print(),100)}
+function buildPrintPages(pages){$("printPages").innerHTML=pages.map(p=>`<div class="print-sheet"><div class="ppt-sheet">${sheetHtml(p.store,p.page,false)}</div></div>`).join("")}
+function assignedCount(store){return CATEGORIES.reduce((sum,c)=>sum+storeData[store].categories[c.key].length,0)}
+function getStorePageCount(store){return Math.max(1,...CATEGORIES.map(c=>Math.ceil(storeData[store].categories[c.key].length/3)))}
+function fileBaseName(){const week=$("weekInput").value.trim()||"W22";const stores=MANAGER_STORES[currentManager].map(s=>s.replace("점","")).join(", ");return `(CE)${week}_코스트코_진열연출점검_(${stores})`}
+function estimate(dataUrl){const b=dataUrl.split(",")[1]||"";return Math.round(b.length*3/4)}
+function formatBytes(bytes){if(!bytes)return"0MB";const mb=bytes/1024/1024;return mb>=1?`${mb.toFixed(1)}MB`:`${Math.round(bytes/1024)}KB`}
+function randomId(){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+function showError(err){console.error(err);progressBar.style.width="0%";statusText.textContent="오류: "+(err?.message||err);alert("오류가 발생했습니다.\n\n"+(err?.message||err))}
 </script>
 </body>
 </html>
