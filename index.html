@@ -1,290 +1,111 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>코스트코 진열·연출 점검 PPT 생성기</title>
-  <style>
-    :root{--bg:#f3f5f9;--card:#fff;--line:#cfd7e6;--text:#111827;--muted:#667085;--primary:#111827;--blue:#1d4ed8;--danger:#dc2626;--soft:#eef2ff;--navy:#172033;--head:#d9d9d9;--grid:#222}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,"Malgun Gothic","Noto Sans KR",sans-serif;background:var(--bg);color:var(--text)}
-    header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:14px 20px}
-    h1{margin:0;font-size:22px;letter-spacing:-.5px} header p{margin:5px 0 0;color:var(--muted);font-size:13px}
-    main{max-width:1560px;margin:0 auto;padding:16px}
-    .toolbar{display:grid;grid-template-columns:.55fr .7fr .7fr .85fr .65fr auto auto;gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(15,23,42,.06);margin-bottom:12px}
-    label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:12px;font-weight:800}
-    input,select{min-height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;color:var(--text);font-size:14px;font-family:inherit;max-width:100%}
-    input[type=file]{padding:8px 10px;font-size:12px}
-    button{border:0;border-radius:11px;padding:11px 14px;cursor:pointer;font-weight:900;font-size:14px;white-space:nowrap;font-family:inherit}
-    button.primary{background:var(--primary);color:#fff}button.blue{background:var(--blue);color:#fff}button.ghost{background:var(--soft);color:#1e40af}button.danger{background:#fee2e2;color:var(--danger)}button.small{padding:6px 9px;font-size:12px;border-radius:8px}
-    .sticky-actions{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 10px 28px rgba(15,23,42,.18)}
-    .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.tab{background:#fff;color:#334155;border:1px solid var(--line);padding:9px 13px;border-radius:999px}.tab.active{background:#172033;border-color:#172033;color:#fff}
-    .notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:13px;padding:11px 13px;font-size:13px;line-height:1.55;margin-bottom:12px}
-    .layout{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start}.panel,.ppt-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 22px rgba(15,23,42,.05);overflow:hidden}
-    .panel-head,.ppt-title{padding:13px 15px;border-bottom:1px solid var(--line);background:#fbfcff;display:flex;justify-content:space-between;align-items:center;gap:10px}.panel-head strong,.ppt-title h2{font-size:17px;margin:0}.panel-head span,.ppt-title span{color:var(--muted);font-size:12px}.panel-body{padding:14px}
-    .drop{min-height:142px;border:2px dashed #94a3b8;background:#f8fafc;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:16px;color:var(--muted);cursor:pointer;margin-bottom:12px}.drop strong{color:var(--text);font-size:18px;margin-bottom:6px}.dragover{outline:3px solid #93c5fd!important;background:#eff6ff!important;color:#1e40af!important}.drop input{display:none}
-    .pool{min-height:210px;max-height:430px;overflow:auto;border:2px dashed #d8dfeb;background:#fcfdff;border-radius:14px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pool-empty{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:150px;color:#98a2b3;font-size:13px;text-align:center;line-height:1.5}
-    .thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff;cursor:grab}.thumb img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.thumb .tag{position:absolute;left:4px;top:4px;background:rgba(15,23,42,.82);color:#fff;border-radius:999px;padding:2px 6px;font-size:10px}.thumb .x{position:absolute;right:4px;top:4px;width:21px;height:21px;border-radius:999px;background:rgba(220,38,38,.92);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer}
-    .summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.summary div{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:9px}.summary span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}.summary strong{font-size:15px}.status{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5}.progress{width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:8px}.progress>div{height:100%;width:0%;background:#2563eb;transition:width .2s ease}
-    .ppt-stage{padding:16px;overflow:auto}.scene-nav{display:flex;gap:7px;align-items:center}
-    .ppt-sheet{width:1200px;height:675px;background:#fff;border:1px solid #111;transform-origin:top left;overflow:hidden}
-    .topbar{height:32px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-weight:900}
-    .topbar .store{font-size:23px;text-decoration:underline;text-underline-offset:3px}.topbar .title{font-size:17px}
-    table.check-table{border-collapse:collapse;table-layout:fixed;width:100%;height:643px;font-size:13px}.check-table th,.check-table td{border:1.5px solid var(--grid);vertical-align:middle;text-align:center;padding:0}.check-table .label{width:41.4px;background:var(--head);font-weight:900;color:#111}.check-table .head{height:47px;background:var(--head);font-weight:900;line-height:1.22}.check-table .head .main{font-size:12px;color:#111}.check-table .head .sub{font-size:11px;color:#1f5aa6;text-decoration:underline;font-weight:900}.check-table .photo-label{background:var(--head);font-weight:900;white-space:pre-line;line-height:1.25}.check-table .photo-row{height:490px}.check-table .content-row{height:106px;background:#f3f3f3}.check-table .content-label{background:var(--head);font-weight:900}
-    .category-drop{height:490px;background:#fff;padding:6px;display:flex;align-items:flex-start;justify-content:center}
-    .photo-grid{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:start}
-    .photo-box{aspect-ratio:1/1;border:1px dashed #d1d5db;background:#fafafa;border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#a3aab8;font-size:11px}
-    .photo-box .thumb{width:100%;height:100%;border:0;border-radius:0}.print-pages{display:none}
-    @media(max-width:1100px){.toolbar{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.sticky-actions{left:10px;right:10px;justify-content:center}.ppt-sheet{transform:scale(.78);transform-origin:top left}.ppt-stage{height:560px}}
-    @media print{
-      html,body{background:#fff!important;margin:0!important;padding:0!important;width:297mm;height:auto;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-      header,main,.sticky-actions{display:none!important}
-      .print-pages{display:block!important;position:absolute;left:0;top:0;width:297mm;background:#fff}
-      .print-sheet{width:297mm;height:210mm;page-break-after:always;break-after:page;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden}
-      .print-sheet .ppt-sheet{width:297mm;height:167.06mm;border:0;box-shadow:none;transform:none}
-      .print-sheet .topbar{height:8mm}.print-sheet table.check-table{height:159.06mm}.print-sheet .category-drop{height:115mm}.print-sheet .check-table .photo-row{height:115mm}.print-sheet .check-table .content-row{height:27mm}
-      @page{size:A4 landscape;margin:0}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>코스트코 진열·연출 점검 PPT 생성기</title>
+<style>
+:root{--bg:#f3f5f9;--line:#cfd7e6;--navy:#172033;--head:#d9d9d9;--txt:#111827;--muted:#667085;--blue:#1d4ed8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,'Malgun Gothic',sans-serif;color:var(--txt)}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);padding:14px 20px}h1{font-size:22px;margin:0}header p{margin:5px 0 0;color:var(--muted);font-size:13px}
+main{max-width:1500px;margin:auto;padding:16px}.bar{display:grid;grid-template-columns:.6fr .7fr .7fr .7fr auto auto auto auto;gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px}label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:800}input,select{height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font-size:14px}button{border:0;border-radius:10px;padding:11px 14px;font-weight:900;cursor:pointer;background:#eef2ff;color:#1e40af}button.primary{background:#111827;color:#fff}button.blue{background:var(--blue);color:#fff}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tab{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:#334155}.tab.on{background:#172033;color:#fff}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px;line-height:1.5}.layout{display:grid;grid-template-columns:355px 1fr;gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden}.card h2{font-size:17px;margin:0;padding:14px;border-bottom:1px solid var(--line)}.body{padding:14px}.drop{min-height:135px;border:2px dashed #94a3b8;border-radius:15px;display:flex;align-items:center;justify-content:center;text-align:center;color:#667085;background:#f8fafc;margin-bottom:12px;cursor:pointer}.drop b{display:block;color:#111827;font-size:18px;margin-bottom:5px}.drop input{display:none}.pool{min-height:210px;max-height:390px;overflow:auto;border:2px dashed #d8dfeb;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.empty{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:150px;color:#98a2b3;text-align:center;font-size:13px;line-height:1.5}.thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;cursor:grab}.thumb img{width:100%;height:100%;object-fit:cover;display:block}.thumb .kb{position:absolute;left:4px;top:4px;background:#111827d9;color:#fff;border-radius:99px;font-size:10px;padding:2px 6px}.thumb .x{position:absolute;right:4px;top:4px;background:#dc2626;color:#fff;border-radius:99px;width:21px;height:21px;text-align:center;line-height:21px;font-weight:900}.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sum div{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px}.sum span{display:block;color:#667085;font-size:11px}.sum b{font-size:15px}.status{font-size:13px;color:#667085;margin-top:10px;line-height:1.5}.prog{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}.prog div{height:100%;width:0;background:#2563eb}.previewHead{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);background:#fbfcff}.scene{display:flex;gap:7px;align-items:center}.stage{padding:16px;overflow:auto}.sheet{width:1200px;height:675px;background:#fff;border:1px solid #111;position:relative;overflow:hidden}.top{height:28px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 9px;font-weight:900}.top .store{font-size:23px;text-decoration:underline;text-underline-offset:3px}.top .ttl{font-size:16px}.grid{position:absolute;left:0;top:28px;width:100%;height:647px;border-collapse:collapse;table-layout:fixed}.grid th,.grid td{border:1.5px solid #222;text-align:center;vertical-align:middle;padding:0}.grid .lab{width:35.4px;background:var(--head);font-weight:900;font-size:13px}.grid .hd{height:43px;background:var(--head);font-weight:900;line-height:1.15}.grid .hd .m{font-size:11px}.grid .hd .s{font-size:10.5px;color:#1f5aa6;text-decoration:underline}.grid .photoLab{background:var(--head);font-weight:900;font-size:13px;white-space:pre-line}.grid .photoRow{height:154px}.grid .content{height:142px;background:#f3f3f3}.slot{height:154px;display:flex;align-items:center;justify-content:center;background:#fff;position:relative}.slot .thumb{width:142px;height:142px;border-radius:2px}.slot .thumb img{object-fit:cover}.slot .hint{color:#a3aab8;font-size:12px}.drag{outline:3px solid #93c5fd!important;background:#eff6ff!important}.printOnly{display:none}@media(max-width:1100px){.bar{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.sheet{transform:scale(.75);transform-origin:top left}.stage{height:540px}}@media print{header,main{display:none!important}.printOnly{display:block}.printPage{width:29.7cm;height:16.706cm;margin:0 auto;page-break-after:always}.printPage .sheet{width:29.7cm;height:16.706cm;border:0}.printPage .top{height:.7cm}.printPage .grid{top:.7cm;height:16.006cm}@page{size:A4 landscape;margin:0}}
+</style>
 </head>
 <body>
-  <header><h1>코스트코 진열·연출 점검 PPT 생성기</h1><p>담당 선택 → 점포 선택 → PPT 양식 확인 → 사진 업로드 → 위치 배정 → PPT/PDF 생성</p></header>
-  <main>
-    <section class="toolbar">
-      <label>보고 주차<input id="weekInput" value="W22" /></label>
-      <label>담당<select id="managerSelect"></select></label>
-      <label>현재 점포<select id="storeSelect"></select></label>
-      <label>PPT 양식 업로드<input id="templateInput" type="file" accept=".pptx" /></label>
-      <label>사진 압축<select id="maxSize"><option value="600">600px / 가볍게</option><option value="800" selected>800px / 추천</option><option value="1000">1000px / 선명도</option></select></label>
-      <button class="ghost" onclick="autoDistribute()">대기사진 자동배치</button>
-      <button class="primary" onclick="makePpt()">PPT 생성</button>
-    </section>
-    <div id="storeTabs" class="tabs"></div>
-    <p class="notice"><b>수정 버전:</b> PPT 생성은 외부 라이브러리 없이 <b>index.html 하나만</b>으로 작동합니다. 사진은 품목별 <b>정사각형 4칸(2×2)</b>으로 들어갑니다. PDF 저장은 인쇄창에서 <b>대상: PDF로 저장</b>, 여백 없음, 컬러로 저장하세요.</p>
-    <section class="layout">
-      <aside class="panel">
-        <div class="panel-head"><div><strong>사진 대기함</strong><br><span id="activeInfo">-</span></div><button class="danger small" onclick="clearPool()">대기함 비우기</button></div>
-        <div class="panel-body">
-          <label class="drop" id="uploadDrop"><input type="file" id="fileInput" multiple accept="image/*"><strong>사진을 여기에 넣기</strong>드래그가 안 되면 여기를 클릭해서 선택<br>복사한 사진은 Ctrl+V도 가능</label>
-          <div class="pool" id="photoPool"></div>
-          <div class="summary"><div><span>현재 점포 전체</span><strong id="sumCurrent">0장</strong></div><div><span>배정 완료</span><strong id="sumAssigned">0장</strong></div><div><span>원본 용량</span><strong id="sumOriginal">0MB</strong></div><div><span>압축 후</span><strong id="sumCompressed">0MB</strong></div></div>
-          <div class="status" id="templateStatus">PPT 양식: 미업로드</div>
-          <div class="status" id="statusText">대기 중</div><div class="progress"><div id="progressBar"></div></div>
-        </div>
-      </aside>
-      <section class="ppt-wrap">
-        <div class="ppt-title"><h2 id="pptStoreTitle">코스트코 세종점</h2><div class="scene-nav"><button class="ghost small" onclick="prevScene()">이전</button><span id="sceneInfo">1 / 1</span><button class="ghost small" onclick="nextScene()">다음</button><span id="pptCountText">배정 0장</span></div></div>
-        <div class="ppt-stage"><div id="pdfScene" class="ppt-sheet"></div></div>
-      </section>
-    </section>
-  </main>
-  <div class="sticky-actions"><button class="ghost" onclick="printCurrentPdf()">현재 PDF 저장</button><button class="blue" onclick="printAllPdf()">담당 전체 PDF 저장</button><button class="primary" onclick="makePpt()">PPT 생성</button></div>
-  <div id="printPages" class="print-pages"></div>
+<header><h1>코스트코 진열·연출 점검 PPT 생성기</h1><p>담당 선택 → 점포 선택 → 사진 업로드 → 위치 배정 → PPT/PDF 생성</p></header>
+<main>
+<section class="bar">
+<label>보고 주차<input id="week" value="W22"></label>
+<label>담당<select id="mgr"></select></label>
+<label>현재 점포<select id="store"></select></label>
+<label>압축<select id="max"><option value="700">700px / 가볍게</option><option value="900" selected>900px / 추천</option><option value="1200">1200px / 선명</option></select></label>
+<button onclick="autoPut()">대기사진 자동배치</button><button class="blue" onclick="printCurrent()">현재 PDF</button><button class="blue" onclick="printAll()">담당 전체 PDF</button><button class="primary" onclick="makePpt()">PPT 생성</button>
+</section>
+<div id="tabs" class="tabs"></div>
+<div class="notice"><b>사진은 PPT에서 정확히 4cm × 4cm</b>로 들어갑니다. 한 품목당 한 장면에 3장까지 들어가며 4장째부터 다음 장면으로 넘어갑니다. 이 파일은 외부 라이브러리 없이 index.html 하나만 쓰는 버전입니다.</div>
+<section class="layout">
+<aside class="card"><h2>사진 대기함 <span id="info" style="font-size:12px;color:#667085"></span></h2><div class="body">
+<label class="drop" id="drop"><input type="file" id="files" accept="image/*" multiple><span><b>사진을 여기에 넣기</b>드래그가 안 되면 클릭해서 선택<br>Ctrl+V 붙여넣기도 가능</span></label>
+<div id="pool" class="pool"></div>
+<div class="sum"><div><span>현재 점포 전체</span><b id="sAll">0장</b></div><div><span>배정 완료</span><b id="sIn">0장</b></div><div><span>원본 용량</span><b id="sO">0MB</b></div><div><span>압축 후</span><b id="sC">0MB</b></div></div>
+<div id="status" class="status">대기 중</div><div class="prog"><div id="prog"></div></div>
+</div></aside>
+<section class="card"><div class="previewHead"><h2 id="title" style="padding:0;border:0">코스트코 세종점</h2><div class="scene"><button onclick="prev()">이전</button><span id="pageNo">1 / 1</span><button onclick="next()">다음</button><span id="cnt">배정 0장</span></div></div><div class="stage"><div id="sheet" class="sheet"></div></div></section>
+</section>
+</main>
+<div id="print" class="printOnly"></div>
 <script>
-const MANAGER_STORES={"윤재경":["송도점","일산점","고척점","청라점","천안점"],"김현래":["하남점","상봉점","의정부점","양평점"],"조재현":["양재점","광명점","공세점","평택점"],"김영언":["세종점","대전점","대구점","혁신점"],"심창보":["부산점","울산점","김해점"]};
-const CATEGORIES=[
-  {key:"TV",main:"TV",sub:"(2단 집기)",ppt:"TV\n(2단 집기)"},
-  {key:"REF",main:"냉장고 / 김치냉장고 / 세건",sub:"(비네트/추가 진열)",ppt:"냉장고 / 김치냉장고 / 세건\n(비네트/추가 진열)"},
-  {key:"AC",main:"에어컨",sub:"(스탠드/벽걸이/창문형/시스템)",ppt:"에어컨\n(스탠드/벽걸이/창문형/시스템)"},
-  {key:"MONITOR",main:"모니터",sub:"(무빙스타일/게이밍)",ppt:"모니터\n(무빙스타일/게이밍)"},
-  {key:"COOK",main:"조리기기",sub:"(큐커/인덕션/전자레인지/식기세척기)",ppt:"조리기기\n(큐커/인덕션/전자레인지/식기세척기)"},
-  {key:"ETC",main:"기타 품목",sub:"(AV/청소기)",ppt:"기타 품목\n(AV/청소기)"}
-];
-const ALL_STORES=Object.values(MANAGER_STORES).flat();
-const storeData=Object.fromEntries(ALL_STORES.map(s=>[s,{pool:[],categories:Object.fromEntries(CATEGORIES.map(c=>[c.key,[]]))}]));
-let currentManager="김영언",currentStore="세종점",currentPage=0,draggedPhotoId=null,draggedFrom=null,templateName="";
-const $=id=>document.getElementById(id);
-const managerSelect=$("managerSelect"),storeSelect=$("storeSelect"),storeTabs=$("storeTabs"),photoPool=$("photoPool"),statusText=$("statusText"),progressBar=$("progressBar"),fileInput=$("fileInput"),templateInput=$("templateInput");
-init();
-function init(){
-  managerSelect.innerHTML=Object.keys(MANAGER_STORES).map(n=>`<option>${n}</option>`).join("");
-  managerSelect.value=currentManager;
-  managerSelect.onchange=()=>{currentManager=managerSelect.value;currentStore=MANAGER_STORES[currentManager][0];currentPage=0;renderManager()};
-  storeSelect.onchange=()=>{currentStore=storeSelect.value;currentPage=0;renderAll()};
-  fileInput.onchange=e=>{handleFiles([...e.target.files],null);fileInput.value=""};
-  templateInput.onchange=e=>{const f=e.target.files?.[0];templateName=f?f.name:"";$("templateStatus").textContent=templateName?`PPT 양식: ${templateName} 확인됨`:"PPT 양식: 미업로드"};
-  setupExternalDrop($("uploadDrop"),files=>handleFiles(files,null));
-  $("uploadDrop").addEventListener("click",()=>fileInput.click());
-  setupPoolDrop();
-  document.addEventListener("paste",e=>{const files=[...(e.clipboardData?.files||[])].filter(f=>f.type.startsWith("image/"));if(files.length)handleFiles(files,null)});
-  renderManager();
-}
-function renderManager(){const stores=MANAGER_STORES[currentManager];storeSelect.innerHTML=stores.map(s=>`<option>${s}</option>`).join("");storeSelect.value=currentStore;renderAll()}
-function selectStore(s){currentStore=s;storeSelect.value=s;currentPage=0;renderAll()}
-function renderAll(){
-  const stores=MANAGER_STORES[currentManager];
-  storeTabs.innerHTML=stores.map(s=>`<button class="tab ${s===currentStore?'active':''}" onclick="selectStore('${s}')">${s.replace('점','')}</button>`).join("");
-  $("activeInfo").textContent=`${currentManager} 담당 / 코스트코 ${currentStore}`;
-  $("pptStoreTitle").textContent=`코스트코 ${currentStore}`;
-  const maxPages=getStorePageCount(currentStore);if(currentPage>=maxPages)currentPage=maxPages-1;if(currentPage<0)currentPage=0;
-  $("sceneInfo").textContent=`${currentPage+1} / ${maxPages}`;
-  renderPool();renderPreview();updateSummary();
-}
-function renderPreview(){
-  $("pdfScene").innerHTML=sheetHtml(currentStore,currentPage,true);
-  document.querySelectorAll(".category-drop").forEach(slot=>setupCategoryDrop(slot));
-}
-function sheetHtml(store,page,interactive){
-  const head=CATEGORIES.map(c=>`<th class="head"><div class="main">${esc(c.main)}</div><div class="sub">${esc(c.sub)}</div></th>`).join("");
-  const cells=CATEGORIES.map(c=>{
-    const photos=storeData[store].categories[c.key].slice(page*4,page*4+4);
-    return `<td><div class="category-drop" ${interactive?`data-category="${c.key}"`:""}><div class="photo-grid">${[0,1,2,3].map(i=>boxHtml(c.key,photos[i],interactive)).join("")}</div></div></td>`;
-  }).join("");
-  return `<div class="topbar"><div class="store">코스트코 ${esc(store)}</div><div class="title">코스트코 진열·연출점검</div></div>
-    <table class="check-table"><colgroup><col style="width:41.4px"><col span="6"></colgroup>
-    <tr><th class="label">품목</th>${head}</tr>
-    <tr class="photo-row"><td class="photo-label">현장\n사진</td>${cells}</tr>
-    <tr class="content-row"><td class="content-label">내용</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>`;
-}
-function boxHtml(cat,p,interactive){
-  if(!p)return `<div class="photo-box">${interactive?"사진":" "}</div>`;
-  if(!interactive)return `<div class="photo-box"><img src="${p.dataUrl}" style="width:100%;height:100%;object-fit:cover"></div>`;
-  return `<div class="photo-box">${thumbHtml(p,cat)}</div>`;
-}
-function thumbHtml(p,from){return `<div class="thumb" draggable="true" data-id="${p.id}" data-from="${from}"><img src="${p.dataUrl}"><span class="tag">${formatBytes(p.compressedSize)}</span><span class="x" data-del="${p.id}" data-from="${from}">×</span></div>`}
-function setupCategoryDrop(slot){
-  slot.addEventListener("dragover",e=>{e.preventDefault();slot.classList.add("dragover")});
-  slot.addEventListener("dragleave",()=>slot.classList.remove("dragover"));
-  slot.addEventListener("drop",e=>{e.preventDefault();slot.classList.remove("dragover");const files=getFiles(e);const cat=slot.dataset.category;if(files.length){handleFiles(files,cat);return}if(draggedPhotoId)movePhoto(draggedPhotoId,draggedFrom,cat)});
-}
-function setupExternalDrop(el,onFiles){el.addEventListener("dragover",e=>{e.preventDefault();el.classList.add("dragover")});el.addEventListener("dragleave",()=>el.classList.remove("dragover"));el.addEventListener("drop",e=>{e.preventDefault();el.classList.remove("dragover");const files=getFiles(e);if(!files.length)return alert("사진 파일로 인식되지 않았습니다. 클릭해서 파일 선택으로 넣어보세요.");onFiles(files)})}
-function setupPoolDrop(){
-  photoPool.addEventListener("dragover",e=>{e.preventDefault();photoPool.classList.add("dragover")});
-  photoPool.addEventListener("dragleave",()=>photoPool.classList.remove("dragover"));
-  photoPool.addEventListener("drop",e=>{e.preventDefault();photoPool.classList.remove("dragover");const files=getFiles(e);if(files.length){handleFiles(files,null);return}if(draggedPhotoId)movePhoto(draggedPhotoId,draggedFrom,"pool")});
-  document.addEventListener("dragstart",e=>{const t=e.target.closest?.(".thumb");if(!t)return;draggedPhotoId=t.dataset.id;draggedFrom=t.dataset.from;e.dataTransfer.setData("text/plain",draggedPhotoId)});
-  document.addEventListener("dragend",()=>{draggedPhotoId=null;draggedFrom=null});
-  document.addEventListener("click",e=>{const x=e.target.closest?.(".x");if(!x)return;e.stopPropagation();deletePhoto(x.dataset.del,x.dataset.from)});
-}
-function getFiles(e){const f=[...(e.dataTransfer?.files||[])].filter(x=>x.type.startsWith("image/"));if(f.length)return f;return [...(e.dataTransfer?.items||[])].filter(i=>i.kind==="file").map(i=>i.getAsFile()).filter(x=>x&&x.type.startsWith("image/"))}
-async function handleFiles(files,targetCat){
-  try{files=files.filter(f=>f.type.startsWith("image/"));if(!files.length)return;const maxSize=Number($("maxSize").value);statusText.textContent=`${currentStore} 사진 정사각형 압축 중...`;progressBar.style.width="0%";
-    for(let i=0;i<files.length;i++){const compressed=await squareImage(files[i],maxSize,.74);const p={id:randomId(),dataUrl:compressed.dataUrl,w:1,h:1,originalName:files[i].name||"사진",originalSize:files[i].size||0,compressedSize:compressed.size};if(targetCat)storeData[currentStore].categories[targetCat].push(p);else storeData[currentStore].pool.push(p);progressBar.style.width=`${Math.round((i+1)/files.length*100)}%`;}
-    renderAll();
-  }catch(err){showError(err)}
-}
-function squareImage(file,size,quality){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement("canvas");c.width=size;c.height=size;const ctx=c.getContext("2d");const scale=Math.max(size/img.width,size/img.height);const sw=size/scale,sh=size/scale,sx=(img.width-sw)/2,sy=(img.height-sh)/2;ctx.drawImage(img,sx,sy,sw,sh,0,0,size,size);const dataUrl=c.toDataURL("image/jpeg",quality);resolve({dataUrl,w:size,h:size,size:estimate(dataUrl)})};img.onerror=reject;img.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
-function renderPool(){const pool=storeData[currentStore].pool;photoPool.innerHTML="";if(!pool.length){photoPool.innerHTML='<div class="pool-empty">사진을 넣으면<br>여기에 대기 사진으로 표시됩니다.</div>';return}pool.forEach(p=>{const wrap=document.createElement("div");wrap.innerHTML=thumbHtml(p,"pool");photoPool.appendChild(wrap.firstChild)})}
-function movePhoto(id,from,to){if(from===to)return;const p=removePhoto(id,from);if(!p)return;if(to==="pool")storeData[currentStore].pool.push(p);else storeData[currentStore].categories[to].push(p);renderAll()}
-function removePhoto(id,from){const arr=from==="pool"?storeData[currentStore].pool:storeData[currentStore].categories[from];const idx=arr.findIndex(p=>p.id===id);return idx>=0?arr.splice(idx,1)[0]:null}
-function deletePhoto(id,from){removePhoto(id,from);renderAll()}
-function clearPool(){storeData[currentStore].pool=[];renderAll()}
-function autoDistribute(){const data=storeData[currentStore];let idx=0;while(data.pool.length){const cat=CATEGORIES[idx%CATEGORIES.length].key;data.categories[cat].push(data.pool.shift());idx++}renderAll()}
-function prevScene(){if(currentPage>0){currentPage--;renderAll()}}
-function nextScene(){const max=getStorePageCount(currentStore);if(currentPage<max-1){currentPage++;renderAll()}}
-function updateSummary(){const d=storeData[currentStore];const assigned=CATEGORIES.flatMap(c=>d.categories[c.key]);const all=[...d.pool,...assigned];const orig=all.reduce((s,p)=>s+p.originalSize,0),comp=all.reduce((s,p)=>s+p.compressedSize,0);$("sumCurrent").textContent=`${all.length}장`;$("sumAssigned").textContent=`${assigned.length}장`;$("sumOriginal").textContent=formatBytes(orig);$("sumCompressed").textContent=formatBytes(comp);$("pptCountText").textContent=`배정 ${assigned.length}장 / 대기 ${d.pool.length}장`;const rate=orig?Math.round((1-comp/orig)*100):0;statusText.textContent=all.length?`현재 점포 ${all.length}장 / 원본 ${formatBytes(orig)} → 압축 ${formatBytes(comp)} / 약 ${Math.max(0,rate)}% 감소`:"대기 중"}
-async function makePpt(){
-  try{
-    const stores=MANAGER_STORES[currentManager].filter(s=>assignedCount(s)>0);
-    if(!stores.length)return alert("배정된 사진이 없습니다. 대기 사진을 오른쪽 품목 칸으로 먼저 옮겨주세요.");
-    const unassigned=MANAGER_STORES[currentManager].reduce((sum,s)=>sum+storeData[s].pool.length,0);
-    if(unassigned&&!confirm(`대기 사진 ${unassigned}장은 PPT에 들어가지 않습니다. 그대로 생성할까요?`))return;
-    statusText.textContent="PPT 생성 중...";progressBar.style.width="5%";
-    const slides=[];for(const s of stores){for(let p=0;p<getStorePageCount(s);p++)slides.push({store:s,page:p})}
-    const blob=await buildPptx(slides);
-    downloadBlob(blob,`${fileBaseName()}.pptx`);
-    progressBar.style.width="100%";statusText.textContent=`완료: ${fileBaseName()}.pptx 다운로드됨`;
-  }catch(err){showError(err)}
-}
-async function buildPptx(slides){
-  const zip=new ZipWriter();
-  const slideOverrides=slides.map((_,i)=>`<Override PartName="/ppt/slides/slide${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`).join("");
-  zip.addText("[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpg" ContentType="image/jpeg"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>${slideOverrides}</Types>`);
-  zip.addText("_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`);
-  zip.addText("docProps/app.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Costco Display Check App</Application><PresentationFormat>On-screen Show (16:9)</PresentationFormat><Slides>${slides.length}</Slides></Properties>`);
-  zip.addText("docProps/core.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${xml(fileBaseName())}</dc:title><dc:creator>Costco Display Check App</dc:creator><cp:lastModifiedBy>Costco Display Check App</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:modified></cp:coreProperties>`);
-  const sldIds=slides.map((_,i)=>`<p:sldId id="${256+i}" r:id="rId${i+2}"/>`).join("");
-  zip.addText("ppt/presentation.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${sldIds}</p:sldIdLst><p:sldSz cx="12192000" cy="6858000" type="wide"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>`);
-  zip.addText("ppt/_rels/presentation.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>${slides.map((_,i)=>`<Relationship Id="rId${i+2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${i+1}.xml"/>`).join("")}</Relationships>`);
-  zip.addText("ppt/slideMasters/slideMaster1.xml",masterXml());
-  zip.addText("ppt/slideMasters/_rels/slideMaster1.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/></Relationships>`);
-  zip.addText("ppt/slideLayouts/slideLayout1.xml",layoutXml());
-  zip.addText("ppt/slideLayouts/_rels/slideLayout1.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>`);
-  zip.addText("ppt/theme/theme1.xml",themeXml());
-  let imageNo=1;
-  for(let i=0;i<slides.length;i++){
-    const imageRels=[];const mediaFiles=[];const slideXml=slideXmlFor(slides[i].store,slides[i].page,(p)=>{const rid=`rId${imageRels.length+1}`;const media=`image${imageNo++}.jpg`;imageRels.push({rid,media});mediaFiles.push({media,data:p.dataUrl});return rid;});
-    zip.addText(`ppt/slides/slide${i+1}.xml`,slideXml);
-    zip.addText(`ppt/slides/_rels/slide${i+1}.xml.rels`,relXml(imageRels));
-    for(const m of mediaFiles)zip.addBytes(`ppt/media/${m.media}`,dataUrlBytes(m.data));
-    progressBar.style.width=`${Math.round((i+1)/slides.length*90)}%`;await wait(5);
-  }
-  return new Blob([zip.generate()],{type:"application/vnd.openxmlformats-officedocument.presentationml.presentation"});
-}
-function slideXmlFor(store,page,addImageRel){
-  let id=1,body="";
-  const W=13.333,H=7.5,topH=.356,tableY=.356,col0=.461,col=(W-col0)/6,headH=.521,photoH=5.44,contentH=1.183;
-  body+=rect(++id,0,0,W,topH,"172033","172033",0);
-  body+=textBox(++id,`코스트코 ${store}`,.07,.03,3.5,.28,15,"FFFFFF",true,"left",true);
-  body+=textBox(++id,"코스트코 진열·연출점검",10.75,.055,2.45,.24,11.5,"FFFFFF",true,"right",false);
-  body+=rectText(++id,0,tableY,col0,headH,"품목","D9D9D9",9,true);
-  for(let i=0;i<CATEGORIES.length;i++){
-    const x=col0+i*col,c=CATEGORIES[i];body+=rect(++id,x,tableY,col,headH,"D9D9D9","222222",1);
-    body+=textBox(++id,c.main,x+.03,tableY+.10,col-.06,.17,7.4,"111111",true,"center",false);
-    body+=textBox(++id,c.sub,x+.03,tableY+.30,col-.06,.15,7.1,"1F5AA6",true,"center",true);
-  }
-  const photoY=tableY+headH;
-  body+=rectText(++id,0,photoY,col0,photoH,"현장\n사진","D9D9D9",9,true);
-  for(let i=0;i<CATEGORIES.length;i++){
-    const x=col0+i*col;body+=rect(++id,x,photoY,col,photoH,"FFFFFF","222222",1);
-    const photos=storeData[store].categories[CATEGORIES[i].key].slice(page*4,page*4+4);
-    const gap=.06;const sq=(col-.18-gap)/2;const startX=x+.06;const startY=photoY+.08;
-    for(let j=0;j<4;j++){
-      const bx=startX+(j%2)*(sq+gap),by=startY+Math.floor(j/2)*(sq+gap);
-      body+=rect(++id,bx,by,sq,sq,"FAFAFA","D1D5DB",.6);
-      if(photos[j])body+=pic(++id,addImageRel(photos[j]),bx,by,sq,sq);
-    }
-  }
-  const cy=photoY+photoH;body+=rectText(++id,0,cy,col0,contentH,"내용","D9D9D9",9,true);
-  for(let i=0;i<CATEGORIES.length;i++)body+=rect(++id,col0+i*col,cy,col,contentH,"F3F3F3","222222",1);
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>${body}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`;
-}
-function rectText(id,x,y,w,h,text,fill,size,bold){return rect(id,x,y,w,h,fill,"222222",1)+textBox(id+10000,text,x+.02,y+.02,w-.04,h-.04,size,"111111",bold,"center",false,true)}
-function rect(id,x,y,w,h,fill,line,width){return `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="Shape ${id}"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${emu(x)}" y="${emu(y)}"/><a:ext cx="${emu(w)}" cy="${emu(h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="${fill}"/></a:solidFill><a:ln w="${Math.round((width||1)*12700)}"><a:solidFill><a:srgbClr val="${line||"222222"}"/></a:solidFill></a:ln></p:spPr></p:sp>`}
-function textBox(id,text,x,y,w,h,size,color,bold,align,underline,mid){
-  const lines=String(text).split("\n");
-  const paras=lines.map(line=>`<a:p><a:pPr algn="${align==="left"?"l":align==="right"?"r":"ctr"}"/><a:r><a:rPr lang="ko-KR" sz="${Math.round(size*100)}"${bold?' b="1"':''}${underline?' u="sng"':''}><a:solidFill><a:srgbClr val="${color}"/></a:solidFill><a:latin typeface="Malgun Gothic"/><a:ea typeface="Malgun Gothic"/><a:cs typeface="Malgun Gothic"/></a:rPr><a:t>${xml(line)}</a:t></a:r><a:endParaRPr lang="ko-KR"/></a:p>`).join("");
-  return `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="Text ${id}"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${emu(x)}" y="${emu(y)}"/><a:ext cx="${emu(w)}" cy="${emu(h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="square"${mid?' anchor="ctr"':''} lIns="0" tIns="0" rIns="0" bIns="0"/><a:lstStyle/>${paras}</p:txBody></p:sp>`;
-}
-function pic(id,rid,x,y,w,h){return `<p:pic><p:nvPicPr><p:cNvPr id="${id}" name="Picture ${id}"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${emu(x)}" y="${emu(y)}"/><a:ext cx="${emu(w)}" cy="${emu(h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>`}
-function relXml(rels){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels.map(r=>`<Relationship Id="${r.rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/${r.media}"/>`).join("")}</Relationships>`}
-function masterXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle/><p:bodyStyle/><p:otherStyle/></p:txStyles></p:sldMaster>`}
-function layoutXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" type="blank" preserve="1"><p:cSld name="Blank"><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`}
-function themeXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Office Theme"><a:themeElements><a:clrScheme name="Office"><a:dk1><a:srgbClr val="000000"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="1F2937"/></a:dk2><a:lt2><a:srgbClr val="F3F4F6"/></a:lt2><a:accent1><a:srgbClr val="2563EB"/></a:accent1><a:accent2><a:srgbClr val="DC2626"/></a:accent2><a:accent3><a:srgbClr val="16A34A"/></a:accent3><a:accent4><a:srgbClr val="F59E0B"/></a:accent4><a:accent5><a:srgbClr val="7C3AED"/></a:accent5><a:accent6><a:srgbClr val="0891B2"/></a:accent6><a:hlink><a:srgbClr val="0000FF"/></a:hlink><a:folHlink><a:srgbClr val="800080"/></a:folHlink></a:clrScheme><a:fontScheme name="Office"><a:majorFont><a:latin typeface="Malgun Gothic"/><a:ea typeface="Malgun Gothic"/><a:cs typeface="Malgun Gothic"/></a:majorFont><a:minorFont><a:latin typeface="Malgun Gothic"/><a:ea typeface="Malgun Gothic"/><a:cs typeface="Malgun Gothic"/></a:minorFont></a:fontScheme><a:fmtScheme name="Office"><a:fillStyleLst/><a:lnStyleLst/><a:effectStyleLst/><a:bgFillStyleLst/></a:fmtScheme></a:themeElements><a:objectDefaults/><a:extraClrSchemeLst/></a:theme>`}
-function emu(inch){return Math.round(inch*914400)}
-function xml(s){return String(s).replace(/[<>&'"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","'":"&apos;",'"':"&quot;"}[c]))}
-function esc(s){return String(s).replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]))}
-function dataUrlBytes(dataUrl){const b64=dataUrl.split(",")[1]||"";const bin=atob(b64);const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return arr}
-class ZipWriter{
-  constructor(){this.files=[]}
-  addText(name,text){this.addBytes(name,new TextEncoder().encode(text))}
-  addBytes(name,bytes){this.files.push({name,bytes,crc:crc32(bytes)})}
-  generate(){
-    const locals=[],centrals=[];let offset=0;
-    for(const f of this.files){const nameBytes=new TextEncoder().encode(f.name);const local=new Uint8Array(30+nameBytes.length+f.bytes.length);const v=new DataView(local.buffer);let p=0;
-      u32(v,p,0x04034b50);p+=4;u16(v,p,20);p+=2;u16(v,p,0);p+=2;u16(v,p,0);p+=2;u16(v,p,0);p+=2;u16(v,p,0);p+=2;u32(v,p,f.crc);p+=4;u32(v,p,f.bytes.length);p+=4;u32(v,p,f.bytes.length);p+=4;u16(v,p,nameBytes.length);p+=2;u16(v,p,0);p+=2;local.set(nameBytes,p);p+=nameBytes.length;local.set(f.bytes,p);locals.push(local);
-      const central=new Uint8Array(46+nameBytes.length);const c=new DataView(central.buffer);p=0;u32(c,p,0x02014b50);p+=4;u16(c,p,20);p+=2;u16(c,p,20);p+=2;u16(c,p,0);p+=2;u16(c,p,0);p+=2;u16(c,p,0);p+=2;u16(c,p,0);p+=2;u32(c,p,f.crc);p+=4;u32(c,p,f.bytes.length);p+=4;u32(c,p,f.bytes.length);p+=4;u16(c,p,nameBytes.length);p+=2;u16(c,p,0);p+=2;u16(c,p,0);p+=2;u16(c,p,0);p+=2;u16(c,p,0);p+=2;u32(c,p,0);p+=4;u32(c,p,offset);p+=4;central.set(nameBytes,p);centrals.push(central);
-      offset+=local.length;
-    }
-    const cdSize=centrals.reduce((s,a)=>s+a.length,0),cdOffset=offset;const end=new Uint8Array(22);const e=new DataView(end.buffer);let p=0;u32(e,p,0x06054b50);p+=4;u16(e,p,0);p+=2;u16(e,p,0);p+=2;u16(e,p,this.files.length);p+=2;u16(e,p,this.files.length);p+=2;u32(e,p,cdSize);p+=4;u32(e,p,cdOffset);p+=4;u16(e,p,0);
-    return concat([...locals,...centrals,end]);
-  }
-}
-function u16(v,p,n){v.setUint16(p,n,true)}function u32(v,p,n){v.setUint32(p,n>>>0,true)}
-function concat(arrs){const len=arrs.reduce((s,a)=>s+a.length,0),out=new Uint8Array(len);let p=0;for(const a of arrs){out.set(a,p);p+=a.length}return out}
-let CRC_TABLE=null;function crc32(bytes){if(!CRC_TABLE){CRC_TABLE=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1));CRC_TABLE[n]=c>>>0}}let c=0xffffffff;for(let i=0;i<bytes.length;i++)c=CRC_TABLE[(c^bytes[i])&0xff]^(c>>>8);return (c^0xffffffff)>>>0}
-function downloadBlob(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
-function printCurrentPdf(){buildPrintPages([{store:currentStore,page:currentPage}]);setTimeout(()=>window.print(),150)}
-function printAllPdf(){const pages=[];for(const s of MANAGER_STORES[currentManager].filter(st=>assignedCount(st)>0)){for(let p=0;p<getStorePageCount(s);p++)pages.push({store:s,page:p})}if(!pages.length)return alert("PDF에 넣을 배정 사진이 없습니다.");buildPrintPages(pages);setTimeout(()=>window.print(),150)}
-function buildPrintPages(pages){$("printPages").innerHTML=pages.map(p=>`<div class="print-sheet"><div class="ppt-sheet">${sheetHtml(p.store,p.page,false)}</div></div>`).join("")}
-function assignedCount(store){return CATEGORIES.reduce((sum,c)=>sum+storeData[store].categories[c.key].length,0)}
-function getStorePageCount(store){return Math.max(1,...CATEGORIES.map(c=>Math.ceil(storeData[store].categories[c.key].length/4)))}
-function fileBaseName(){const week=$("weekInput").value.trim()||"W22";const stores=MANAGER_STORES[currentManager].map(s=>s.replace("점","")).join(", ");return `(CE)${week}_코스트코_진열연출점검_(${stores})`}
-function estimate(dataUrl){const b=dataUrl.split(",")[1]||"";return Math.round(b.length*3/4)}
-function formatBytes(bytes){if(!bytes)return"0MB";const mb=bytes/1024/1024;return mb>=1?`${mb.toFixed(1)}MB`:`${Math.round(bytes/1024)}KB`}
-function randomId(){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}
-function wait(ms){return new Promise(r=>setTimeout(r,ms))}
-function showError(err){console.error(err);progressBar.style.width="0%";statusText.textContent="오류: "+(err?.message||err);alert("오류가 발생했습니다.\n\n"+(err?.message||err))}
+const M={"윤재경":["송도점","일산점","고척점","청라점","천안점"],"김현래":["하남점","상봉점","의정부점","양평점"],"조재현":["양재점","광명점","공세점","평택점"],"김영언":["세종점","대전점","대구점","혁신점"],"심창보":["부산점","울산점","김해점"]};
+const C=[['TV','TV','(2단 집기)'],['REF','냉장고 / 김치냉장고 / 세건','(비네트/추가 진열)'],['AC','에어컨','(스탠드/벽걸이/창문형/시스템)'],['MON','모니터','(무빙스타일/게이밍)'],['COOK','조리기기','(큐커/인덕션/전자레인지/식기세척기)'],['ETC','기타 품목','(AV/청소기)']];
+const DATA=Object.fromEntries(Object.values(M).flat().map(s=>[s,{pool:[],cat:Object.fromEntries(C.map(c=>[c[0],[]]))}]));
+let mgr='김영언',st='세종점',page=0,dragId=null,dragFrom=null;
+const $=id=>document.getElementById(id);init();
+function init(){mgrSel();$('files').onchange=e=>{addFiles([...e.target.files],null);e.target.value=''};$('drop').onclick=()=>$('files').click();dropFiles($('drop'),fs=>addFiles(fs,null));poolDrop();document.addEventListener('paste',e=>{let fs=[...(e.clipboardData?.files||[])].filter(f=>f.type.startsWith('image/'));if(fs.length)addFiles(fs,null)});renderMgr()}
+function mgrSel(){$('mgr').innerHTML=Object.keys(M).map(x=>`<option>${x}</option>`).join('');$('mgr').value=mgr;$('mgr').onchange=()=>{mgr=$('mgr').value;st=M[mgr][0];page=0;renderMgr()};$('store').onchange=()=>{st=$('store').value;page=0;render()}}
+function renderMgr(){$('store').innerHTML=M[mgr].map(x=>`<option>${x}</option>`).join('');$('store').value=st;render()}
+function selStore(x){st=x;$('store').value=x;page=0;render()}
+function render(){let ms=M[mgr];$('tabs').innerHTML=ms.map(x=>`<button class="tab ${x==st?'on':''}" onclick="selStore('${x}')">${x.replace('점','')}</button>`).join('');$('info').textContent=` ${mgr} / 코스트코 ${st}`;$('title').textContent=`코스트코 ${st}`;let max=pages(st);if(page>=max)page=max-1;if(page<0)page=0;$('pageNo').textContent=`${page+1} / ${max}`;renderPool();renderSheet();summary()}
+function renderSheet(){ $('sheet').innerHTML=sheetHtml(st,page,true); document.querySelectorAll('.slot').forEach(slotDrop); }
+function sheetHtml(store,p,live){let heads=C.map(c=>`<th class="hd"><div class="m">${c[1]}</div><div class="s">${c[2]}</div></th>`).join('');let rows='';for(let r=0;r<3;r++){rows+=`<tr class="photoRow">${r==0?'<td rowspan="3" class="photoLab">현장\n사진</td>':''}`;for(let c of C){let ph=DATA[store].cat[c[0]][p*3+r];rows+=`<td>${slot(c[0],ph,live)}</td>`}rows+='</tr>'}return `<div class="top"><div class="store">코스트코 ${store}</div><div class="ttl">코스트코 진열·연출점검</div></div><table class="grid"><colgroup><col style="width:35.4px"><col span="6"></colgroup><tr><th class="lab">품목</th>${heads}</tr>${rows}<tr class="content"><td class="lab">내용</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>`}
+function slot(cat,p,live){if(!p)return `<div class="slot" ${live?`data-cat="${cat}"`:''}><span class="hint">사진 드래그</span></div>`;let img=live?thumb(p,cat):`<img src="${p.url}" style="width:100%;height:100%;object-fit:cover">`;return `<div class="slot" ${live?`data-cat="${cat}"`:''}>${img}</div>`}
+function thumb(p,from){return `<div class="thumb" draggable="true" data-id="${p.id}" data-from="${from}"><img src="${p.url}"><span class="kb">${fmt(p.size)}</span><span class="x" data-del="${p.id}" data-from="${from}">×</span></div>`}
+function renderPool(){let p=DATA[st].pool;$('pool').innerHTML=p.length?p.map(x=>thumb(x,'pool')).join(''):'<div class="empty">사진을 넣으면<br>여기에 대기 사진으로 표시됩니다.</div>'}
+function dropFiles(el,cb){el.ondragover=e=>{e.preventDefault();el.classList.add('drag')};el.ondragleave=()=>el.classList.remove('drag');el.ondrop=e=>{e.preventDefault();el.classList.remove('drag');let fs=getFiles(e);if(fs.length)cb(fs)}}
+function poolDrop(){dropFiles($('pool'),fs=>addFiles(fs,null));$('pool').ondrop=e=>{e.preventDefault();$('pool').classList.remove('drag');let fs=getFiles(e);if(fs.length){addFiles(fs,null);return}if(dragId)move(dragId,dragFrom,'pool')};document.addEventListener('dragstart',e=>{let t=e.target.closest?.('.thumb');if(!t)return;dragId=t.dataset.id;dragFrom=t.dataset.from;e.dataTransfer.setData('text/plain',dragId)});document.addEventListener('dragend',()=>{dragId=null;dragFrom=null});document.addEventListener('click',e=>{let x=e.target.closest?.('.x');if(!x)return;e.stopPropagation();remove(x.dataset.del,x.dataset.from);render()})}
+function slotDrop(el){el.ondragover=e=>{e.preventDefault();el.classList.add('drag')};el.ondragleave=()=>el.classList.remove('drag');el.ondrop=e=>{e.preventDefault();el.classList.remove('drag');let fs=getFiles(e),cat=el.dataset.cat;if(fs.length){addFiles(fs,cat);return}if(dragId)move(dragId,dragFrom,cat)}}
+function getFiles(e){return [...(e.dataTransfer?.files||[])].filter(f=>f.type.startsWith('image/'))}
+async function addFiles(fs,cat){fs=fs.filter(f=>f.type.startsWith('image/'));if(!fs.length)return;let max=+$('max').value;$('status').textContent=`${st} 사진 압축 중...`;$('prog').style.width='0%';for(let i=0;i<fs.length;i++){let q=await squareImage(fs[i],max);let p={id:uid(),url:q.url,size:q.size,orig:fs[i].size};(cat?DATA[st].cat[cat]:DATA[st].pool).push(p);$('prog').style.width=Math.round((i+1)/fs.length*100)+'%'}render()}
+function squareImage(file,max){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>{let img=new Image();img.onload=()=>{let s=Math.min(img.width,img.height),sx=(img.width-s)/2,sy=(img.height-s)/2;let c=document.createElement('canvas');c.width=max;c.height=max;let ctx=c.getContext('2d');ctx.drawImage(img,sx,sy,s,s,0,0,max,max);let url=c.toDataURL('image/jpeg',.78);res({url,size:Math.round((url.split(',')[1]||'').length*3/4)})};img.onerror=rej;img.src=r.result};r.onerror=rej;r.readAsDataURL(file)})}
+function move(id,from,to){if(from==to)return;let p=take(id,from);if(!p)return;(to=='pool'?DATA[st].pool:DATA[st].cat[to]).push(p);render()}
+function take(id,from){let a=from=='pool'?DATA[st].pool:DATA[st].cat[from],i=a.findIndex(x=>x.id==id);return i>-1?a.splice(i,1)[0]:null}
+function remove(id,from){take(id,from)}
+function autoPut(){let d=DATA[st],i=0;while(d.pool.length){d.cat[C[i%C.length][0]].push(d.pool.shift());i++}render()}
+function prev(){if(page>0){page--;render()}}function next(){if(page<pages(st)-1){page++;render()}}
+function summary(){let d=DATA[st],ins=C.flatMap(c=>d.cat[c[0]]),all=[...d.pool,...ins],o=all.reduce((s,p)=>s+p.orig,0),co=all.reduce((s,p)=>s+p.size,0);$('sAll').textContent=all.length+'장';$('sIn').textContent=ins.length+'장';$('sO').textContent=fmt(o);$('sC').textContent=fmt(co);$('cnt').textContent=`배정 ${ins.length}장 / 대기 ${d.pool.length}장`;$('status').textContent=all.length?`현재 점포 ${all.length}장 / 사진은 PPT에서 4cm × 4cm 고정`:'대기 중'}
+function pages(store){return Math.max(1,...C.map(c=>Math.ceil(DATA[store].cat[c[0]].length/3)))}
+function assigned(store){return C.reduce((s,c)=>s+DATA[store].cat[c[0]].length,0)}
+function fmt(b){if(!b)return'0MB';let m=b/1048576;return m>=1?m.toFixed(1)+'MB':Math.round(b/1024)+'KB'}function uid(){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}
+function fileName(){let w=$('week').value.trim()||'W22',ss=M[mgr].map(x=>x.replace('점','')).join(', ');return `(CE)${w}_코스트코_진열연출점검_(${ss})`}
+function printCurrent(){buildPrint([{s:st,p:page}]);setTimeout(()=>print(),100)}
+function printAll(){let arr=[];for(let s of M[mgr].filter(x=>assigned(x)>0))for(let p=0;p<pages(s);p++)arr.push({s,p});if(!arr.length)return alert('PDF에 넣을 사진이 없습니다.');buildPrint(arr);setTimeout(()=>print(),100)}
+function buildPrint(arr){$('print').innerHTML=arr.map(x=>`<div class="printPage"><div class="sheet">${sheetHtml(x.s,x.p,false)}</div></div>`).join('')}
+
+/* ===================== PPTX 생성부: 외부 라이브러리 없음 ===================== */
+const EMU_PER_CM=360000, SLIDE_W=33.8666667, SLIDE_H=19.05, PIC=4.0;
+const emu=cm=>Math.round(cm*EMU_PER_CM), esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+async function makePpt(){try{let stores=M[mgr].filter(x=>assigned(x)>0);if(!stores.length)return alert('배정된 사진이 없습니다.');let files=buildPptx(stores);downloadBlob(zipStore(files),fileName()+'.pptx','application/vnd.openxmlformats-officedocument.presentationml.presentation');$('status').textContent='PPT 다운로드 완료';}catch(e){console.error(e);alert('PPT 생성 오류: '+(e.message||e))}}
+function buildPptx(stores){let slides=[],media=[],slideNo=1;for(let s of stores){for(let p=0;p<pages(s);p++){let imgRels=[];let xml=slideXml(s,p,slideNo,imgRels,media);slides.push({xml,rels:slideRelXml(imgRels)});slideNo++}}let files=[];files.push({name:'[Content_Types].xml',text:contentTypes(slides.length)});files.push({name:'_rels/.rels',text:rootRels()});files.push({name:'docProps/core.xml',text:coreXml()});files.push({name:'docProps/app.xml',text:appXml(slides.length)});files.push({name:'ppt/presentation.xml',text:presentationXml(slides.length)});files.push({name:'ppt/_rels/presentation.xml.rels',text:presentationRels(slides.length)});files.push({name:'ppt/slideMasters/slideMaster1.xml',text:slideMasterXml()});files.push({name:'ppt/slideMasters/_rels/slideMaster1.xml.rels',text:slideMasterRels()});files.push({name:'ppt/slideLayouts/slideLayout1.xml',text:slideLayoutXml()});files.push({name:'ppt/slideLayouts/_rels/slideLayout1.xml.rels',text:slideLayoutRels()});files.push({name:'ppt/theme/theme1.xml',text:themeXml()});slides.forEach((s,i)=>{files.push({name:`ppt/slides/slide${i+1}.xml`,text:s.xml});files.push({name:`ppt/slides/_rels/slide${i+1}.xml.rels`,text:s.rels})});media.forEach((m,i)=>files.push({name:`ppt/media/image${i+1}.jpg`,bytes:m.bytes}));return files}
+function slideXml(store,p,idx,imgRels,media){let id=2;let out=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree>${grp()}`;
+function rect(x,y,w,h,fill='FFFFFF',line='222222'){out+=`<p:sp><p:nvSpPr><p:cNvPr id="${id++}" name="Rect"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${emu(x)}" y="${emu(y)}"/><a:ext cx="${emu(w)}" cy="${emu(h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="${fill}"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="${line}"/></a:solidFill></a:ln></p:spPr></p:sp>`}
+function text(x,y,w,h,t,sz=9,b=1,color='111111',fill=null,align='ctr',under=false){if(fill)rect(x,y,w,h,fill);out+=`<p:sp><p:nvSpPr><p:cNvPr id="${id++}" name="Text"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${emu(x)}" y="${emu(y)}"/><a:ext cx="${emu(w)}" cy="${emu(h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="square" anchor="ctr"/><a:lstStyle/>`;String(t).split('\n').forEach(part=>{out+=`<a:p><a:pPr algn="${align}"/><a:r><a:rPr lang="ko-KR" sz="${sz*100}" ${b?'b="1"':''} ${under?'u="sng"':''}><a:solidFill><a:srgbClr val="${color}"/></a:solidFill><a:latin typeface="Malgun Gothic"/><a:ea typeface="Malgun Gothic"/></a:rPr><a:t>${esc(part)}</a:t></a:r></a:p>`});out+=`</p:txBody></p:sp>`}
+function pic(p,x,y){let n=media.length+1;media.push({bytes:dataUrlBytes(p.url)});let rid='rId'+(imgRels.length+1);imgRels.push({rid,target:`../media/image${n}.jpg`});out+=`<p:pic><p:nvPicPr><p:cNvPr id="${id++}" name="image${n}.jpg"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${emu(x)}" y="${emu(y)}"/><a:ext cx="${emu(PIC)}" cy="${emu(PIC)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:ln w="6350"><a:solidFill><a:srgbClr val="C8CDD5"/></a:solidFill></a:ln></p:spPr></p:pic>`}
+let top=.8, lab=1.0, head=1.2, content=2.2, col=(SLIDE_W-lab)/6, py=top+head;
+rect(0,0,SLIDE_W,top,'172033','172033');text(.15,.05,7,top-.1,`코스트코 ${store}`,15,1,'FFFFFF',null,'l',true);text(SLIDE_W-5.0,.08,4.8,top-.15,'코스트코 진열·연출점검',10,1,'FFFFFF',null,'r');
+text(0,top,lab,head,'품목',9,1,'111111','D9D9D9');C.forEach((c,i)=>{let x=lab+i*col;text(x,top,col,.55,c[1],7.2,1,'111111','D9D9D9');text(x,top+.54,col,.5,c[2],6.7,1,'1F5AA6',null,'ctr',true)});
+text(0,py,lab,SLIDE_H-top-head-content,'현장\n사진',9,1,'111111','D9D9D9');
+for(let i=0;i<6;i++)rect(lab+i*col,py,col,SLIDE_H-top-head-content,'FFFFFF');
+for(let i=0;i<C.length;i++){let x=lab+i*col+(col-PIC)/2;for(let r=0;r<3;r++){let ph=DATA[store].cat[C[i][0]][p*3+r];if(ph)pic(ph,x,py+.55+r*(PIC+.35));}}
+let cy=SLIDE_H-content;text(0,cy,lab,content,'내용',9,1,'111111','D9D9D9');for(let i=0;i<6;i++)rect(lab+i*col,cy,col,content,'F3F3F3');
+out+=`</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`;return out}
+function grp(){return `<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>`}
+function dataUrlBytes(u){let b=atob(u.split(',')[1]),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+function slideRelXml(rels){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdLayout" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/>${rels.map(r=>`<Relationship Id="${r.rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="${r.target}"/>`).join('')}</Relationships>`}
+function contentTypes(n){let s=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpg" ContentType="image/jpeg"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>`;for(let i=1;i<=n;i++)s+=`<Override PartName="/ppt/slides/slide${i}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`;return s+'</Types>'}
+function rootRels(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`}
+function presentationXml(n){let ids='';for(let i=1;i<=n;i++)ids+=`<p:sldId id="${255+i}" r:id="rId${i+1}"/>`;return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${ids}</p:sldIdLst><p:sldSz cx="${emu(SLIDE_W)}" cy="${emu(SLIDE_H)}" type="wide"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>`}
+function presentationRels(n){let s=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>`;for(let i=1;i<=n;i++)s+=`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${i}.xml"/>`;return s+'</Relationships>'}
+function slideMasterXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree>${grp()}</p:spTree></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst></p:sldMaster>`}
+function slideMasterRels(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/></Relationships>`}
+function slideLayoutXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" type="blank" preserve="1"><p:cSld name="Blank"><p:spTree>${grp()}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`}
+function slideLayoutRels(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>`}
+function themeXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Office"><a:themeElements><a:clrScheme name="Office"><a:dk1><a:srgbClr val="000000"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="1F497D"/></a:dk2><a:lt2><a:srgbClr val="EEECE1"/></a:lt2><a:accent1><a:srgbClr val="4F81BD"/></a:accent1><a:accent2><a:srgbClr val="C0504D"/></a:accent2><a:accent3><a:srgbClr val="9BBB59"/></a:accent3><a:accent4><a:srgbClr val="8064A2"/></a:accent4><a:accent5><a:srgbClr val="4BACC6"/></a:accent5><a:accent6><a:srgbClr val="F79646"/></a:accent6><a:hlink><a:srgbClr val="0000FF"/></a:hlink><a:folHlink><a:srgbClr val="800080"/></a:folHlink></a:clrScheme><a:fontScheme name="Office"><a:majorFont><a:latin typeface="Malgun Gothic"/><a:ea typeface="Malgun Gothic"/></a:majorFont><a:minorFont><a:latin typeface="Malgun Gothic"/><a:ea typeface="Malgun Gothic"/></a:minorFont></a:fontScheme><a:fmtScheme name="Office"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:fillStyleLst><a:lnStyleLst><a:ln w="9525"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`}
+function coreXml(){let d=new Date().toISOString();return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${esc(fileName())}</dc:title><dc:creator>Costco Display Check App</dc:creator><cp:lastModifiedBy>Costco Display Check App</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">${d}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${d}</dcterms:modified></cp:coreProperties>`}
+function appXml(n){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Microsoft PowerPoint</Application><PresentationFormat>On-screen Show (16:9)</PresentationFormat><Slides>${n}</Slides></Properties>`}
+
+function zipStore(files){let chunks=[],centrals=[],offset=0;for(let f of files){let name=utf8(f.name),data=f.bytes||utf8(f.text||''),crc=crc32(data);let local=concat([u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data]);chunks.push(local);centrals.push(concat([u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]));offset+=local.length}let central=concat(centrals),end=concat([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(central.length),u32(offset),u16(0)]);return new Blob([...chunks,central,end],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}
+function utf8(s){return new TextEncoder().encode(s)}function u16(n){let a=new Uint8Array(2);new DataView(a.buffer).setUint16(0,n,true);return a}function u32(n){let a=new Uint8Array(4);new DataView(a.buffer).setUint32(0,n>>>0,true);return a}function concat(arr){let l=arr.reduce((s,a)=>s+a.length,0),o=0,r=new Uint8Array(l);for(let a of arr){r.set(a,o);o+=a.length}return r}
+let CRCT=null;function crc32(data){if(!CRCT){CRCT=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;CRCT[n]=c>>>0}}let c=0xffffffff;for(let b of data)c=CRCT[(c^b)&255]^(c>>>8);return (c^0xffffffff)>>>0}
+function downloadBlob(blob,name,type){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 </script>
 </body>
 </html>
