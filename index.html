@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>코스트코 진열·연출 점검 PPT 생성기 v10</title>
+<title>코스트코 진열·연출 점검 PPT 생성기 v11</title>
 <script src="./pptxgen.min.js?v=9"></script>
 <style>
 :root{--bg:#f3f5f9;--line:#cfd7e6;--navy:#172033;--head:#d9d9d9;--txt:#111827;--muted:#667085;--blue:#1d4ed8;--danger:#dc2626}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,'Malgun Gothic','Noto Sans KR',sans-serif;color:var(--txt)}
 header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);padding:14px 20px}h1{font-size:22px;margin:0}header p{margin:5px 0 0;color:var(--muted);font-size:13px}
-main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-columns:.5fr .62fr .62fr .72fr .95fr .62fr auto auto auto auto;gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px;box-shadow:0 8px 22px rgba(15,23,42,.06)}label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:800}input,select{height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font-size:14px;background:#fff;font-family:inherit}input[type=file]{padding:8px 10px;font-size:12px}button{border:0;border-radius:10px;padding:11px 14px;font-weight:900;cursor:pointer;background:#eef2ff;color:#1e40af;font-family:inherit;white-space:nowrap}button.primary{background:#111827;color:#fff}button.blue{background:var(--blue);color:#fff}button.danger{background:#fee2e2;color:var(--danger)}button.small{padding:6px 9px;font-size:12px;border-radius:8px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tab{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:#334155}.tab.on{background:#172033;color:#fff}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px;line-height:1.5}.layout{display:grid;grid-template-columns:360px 1fr;gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 8px 22px rgba(15,23,42,.05)}.cardHead{padding:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.card h2{font-size:17px;margin:0}.body{padding:14px}.drop{min-height:135px;border:2px dashed #94a3b8;border-radius:15px;display:flex;align-items:center;justify-content:center;text-align:center;color:#667085;background:#f8fafc;margin-bottom:12px;cursor:pointer}.drop b{display:block;color:#111827;font-size:18px;margin-bottom:5px}.drop input{display:none}.pool{min-height:210px;max-height:390px;overflow:auto;border:2px dashed #d8dfeb;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.empty{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:150px;color:#98a2b3;text-align:center;font-size:13px;line-height:1.5}.thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;cursor:grab}.thumb img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.thumb .kb{position:absolute;left:4px;top:4px;background:#111827d9;color:#fff;border-radius:99px;font-size:10px;padding:2px 6px}.thumb .x{position:absolute;right:4px;top:4px;background:#dc2626;color:#fff;border-radius:99px;width:21px;height:21px;text-align:center;line-height:21px;font-weight:900}.thumb .remoteLabel{position:absolute;left:4px;right:4px;bottom:4px;background:#0b63cee6;color:#fff;border-radius:7px;font-size:9px;font-weight:900;padding:3px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hubSyncInfo{margin-top:8px;border:1px solid #cfe0f4;border-radius:10px;background:#f4f8ff;padding:8px 10px;color:#33577f;font-size:11px;font-weight:800;line-height:1.45}.hubSyncInfo.ok{background:#ecfdf3;border-color:#b7e4cc;color:#137044}.hubSyncInfo.err{background:#fff1f2;border-color:#fecdd3;color:#b42318}.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sum div{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px}.sum span{display:block;color:#667085;font-size:11px}.sum b{font-size:15px}.status{font-size:13px;color:#667085;margin-top:10px;line-height:1.5}.prog{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}.prog div{height:100%;width:0;background:#2563eb}.previewHead{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);background:#fbfcff}.scene{display:flex;gap:7px;align-items:center}.stage{padding:16px;overflow:auto}.sheet{width:1200px;height:675px;background:#fff;border:1px solid #111;overflow:hidden}.top{height:32px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 9px;font-weight:900}.top .store{font-size:23px;text-decoration:underline;text-underline-offset:3px}.top .ttl{font-size:16px}.grid{width:100%;height:643px;border-collapse:collapse;table-layout:fixed}.grid th,.grid td{border:1.5px solid #222;text-align:center;vertical-align:middle;padding:0}.grid .lab{width:40px;background:var(--head);font-weight:900;font-size:13px}.grid .h1{height:24px;background:var(--head);font-weight:900;font-size:12px}.grid .h2{height:24px;background:var(--head);font-weight:900;font-size:11px;color:#1f5aa6;text-decoration:underline}.grid .photoLab{background:var(--head);font-weight:900;font-size:13px;line-height:1.25}.grid .photoRow{height:172px}.grid .content{height:103px;background:#f3f3f3}.slot{height:172px;display:flex;align-items:center;justify-content:center;background:#fff;position:relative}.slot .thumb{width:151px;height:151px;border-radius:2px}.slot .thumb img{object-fit:cover}.slot .hint{width:151px;height:151px;border:1px dashed #cfd7e6;color:#a3aab8;font-size:12px;display:flex;align-items:center;justify-content:center}.grid.hasOverflow .photoRow,.grid.hasOverflow .overflowRow{height:148px}.grid.hasOverflow .slot{height:148px}.grid.hasOverflow .slot .thumb{width:142px;height:142px}.grid.hasOverflow .slot .hint{width:142px;height:142px}.overflowRow td{background:#fff}.overflowRow .slot{background:#fff}.overflowHint{font-size:11px;color:#94a3b8;font-weight:800}.overflowPhotoLabel{position:absolute;left:5px;right:5px;bottom:5px;border-radius:5px;background:rgba(255,255,255,.90);color:#1f3d67;padding:2px 4px;font-size:9px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.autoBadge{display:inline-flex;align-items:center;gap:5px;margin-left:7px;border-radius:999px;background:#dcfce7;color:#166534;padding:2px 7px;font-size:10px;font-weight:900}
+main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-columns:.36fr .55fr .58fr .58fr .72fr .95fr .62fr auto auto auto auto;gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px;box-shadow:0 8px 22px rgba(15,23,42,.06)}label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:800}input,select{height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font-size:14px;background:#fff;font-family:inherit}input[type=file]{padding:8px 10px;font-size:12px}button{border:0;border-radius:10px;padding:11px 14px;font-weight:900;cursor:pointer;background:#eef2ff;color:#1e40af;font-family:inherit;white-space:nowrap}button.primary{background:#111827;color:#fff}button.blue{background:var(--blue);color:#fff}button.danger{background:#fee2e2;color:var(--danger)}button.small{padding:6px 9px;font-size:12px;border-radius:8px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tab{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:#334155}.tab.on{background:#172033;color:#fff}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px;line-height:1.5}.layout{display:grid;grid-template-columns:360px 1fr;gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 8px 22px rgba(15,23,42,.05)}.cardHead{padding:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.card h2{font-size:17px;margin:0}.body{padding:14px}.drop{min-height:135px;border:2px dashed #94a3b8;border-radius:15px;display:flex;align-items:center;justify-content:center;text-align:center;color:#667085;background:#f8fafc;margin-bottom:12px;cursor:pointer}.drop b{display:block;color:#111827;font-size:18px;margin-bottom:5px}.drop input{display:none}.pool{min-height:210px;max-height:390px;overflow:auto;border:2px dashed #d8dfeb;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.empty{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:150px;color:#98a2b3;text-align:center;font-size:13px;line-height:1.5}.thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;cursor:grab}.thumb img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.thumb .kb{position:absolute;left:4px;top:4px;background:#111827d9;color:#fff;border-radius:99px;font-size:10px;padding:2px 6px}.thumb .x{position:absolute;right:4px;top:4px;background:#dc2626;color:#fff;border-radius:99px;width:21px;height:21px;text-align:center;line-height:21px;font-weight:900}.thumb .remoteLabel{position:absolute;left:4px;right:4px;bottom:4px;background:#0b63cee6;color:#fff;border-radius:7px;font-size:9px;font-weight:900;padding:3px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hubSyncInfo{margin-top:8px;border:1px solid #cfe0f4;border-radius:10px;background:#f4f8ff;padding:8px 10px;color:#33577f;font-size:11px;font-weight:800;line-height:1.45}.hubSyncInfo.ok{background:#ecfdf3;border-color:#b7e4cc;color:#137044}.hubSyncInfo.err{background:#fff1f2;border-color:#fecdd3;color:#b42318}.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sum div{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px}.sum span{display:block;color:#667085;font-size:11px}.sum b{font-size:15px}.status{font-size:13px;color:#667085;margin-top:10px;line-height:1.5}.prog{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}.prog div{height:100%;width:0;background:#2563eb}.previewHead{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);background:#fbfcff}.scene{display:flex;gap:7px;align-items:center}.stage{padding:16px;overflow:auto}.sheet{width:1200px;height:675px;background:#fff;border:1px solid #111;overflow:hidden}.top{height:32px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 9px;font-weight:900}.top .store{font-size:23px;text-decoration:underline;text-underline-offset:3px}.top .ttl{font-size:16px}.grid{width:100%;height:643px;border-collapse:collapse;table-layout:fixed}.grid th,.grid td{border:1.5px solid #222;text-align:center;vertical-align:middle;padding:0}.grid .lab{width:40px;background:var(--head);font-weight:900;font-size:13px}.grid .h1{height:24px;background:var(--head);font-weight:900;font-size:12px}.grid .h2{height:24px;background:var(--head);font-weight:900;font-size:11px;color:#1f5aa6;text-decoration:underline}.grid .photoLab{background:var(--head);font-weight:900;font-size:13px;line-height:1.25}.grid .photoRow{height:172px}.grid .content{height:103px;background:#f3f3f3}.slot{height:172px;display:flex;align-items:center;justify-content:center;background:#fff;position:relative}.slot .thumb{width:151px;height:151px;border-radius:2px}.slot .thumb img{object-fit:cover}.slot .hint{width:151px;height:151px;border:1px dashed #cfd7e6;color:#a3aab8;font-size:12px;display:flex;align-items:center;justify-content:center}.grid.hasOverflow .photoRow,.grid.hasOverflow .overflowRow{height:148px}.grid.hasOverflow .slot{height:148px}.grid.hasOverflow .slot .thumb{width:142px;height:142px}.grid.hasOverflow .slot .hint{width:142px;height:142px}.overflowRow td{background:#fff}.overflowRow .slot{background:#fff}.overflowHint{font-size:11px;color:#94a3b8;font-weight:800}.overflowPhotoLabel{position:absolute;left:5px;right:5px;bottom:5px;border-radius:5px;background:rgba(255,255,255,.90);color:#1f3d67;padding:2px 4px;font-size:9px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.autoBadge{display:inline-flex;align-items:center;gap:5px;margin-left:7px;border-radius:999px;background:#dcfce7;color:#166534;padding:2px 7px;font-size:10px;font-weight:900}
 .drag{outline:3px solid #93c5fd!important;background:#eff6ff!important}.fixed{position:fixed;right:18px;bottom:18px;z-index:20;display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 10px 28px rgba(15,23,42,.18)}.printOnly{display:none}@media(max-width:1100px){.bar{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.sheet{transform:scale(.75);transform-origin:top left}.stage{height:540px}.fixed{left:10px;right:10px;justify-content:center}}@media print{header,main,.fixed{display:none!important}.printOnly{display:block}.printPage{width:297mm;height:167.1mm;margin:0;page-break-after:always;background:white;overflow:hidden}.printPage .sheet{width:297mm;height:167.1mm;border:0;transform:none!important}.printPage .top{height:8mm}.printPage .grid{height:159.1mm}@page{size:297mm 167.1mm;margin:0}}
 </style>
 </head>
 <body>
-<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v10</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
+<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v11</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
 <main>
 <section class="bar">
+<label>연도<select id="year"></select></label>
 <label>보고 주차<select id="week"></select></label>
 <label>담당<select id="mgr"></select></label>
 <label>현재 점포<select id="store"></select></label>
@@ -26,7 +27,7 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 <button id="hubSyncBtn" class="blue" type="button">HUB 사진 새로고침</button><button onclick="autoPut()">대기사진 자동배치</button><button class="blue" onclick="printCurrent()">현재 PDF</button><button class="primary" onclick="makePpt()">PPT 생성</button>
 </section>
 <div id="tabs" class="tabs"></div>
-<div class="notice"><b>자동 연동:</b> 점포와 HUB 촬영 주차를 선택하면 사진을 자동으로 불러옵니다. 기본 3×6칸을 초과한 비네트·에어컨 사진은 <b>가장 아래 추가 사진 칸</b>에 자동 배치되며, PPT 사진 크기는 <b>정확히 4cm × 4cm</b>로 유지됩니다.</div>
+<div class="notice"><b>자동 연동:</b> 연도별 전체 주차를 선택할 수 있으며, 점포와 HUB 촬영 주차를 선택하면 사진을 자동으로 불러옵니다. 기본 3×6칸을 초과한 비네트·에어컨 사진은 <b>가장 아래 추가 사진 칸</b>에 자동 배치되며, PPT 사진 크기는 <b>정확히 4cm × 4cm</b>로 유지됩니다.</div>
 <section class="layout">
 <aside class="card"><div class="cardHead"><div><h2>사진 대기함</h2><span id="info" style="font-size:12px;color:#667085"></span></div><button class="danger small" onclick="clearPool()">대기함 비우기</button></div><div class="body">
 <label class="drop" id="drop"><input type="file" id="files" accept="image/*" multiple><span><b>사진을 여기에 넣기</b>드래그가 안 되면 클릭해서 선택<br>Ctrl+V 붙여넣기도 가능</span></label>
@@ -68,7 +69,13 @@ init();
 
 function init(){
   selInit();
+  populateYearOptions();
   populateWeekSelects();
+  $('year').onchange=()=>{
+    populateWeekSelects();
+    resetHubSyncState();
+    scheduleHubSync(true,150);
+  };
   $('shootDate').onchange=()=>{
     const w=$('shootDate').selectedOptions[0]?.dataset.week;
     if(w)$('week').value=w;
@@ -387,22 +394,46 @@ function squareDataUrl(url,max){
     img.onerror=rej;img.src=url;
   });
 }
-function isoWeekInfo(offset=0){
-  const k=new Date(Date.now()+9*60*60*1000),today=new Date(Date.UTC(k.getUTCFullYear(),k.getUTCMonth(),k.getUTCDate())),day=today.getUTCDay()||7,m=new Date(today);
-  m.setUTCDate(today.getUTCDate()-day+1+Number(offset||0)*7);
-  const su=new Date(m);su.setUTCDate(m.getUTCDate()+6);
-  const th=new Date(m);th.setUTCDate(m.getUTCDate()+3);
-  const ys=new Date(Date.UTC(th.getUTCFullYear(),0,1)),w=Math.ceil((((th-ys)/86400000)+1)/7),iso=x=>x.toISOString().slice(0,10),week='W'+String(w).padStart(2,'0');
-  return{week,start:iso(m),end:iso(su),label:`${week}(${m.getUTCMonth()+1}월${m.getUTCDate()}일~${su.getUTCMonth()+1}월${su.getUTCDate()}일)`};
+function kstTodayUtc(){
+  const k=new Date(Date.now()+9*60*60*1000);
+  return new Date(Date.UTC(k.getUTCFullYear(),k.getUTCMonth(),k.getUTCDate()));
+}
+function weekRowsForYear(year){
+  const y=Number(year)||kstTodayUtc().getUTCFullYear(),jan1=new Date(Date.UTC(y,0,1)),janDay=jan1.getUTCDay()||7,first=new Date(jan1);
+  first.setUTCDate(jan1.getUTCDate()-janDay+1);
+  const dec31=new Date(Date.UTC(y,11,31)),decDay=dec31.getUTCDay()||7,last=new Date(dec31);
+  last.setUTCDate(dec31.getUTCDate()-decDay+1);
+  const total=Math.round((last-first)/604800000)+1,iso=d=>d.toISOString().slice(0,10);
+  return Array.from({length:total},(_,i)=>{
+    const m=new Date(first);m.setUTCDate(first.getUTCDate()+i*7);
+    const su=new Date(m);su.setUTCDate(m.getUTCDate()+6);
+    const th=new Date(m);th.setUTCDate(m.getUTCDate()+3);
+    const ys=new Date(Date.UTC(th.getUTCFullYear(),0,1)),weekNo=Math.ceil((((th-ys)/86400000)+1)/7);
+    const week='W'+String(weekNo).padStart(2,'0');
+    return{year:y,week,start:iso(m),end:iso(su),label:`${week}(${m.getUTCMonth()+1}월${m.getUTCDate()}일~${su.getUTCMonth()+1}월${su.getUTCDate()}일)`};
+  });
+}
+function currentWeekInfo(){
+  const today=kstTodayUtc(),iso=today.toISOString().slice(0,10),rows=weekRowsForYear(today.getUTCFullYear());
+  return rows.find(x=>x.start<=iso&&x.end>=iso)||rows[0];
+}
+function populateYearOptions(){
+  const currentYear=kstTodayUtc().getUTCFullYear(),selected=Number($('year').value)||currentYear,start=2026,end=Math.max(currentYear+5,2031);
+  $('year').innerHTML=Array.from({length:end-start+1},(_,i)=>start+i).map(y=>`<option value="${y}" ${y===selected?'selected':''}>${y}년</option>`).join('');
+  if(!$('year').value)$('year').value=String(currentYear);
 }
 function populateWeekSelects(){
-  const rows=[-1,0,1,2].map(isoWeekInfo);
-  $('shootDate').innerHTML=rows.map((x,i)=>`<option value="${x.start}" data-end="${x.end}" data-week="${x.week}" ${i===1?'selected':''}>${x.label}</option>`).join('');
-  $('week').innerHTML=rows.map((x,i)=>`<option value="${x.week}" ${i===1?'selected':''}>${x.label}</option>`).join('');
+  populateYearOptions();
+  const current=currentWeekInfo(),year=Number($('year').value)||current.year,rows=weekRowsForYear(year),previous=$('shootDate').value;
+  let selectedStart=rows.some(x=>x.start===previous)?previous:'';
+  if(!selectedStart&&year===current.year)selectedStart=current.start;
+  if(!selectedStart)selectedStart=rows[0]?.start||'';
+  $('shootDate').innerHTML=rows.map(x=>`<option value="${x.start}" data-year="${x.year}" data-end="${x.end}" data-week="${x.week}" ${x.start===selectedStart?'selected':''}>${x.label}</option>`).join('');
+  $('week').innerHTML=rows.map(x=>`<option value="${x.week}" ${x.start===selectedStart?'selected':''}>${x.label}</option>`).join('');
 }
 function selectedShootWeek(){
-  const o=$('shootDate').selectedOptions[0],f=isoWeekInfo(0);
-  return{start:o?.value||f.start,end:o?.dataset.end||f.end,week:o?.dataset.week||f.week,label:o?.textContent||f.label};
+  const o=$('shootDate').selectedOptions[0],f=currentWeekInfo();
+  return{year:Number(o?.dataset.year||$('year').value||f.year),start:o?.value||f.start,end:o?.dataset.end||f.end,week:o?.dataset.week||f.week,label:o?.textContent||f.label};
 }
 function escHtml(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
 function setHubSyncInfo(msg,type=''){
@@ -427,11 +458,11 @@ async function syncHubPhotos(force=false){
     if(!force&&hubLastSyncKey===key){
       const meta=await hubJsonp({action:'displayCheckPhotoMeta',store:syncStore,shotDate:date},60000);
       if(meta?.ok&&meta.version===hubLastSyncVersion){
-        if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.label} HUB 촬영사진은 최신 상태입니다. (${meta.count||0}장)`,'ok');
+        if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진은 최신 상태입니다. (${meta.count||0}장)`,'ok');
         hubAutoRetry=0;return true;
       }
     }
-    if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.label} HUB 촬영사진을 자동으로 불러오는 중입니다…`);
+    if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진을 자동으로 불러오는 중입니다…`);
     const r=await hubJsonp({action:'displayCheckPhotos',store:syncStore,shotDate:date,latestOnly:'1',includeData:'1',max:'80'});
     if(!r||!r.ok)throw new Error(r?.message||'HUB 촬영사진 조회 실패');
     const byCat=Object.fromEntries(C.map(c=>[c[0],[]]));
@@ -458,7 +489,7 @@ async function syncHubPhotos(force=false){
     hubLastSyncKey=key;hubLastSyncVersion=r.version||'';hubAutoRetry=0;
     if(st===syncStore){
       page=0;render();
-      setHubSyncInfo(`${syncStore} ${range.label} HUB 촬영사진 ${loaded}장을 자동 배치했습니다.${failed?` (${failed}장 불러오기 실패)`:''}`,failed?'err':'ok');
+      setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진 ${loaded}장을 자동 배치했습니다.${failed?` (${failed}장 불러오기 실패)`:''}`,failed?'err':'ok');
     }
     return true;
   }catch(e){
