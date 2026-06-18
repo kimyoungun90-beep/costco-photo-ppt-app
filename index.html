@@ -1,909 +1,560 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#081a32" />
-  <meta name="description" content="코스트코 삼성전자 점포별 매출 및 상대평가 대시보드" />
-  <title>Costco Sales Command Center</title>
-  <!-- self-contained build v5 2026-06-18: v4 mobile viewer + browser back closes viewer -->
-  <style>
-:root{--navy950:#061426;--navy900:#0a1f3b;--navy800:#123b68;--blue:#1769e0;--blue100:#eaf2ff;--ink:#172033;--muted:#6b778c;--line:#dbe3ee;--surface:#fff;--bg:#f3f6fa;--good:#087a55;--goodbg:#eaf7f1;--bad:#bd2c2c;--badbg:#fff0f0;--warn:#a46100;--warnbg:#fff6e5;--shadow:0 12px 30px rgba(17,38,70,.08)}
-*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;min-width:320px;color:var(--ink);background:var(--bg);font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif;line-height:1.5}button,input,select{font:inherit}button,select{cursor:pointer}.topbar{min-height:118px;padding:24px max(24px,calc((100vw - 1440px)/2));display:flex;align-items:center;justify-content:space-between;gap:24px;color:#fff;background:linear-gradient(135deg,var(--navy950),var(--navy800));box-shadow:0 4px 18px rgba(0,0,0,.16)}.topbar h1{margin:2px 0 0;font-size:clamp(25px,3vw,38px);letter-spacing:-.04em}.header-sub{margin:5px 0 0;color:#c7d8ee;font-size:13px}.eyebrow,.section-kicker{margin:0;font-weight:900;font-size:12px;letter-spacing:.12em}.eyebrow{color:#90bfff}.header-actions{display:flex;align-items:center;gap:12px}.status-badge{padding:8px 12px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(255,255,255,.1);font-size:13px}.week-picker{display:flex;align-items:center;gap:9px;font-size:13px}.week-picker select{min-width:190px;padding:10px 34px 10px 12px;border:0;border-radius:12px;background:#fff;color:var(--ink);font-weight:800}.shell{width:min(1440px,calc(100% - 32px));margin:24px auto 64px}.narrow-shell{width:min(980px,calc(100% - 32px))}.period-line{display:flex;justify-content:space-between;align-items:center;margin:0 0 14px}.period-line span{display:block;font-weight:900;font-size:18px}.period-line small{color:var(--muted)}.tabs{display:flex;gap:8px;overflow-x:auto;padding:6px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}.tab{flex:1;min-width:110px;border:0;border-radius:11px;padding:12px 15px;color:var(--muted);background:transparent;font-weight:900}.tab.active{color:#fff;background:var(--navy900)}.tab-panel{display:none;margin-top:18px}.tab-panel.active{display:block}.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}.kpi-grid.compact{grid-template-columns:repeat(3,minmax(0,1fr))}.kpi-card{position:relative;overflow:hidden;min-height:134px;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}.kpi-card:after{content:"";position:absolute;right:-24px;bottom:-38px;width:110px;height:110px;border-radius:50%;background:var(--blue100)}.kpi-label{color:var(--muted);font-size:13px;font-weight:800}.kpi-value{position:relative;z-index:1;margin-top:12px;font-size:clamp(23px,3vw,35px);font-weight:950;letter-spacing:-.05em}.kpi-sub{position:relative;z-index:1;margin-top:8px;color:var(--muted);font-size:13px}.two-column{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(340px,.85fr);gap:18px}.two-column.equal{grid-template-columns:1fr 1fr}.panel{padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow);margin-bottom:18px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}.panel h2{margin:3px 0 0;font-size:21px;letter-spacing:-.03em}.section-kicker{color:var(--blue)}.hint{color:var(--muted);font-size:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{padding:12px 13px;border-bottom:1px solid #edf1f6;text-align:right;font-size:13px}th{position:sticky;top:0;z-index:1;color:#536076;background:#f7f9fc;font-size:12px;font-weight:900}tr:last-child td{border-bottom:0}.text-left{text-align:left}.rank{font-weight:950}.summary-box,.briefing-box{padding:18px;border-radius:16px;background:#f7f9fc;color:#273247;white-space:pre-line}.summary-box p,.briefing-box p{margin:0 0 11px}.summary-box p:last-child,.briefing-box p:last-child{margin-bottom:0}.grade,.position{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900}.grade-excellent,.position-strong{color:var(--good);background:var(--goodbg)}.grade-good{color:#1769e0;background:var(--blue100)}.grade-normal,.position-neutral{color:#5b6577;background:#eef1f5}.grade-watch{color:var(--warn);background:var(--warnbg)}.grade-risk,.position-weak{color:var(--bad);background:var(--badbg)}.delta-up{color:var(--good)!important;font-weight:900}.delta-down{color:var(--bad)!important;font-weight:900}.delta-flat{color:var(--muted)!important;font-weight:900}.control{min-width:170px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);font-weight:800}.compare-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0 22px}.compare-controls span{font-weight:950;color:var(--muted)}.comparison-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.compare-card{padding:16px;border:1px solid var(--line);border-radius:14px;background:#f8fafc}.compare-card strong{display:block;font-size:12px;color:var(--muted)}.compare-card .compare-values{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;font-weight:900}.briefing-list{display:grid;gap:12px}.briefing-item{padding:17px;border:1px solid var(--line);border-radius:15px;background:#fafbfd}.briefing-item-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px}.briefing-item h3{margin:0;font-size:16px}.briefing-item p{margin:0;white-space:pre-line;color:#364258}.ghost-btn,.primary-btn{border:0;border-radius:11px;padding:10px 14px;font-weight:900}.ghost-btn{color:var(--navy900);background:#eef3fa}.topbar .ghost-btn{color:#fff;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2)}.primary-btn{width:100%;padding:13px 18px;color:#fff;background:var(--navy900)}.primary-btn:disabled{opacity:.5;cursor:not-allowed}.link-btn{text-decoration:none}.empty-state{padding:50px 24px;text-align:center;border:1px dashed #b8c4d4;border-radius:20px;background:#fff}.empty-state strong{font-size:20px}.empty-state p{color:var(--muted)}.security-notice{margin-bottom:18px;padding:18px 20px;border-left:5px solid var(--blue);border-radius:14px;background:#edf4ff}.security-notice p{margin:4px 0 0;color:#536076}.form-grid{display:grid;gap:14px}.form-grid.two{grid-template-columns:1fr 1fr}.field{display:flex;flex-direction:column;gap:7px}.field span{font-size:13px;font-weight:900;color:#4f5c70}.field input,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff}.action-field{justify-content:flex-end}.form-status,.form-help{color:var(--muted);font-size:13px}.form-status.ok{color:var(--good)}.form-status.error{color:var(--bad)}.top-gap{margin-top:14px}.validation-box{margin:0 0 16px;padding:14px 16px;border-radius:13px;background:#f7f9fc;font-size:13px}.validation-box ul{margin:7px 0 0;padding-left:18px}.filter-row,.store-filter-head{align-items:center}
-@media(max-width:1050px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two-column,.two-column.equal{grid-template-columns:1fr}.comparison-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:720px){.topbar{align-items:flex-start;flex-direction:column;padding:20px}.header-actions{width:100%;align-items:stretch;flex-direction:column}.week-picker{justify-content:space-between}.week-picker select{min-width:0;flex:1}.shell,.narrow-shell{width:min(100% - 20px,1440px);margin-top:14px}.panel{padding:16px}.kpi-grid,.kpi-grid.compact{grid-template-columns:1fr 1fr}.kpi-card{min-height:118px;padding:16px}.kpi-value{font-size:24px}.form-grid.two{grid-template-columns:1fr}.comparison-grid{grid-template-columns:1fr}.period-line{align-items:flex-start;gap:10px}.compare-controls{align-items:stretch;flex-direction:column}.control{width:100%}.tab{min-width:105px}.panel-head{align-items:flex-start;flex-direction:column}.store-filter-head,.filter-row{align-items:stretch}}
-@media(max-width:430px){.kpi-grid,.kpi-grid.compact{grid-template-columns:1fr}.topbar h1{font-size:27px}}
-
-  
-
-/* =========================================================
-   v3 mobile UX hardening (2026-06-18)
-   - full-width header
-   - horizontally scrollable tabs
-   - sticky rank/store columns in store ranking
-   - stable mobile store comparison layout
-========================================================= */
-html,body{width:100%;max-width:100%;overflow-x:hidden}
-.topbar{width:100%;max-width:none}
-
-.tabs{
-  width:100%;
-  max-width:100%;
-  flex-wrap:nowrap;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-x;
-  overscroll-behavior-x:contain;
-  scroll-snap-type:x proximity;
-  scrollbar-width:none;
-}
-.tabs::-webkit-scrollbar{display:none}
-.tabs .tab{
-  flex:0 0 112px;
-  width:112px;
-  min-width:112px;
-  max-width:112px;
-  white-space:nowrap;
-  scroll-snap-align:start;
-}
-.tabs:after{content:"";flex:0 0 4px}
-
-#topStoreTable{
-  position:relative;
-  display:block;
-  width:100%;
-  max-width:100%;
-  overflow-x:auto!important;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-x;
-  overscroll-behavior-x:contain;
-}
-#topStoreTable table{
-  width:max-content!important;
-  min-width:960px!important;
-  table-layout:fixed;
-  border-collapse:separate;
-  border-spacing:0;
-}
-#topStoreTable th,#topStoreTable td{
-  min-width:108px;
-  background:#fff;
-  white-space:nowrap;
-}
-#topStoreTable thead th{background:#f7f9fc}
-#topStoreTable th:nth-child(1),#topStoreTable td:nth-child(1){
-  position:sticky;
-  left:0;
-  z-index:6;
-  width:54px;
-  min-width:54px;
-  max-width:54px;
-  background:#fff;
-}
-#topStoreTable th:nth-child(2),#topStoreTable td:nth-child(2){
-  position:sticky;
-  left:54px;
-  z-index:6;
-  width:120px;
-  min-width:120px;
-  max-width:120px;
-  background:#fff;
-  text-align:left;
-  white-space:normal;
-  box-shadow:10px 0 14px -14px rgba(6,20,38,.9);
-}
-#topStoreTable thead th:nth-child(1),#topStoreTable thead th:nth-child(2){
-  z-index:9;
-  background:#f7f9fc;
-}
-#topStoreTable td:nth-child(2) strong{display:block;line-height:1.25}
-#topStoreTable td:nth-child(2) small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.2}
-
-#storeCategoryTable,#compareCategoryTable,#categoryTable,#modelTable,#airconTable{
-  display:block;
-  width:100%;
-  max-width:100%;
-  overflow-x:auto!important;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-x;
-  overscroll-behavior-x:contain;
-}
-#storeCategoryTable table,#compareCategoryTable table,#categoryTable table,#modelTable table,#airconTable table{
-  width:max-content!important;
-  min-width:720px!important;
-}
-
-.compare-controls{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);
-  align-items:center;
-  gap:12px;
-}
-.compare-controls>span{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  color:#fff;
-  background:var(--navy900);
-  box-shadow:0 8px 18px rgba(10,31,59,.18);
-}
-.compare-controls .control{width:100%;min-width:0;height:50px}
-#compareSummary{grid-template-columns:repeat(5,minmax(150px,1fr))}
-.compare-card{min-width:0;overflow:hidden}
-.compare-card .compare-values{min-width:0}
-.compare-card .compare-values span{min-width:0;overflow-wrap:anywhere}
-
-@media(max-width:720px){
-  .topbar{width:100%;max-width:none;border-radius:0 0 22px 22px}
-  .header-actions{display:grid!important;grid-template-columns:1fr!important;width:100%}
-  .status-badge,.week-picker{width:100%}
-  .week-picker{display:grid!important;grid-template-columns:1fr;align-items:stretch}
-  .week-picker select{width:100%!important;min-width:0!important}
-  .shell,.narrow-shell{width:100%!important;max-width:100%!important;padding-left:16px!important;padding-right:16px!important}
-
-  .tabs{
-    width:calc(100vw - 32px)!important;
-    max-width:calc(100vw - 32px)!important;
-    margin-left:0!important;
-    margin-right:0!important;
-    padding:5px 5px 10px!important;
-  }
-  .tabs .tab{
-    flex:0 0 112px!important;
-    width:112px!important;
-    min-width:112px!important;
-    max-width:112px!important;
-  }
-
-  #topStoreTable table{min-width:980px!important}
-  #topStoreTable th,#topStoreTable td{font-size:12px;padding:11px 9px}
-  #tab-overview .panel{padding-left:12px;padding-right:12px}
-
-  #tab-compare .panel{padding:16px;overflow:visible}
-  .compare-controls{
-    grid-template-columns:1fr!important;
-    gap:10px!important;
-    margin-bottom:18px;
-  }
-  .compare-controls>span{
-    width:42px;
-    height:42px;
-    margin:0 auto;
-    font-size:12px;
-  }
-  .compare-controls .control{width:100%!important;height:52px;font-size:14px}
-  #compareSummary{grid-template-columns:1fr!important;gap:10px}
-  .compare-card{width:100%;padding:15px}
-  .compare-card .compare-values{grid-template-columns:1fr 1fr;gap:8px}
-  #compareCategoryTable table{min-width:760px!important}
-
-  #tab-stores .store-filter-head{display:block}
-  #tab-stores .store-filter-head>div{margin-bottom:12px}
-  #storeSelect{width:100%!important;min-height:50px}
-  #storeKpis{grid-template-columns:1fr!important}
-}
-
-
-/* =========================================================
-   v4 mobile scroll + fullscreen data viewer (2026-06-18)
-========================================================= */
-.two-column>* , .two-column.equal>* , .panel , .tab-panel{min-width:0}
-.table-wrap{
-  position:relative;
-  display:block;
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow-x:auto!important;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior-x:contain;
-  touch-action:auto!important;
-  scrollbar-gutter:stable;
-}
-.table-wrap::-webkit-scrollbar{height:9px}
-.table-wrap::-webkit-scrollbar-thumb{background:#c6d2e1;border-radius:999px;border:2px solid #f7f9fc}
-.table-wrap::-webkit-scrollbar-track{background:#f7f9fc}
-#storeCategoryTable table{min-width:780px!important}
-#compareCategoryTable table{min-width:840px!important}
-#categoryTable table{min-width:820px!important}
-#modelTable table{min-width:900px!important}
-.panel-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
-.expand-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  min-height:38px;
-  padding:8px 11px;
-  border:1px solid #cad7e7;
-  border-radius:11px;
-  color:var(--navy900);
-  background:#f4f7fb;
-  font-size:12px;
-  font-weight:950;
-  white-space:nowrap;
-}
-.expand-btn:before{content:"↗";font-size:15px;line-height:1}
-.expand-btn:hover{background:#eaf2ff;border-color:#a8c5ee}
-.scroll-hint{display:none;color:var(--muted);font-size:11px;font-weight:800}
-
-body.viewer-open{overflow:hidden!important;touch-action:none}
-.data-viewer[hidden]{display:none!important}
-.data-viewer{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:14px}
-.viewer-backdrop{position:absolute;inset:0;background:rgba(3,12,25,.78);backdrop-filter:blur(6px)}
-.viewer-dialog{
-  position:relative;
-  z-index:1;
-  display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto;
-  width:min(1500px,100%);
-  height:min(94dvh,980px);
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:22px;
-  background:#eef3f8;
-  box-shadow:0 28px 90px rgba(0,0,0,.42);
-}
-.viewer-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 16px;background:linear-gradient(135deg,var(--navy950),var(--navy800));color:#fff}
-.viewer-title-wrap{min-width:0}
-.viewer-kicker{display:block;color:#90bfff;font-size:10px;font-weight:950;letter-spacing:.12em}
-.viewer-title{margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:18px;letter-spacing:-.03em}
-.viewer-controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
-.viewer-btn{
-  display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:38px;padding:0 11px;
-  border:1px solid rgba(255,255,255,.22);border-radius:10px;background:rgba(255,255,255,.11);color:#fff;font-weight:950
-}
-.viewer-btn:hover{background:rgba(255,255,255,.2)}
-.viewer-zoom-label{min-width:62px;text-align:center;color:#dbe9fb;font-size:12px;font-weight:900}
-.viewer-close{font-size:20px}
-.viewer-viewport{
-  position:relative;
-  min-width:0;
-  min-height:0;
-  overflow:hidden;
-  background-color:#dce5ef;
-  background-image:linear-gradient(#cfd9e5 1px,transparent 1px),linear-gradient(90deg,#cfd9e5 1px,transparent 1px);
-  background-size:22px 22px;
-  cursor:grab;
-  touch-action:none;
-  user-select:none;
-}
-.viewer-viewport.dragging{cursor:grabbing}
-.viewer-content{
-  position:absolute;
-  left:0;
-  top:0;
-  width:max-content;
-  min-width:720px;
-  padding:18px;
-  border:1px solid #cbd7e5;
-  border-radius:16px;
-  background:#fff;
-  box-shadow:0 18px 48px rgba(15,34,61,.18);
-  transform-origin:0 0;
-  will-change:transform;
-}
-.viewer-content .table-wrap{overflow:visible!important;border:0;border-radius:0}
-.viewer-content table{width:max-content!important;min-width:900px!important;border-collapse:collapse!important;white-space:nowrap}
-.viewer-content th,.viewer-content td{position:static!important;min-width:auto!important;max-width:none!important;background:#fff!important;box-shadow:none!important}
-.viewer-content thead th{background:#f3f6fa!important}
-.viewer-footer{display:flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;color:#536076;background:#fff;font-size:11px;font-weight:800;text-align:center}
-
-@media(max-width:720px){
-  #tab-overview .two-column,#tab-stores .two-column.equal{display:block!important}
-  #topStoreTable,#storeCategoryTable,#compareCategoryTable,#categoryTable,#modelTable,#airconTable{width:100%!important;max-width:100%!important;overflow-x:auto!important;touch-action:auto!important}
-  #storeCategoryTable table{min-width:760px!important}
-  #compareCategoryTable table{min-width:820px!important}
-  #categoryTable table{min-width:800px!important}
-  #modelTable table{min-width:880px!important}
-  .panel-head.has-expand{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start!important;gap:10px!important}
-  .panel-head.has-expand .panel-tools{align-self:start}
-  .expand-btn{min-width:42px;width:42px;padding:0;font-size:0}
-  .expand-btn:before{font-size:18px}
-  .scroll-hint{display:block;margin-top:5px}
-  .data-viewer{padding:0}
-  .viewer-dialog{width:100%;height:100dvh;border:0;border-radius:0}
-  .viewer-header{align-items:flex-start;padding:12px}
-  .viewer-title{font-size:16px}
-  .viewer-controls{gap:5px}
-  .viewer-btn{min-width:36px;height:36px;padding:0 9px}
-  .viewer-zoom-label{min-width:52px;font-size:11px}
-  .viewer-content{min-width:700px;padding:14px}
-  .viewer-content table{min-width:860px!important}
-  .viewer-footer{padding-bottom:max(8px,env(safe-area-inset-bottom))}
-  #tab-briefing .panel-head.filter-row{display:grid!important;grid-template-columns:1fr;align-items:stretch!important}
-  #briefingStoreSelect{width:100%}
-}
-
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>코스트코 진열·연출 점검 PPT 생성기 v10</title>
+<script src="./pptxgen.min.js?v=9"></script>
+<style>
+:root{--bg:#f3f5f9;--line:#cfd7e6;--navy:#172033;--head:#d9d9d9;--txt:#111827;--muted:#667085;--blue:#1d4ed8;--danger:#dc2626}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,'Malgun Gothic','Noto Sans KR',sans-serif;color:var(--txt)}
+header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);padding:14px 20px}h1{font-size:22px;margin:0}header p{margin:5px 0 0;color:var(--muted);font-size:13px}
+main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-columns:.5fr .62fr .62fr .72fr .95fr .62fr auto auto auto auto;gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px;box-shadow:0 8px 22px rgba(15,23,42,.06)}label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:800}input,select{height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font-size:14px;background:#fff;font-family:inherit}input[type=file]{padding:8px 10px;font-size:12px}button{border:0;border-radius:10px;padding:11px 14px;font-weight:900;cursor:pointer;background:#eef2ff;color:#1e40af;font-family:inherit;white-space:nowrap}button.primary{background:#111827;color:#fff}button.blue{background:var(--blue);color:#fff}button.danger{background:#fee2e2;color:var(--danger)}button.small{padding:6px 9px;font-size:12px;border-radius:8px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tab{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:#334155}.tab.on{background:#172033;color:#fff}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px;line-height:1.5}.layout{display:grid;grid-template-columns:360px 1fr;gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 8px 22px rgba(15,23,42,.05)}.cardHead{padding:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.card h2{font-size:17px;margin:0}.body{padding:14px}.drop{min-height:135px;border:2px dashed #94a3b8;border-radius:15px;display:flex;align-items:center;justify-content:center;text-align:center;color:#667085;background:#f8fafc;margin-bottom:12px;cursor:pointer}.drop b{display:block;color:#111827;font-size:18px;margin-bottom:5px}.drop input{display:none}.pool{min-height:210px;max-height:390px;overflow:auto;border:2px dashed #d8dfeb;border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.empty{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:150px;color:#98a2b3;text-align:center;font-size:13px;line-height:1.5}.thumb{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;cursor:grab}.thumb img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.thumb .kb{position:absolute;left:4px;top:4px;background:#111827d9;color:#fff;border-radius:99px;font-size:10px;padding:2px 6px}.thumb .x{position:absolute;right:4px;top:4px;background:#dc2626;color:#fff;border-radius:99px;width:21px;height:21px;text-align:center;line-height:21px;font-weight:900}.thumb .remoteLabel{position:absolute;left:4px;right:4px;bottom:4px;background:#0b63cee6;color:#fff;border-radius:7px;font-size:9px;font-weight:900;padding:3px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hubSyncInfo{margin-top:8px;border:1px solid #cfe0f4;border-radius:10px;background:#f4f8ff;padding:8px 10px;color:#33577f;font-size:11px;font-weight:800;line-height:1.45}.hubSyncInfo.ok{background:#ecfdf3;border-color:#b7e4cc;color:#137044}.hubSyncInfo.err{background:#fff1f2;border-color:#fecdd3;color:#b42318}.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sum div{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px}.sum span{display:block;color:#667085;font-size:11px}.sum b{font-size:15px}.status{font-size:13px;color:#667085;margin-top:10px;line-height:1.5}.prog{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}.prog div{height:100%;width:0;background:#2563eb}.previewHead{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);background:#fbfcff}.scene{display:flex;gap:7px;align-items:center}.stage{padding:16px;overflow:auto}.sheet{width:1200px;height:675px;background:#fff;border:1px solid #111;overflow:hidden}.top{height:32px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 9px;font-weight:900}.top .store{font-size:23px;text-decoration:underline;text-underline-offset:3px}.top .ttl{font-size:16px}.grid{width:100%;height:643px;border-collapse:collapse;table-layout:fixed}.grid th,.grid td{border:1.5px solid #222;text-align:center;vertical-align:middle;padding:0}.grid .lab{width:40px;background:var(--head);font-weight:900;font-size:13px}.grid .h1{height:24px;background:var(--head);font-weight:900;font-size:12px}.grid .h2{height:24px;background:var(--head);font-weight:900;font-size:11px;color:#1f5aa6;text-decoration:underline}.grid .photoLab{background:var(--head);font-weight:900;font-size:13px;line-height:1.25}.grid .photoRow{height:172px}.grid .content{height:103px;background:#f3f3f3}.slot{height:172px;display:flex;align-items:center;justify-content:center;background:#fff;position:relative}.slot .thumb{width:151px;height:151px;border-radius:2px}.slot .thumb img{object-fit:cover}.slot .hint{width:151px;height:151px;border:1px dashed #cfd7e6;color:#a3aab8;font-size:12px;display:flex;align-items:center;justify-content:center}.grid.hasOverflow .photoRow,.grid.hasOverflow .overflowRow{height:148px}.grid.hasOverflow .slot{height:148px}.grid.hasOverflow .slot .thumb{width:142px;height:142px}.grid.hasOverflow .slot .hint{width:142px;height:142px}.overflowRow td{background:#fff}.overflowRow .slot{background:#fff}.overflowHint{font-size:11px;color:#94a3b8;font-weight:800}.overflowPhotoLabel{position:absolute;left:5px;right:5px;bottom:5px;border-radius:5px;background:rgba(255,255,255,.90);color:#1f3d67;padding:2px 4px;font-size:9px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.autoBadge{display:inline-flex;align-items:center;gap:5px;margin-left:7px;border-radius:999px;background:#dcfce7;color:#166534;padding:2px 7px;font-size:10px;font-weight:900}
+.drag{outline:3px solid #93c5fd!important;background:#eff6ff!important}.fixed{position:fixed;right:18px;bottom:18px;z-index:20;display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 10px 28px rgba(15,23,42,.18)}.printOnly{display:none}@media(max-width:1100px){.bar{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.sheet{transform:scale(.75);transform-origin:top left}.stage{height:540px}.fixed{left:10px;right:10px;justify-content:center}}@media print{header,main,.fixed{display:none!important}.printOnly{display:block}.printPage{width:297mm;height:167.1mm;margin:0;page-break-after:always;background:white;overflow:hidden}.printPage .sheet{width:297mm;height:167.1mm;border:0;transform:none!important}.printPage .top{height:8mm}.printPage .grid{height:159.1mm}@page{size:297mm 167.1mm;margin:0}}
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand-block">
-      <p class="eyebrow">COSTCO SAMSUNG SALES</p>
-      <h1>Sales Command Center</h1>
-      <p class="header-sub">점포별 매출 · 상대평가 · 주간 증분 분석</p>
-    </div>
-    <div class="header-actions">
-      <a class="status-badge" href="./admin.html" style="text-decoration:none;color:#fff">관리자</a>
-      <span id="modeBadge" class="status-badge">데이터 확인 중</span>
-      <label class="week-picker">
-        <span>기준일</span>
-        <select id="snapshotSelect" aria-label="기준일 선택"></select>
-      </label>
-    </div>
-  </header>
+<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v10</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
+<main>
+<section class="bar">
+<label>보고 주차<select id="week"></select></label>
+<label>담당<select id="mgr"></select></label>
+<label>현재 점포<select id="store"></select></label>
+<label>HUB 촬영 주차<select id="shootDate"></select></label>
+<label>PPT 양식 업로드<input id="tpl" type="file" accept=".pptx"></label>
+<label>압축<select id="max"><option value="700">700px / 가볍게</option><option value="900" selected>900px / 추천</option><option value="1200">1200px / 선명</option></select></label>
+<button id="hubSyncBtn" class="blue" type="button">HUB 사진 새로고침</button><button onclick="autoPut()">대기사진 자동배치</button><button class="blue" onclick="printCurrent()">현재 PDF</button><button class="primary" onclick="makePpt()">PPT 생성</button>
+</section>
+<div id="tabs" class="tabs"></div>
+<div class="notice"><b>자동 연동:</b> 점포와 HUB 촬영 주차를 선택하면 사진을 자동으로 불러옵니다. 기본 3×6칸을 초과한 비네트·에어컨 사진은 <b>가장 아래 추가 사진 칸</b>에 자동 배치되며, PPT 사진 크기는 <b>정확히 4cm × 4cm</b>로 유지됩니다.</div>
+<section class="layout">
+<aside class="card"><div class="cardHead"><div><h2>사진 대기함</h2><span id="info" style="font-size:12px;color:#667085"></span></div><button class="danger small" onclick="clearPool()">대기함 비우기</button></div><div class="body">
+<label class="drop" id="drop"><input type="file" id="files" accept="image/*" multiple><span><b>사진을 여기에 넣기</b>드래그가 안 되면 클릭해서 선택<br>Ctrl+V 붙여넣기도 가능</span></label>
+<div id="pool" class="pool"></div>
+<div class="sum"><div><span>현재 점포 전체</span><b id="sAll">0장</b></div><div><span>배정 완료</span><b id="sIn">0장</b></div><div><span>원본 용량</span><b id="sO">0MB</b></div><div><span>압축 후</span><b id="sC">0MB</b></div></div>
+<div id="hubSyncInfo" class="hubSyncInfo">HUB 촬영사진은 점포와 촬영 주차를 기준으로 자동 불러옵니다.</div><div id="tplStatus" class="status">PPT 양식: 미업로드</div><div id="status" class="status">대기 중</div><div class="prog"><div id="prog"></div></div>
+</div></aside>
+<section class="card"><div class="previewHead"><h2 id="title">코스트코 세종점</h2><div class="scene"><button onclick="prev()">이전</button><span id="pageNo">1 / 1</span><button onclick="next()">다음</button><span id="cnt">배정 0장</span></div></div><div class="stage"><div id="sheet" class="sheet"></div></div></section>
+</section>
+</main>
+<div class="fixed"><button onclick="printCurrent()">현재 PDF</button><button class="blue" onclick="printAll()">담당 전체 PDF</button><button class="primary" onclick="makePpt()">PPT 생성</button></div>
+<div id="print" class="printOnly"></div>
+<script>
+const HUB_BACKEND_URL='https://script.google.com/macros/s/AKfycbwtnE_Bwm4YwwBHdg-38aelzvlnR0ryZKo9zwLwVjkiehVFdaboxDBFdS8NsAg3ZeGhZQ/exec';
+const HUB_SYNC_INTERVAL_MS=60000;
+let hubSyncBusy=false,hubSyncTimer=0,hubAutoTimer=0,hubAutoRetry=0,hubLastSyncKey='',hubLastSyncVersion='';
 
-  <main class="shell">
-    <section id="emptyState" class="empty-state" hidden>
-      <strong>등록된 실적 파일이 없습니다.</strong>
-      <p>관리자 화면에서 첫 번째 누계 엑셀을 등록하면 대시보드가 활성화됩니다.</p>
-      <a class="primary-btn" href="./admin.html" style="display:inline-block;width:auto;text-decoration:none;margin-top:10px">관리자 화면 열기</a>
-    </section>
-
-    <section id="dashboard" hidden>
-      <div class="period-line">
-        <div>
-          <span id="periodLabel">-</span>
-          <small id="updatedAt">-</small>
-        </div>
-        <button id="refreshBtn" class="ghost-btn" type="button">새로고침</button>
-      </div>
-
-      <nav class="tabs" aria-label="대시보드 메뉴">
-        <button class="tab active" data-tab="overview">종합 현황</button>
-        <button class="tab" data-tab="stores">점포별 평가</button>
-        <button class="tab" data-tab="compare">점포 비교</button>
-        <button class="tab" data-tab="categories">부서·품목</button>
-        <button class="tab" data-tab="models">주요 모델</button>
-        <button class="tab" data-tab="briefing">브리핑</button>
-      </nav>
-
-      <section class="tab-panel active" id="tab-overview">
-        <div id="kpiGrid" class="kpi-grid"></div>
-        <div class="two-column">
-          <article class="panel">
-            <div class="panel-head has-expand">
-              <div><p class="section-kicker">STORE RANKING</p><h2>점포별 실적 순위</h2><span class="scroll-hint">표를 좌우로 밀어 전체 항목을 확인하세요.</span></div>
-              <div class="panel-tools"><span id="rankingHint" class="hint"></span><button class="expand-btn" type="button" data-expand-target="topStoreTable" data-expand-title="점포별 실적 순위" aria-label="점포별 실적 순위 전체화면으로 보기">전체화면</button></div>
-            </div>
-            <div id="topStoreTable" class="table-wrap"></div>
-          </article>
-          <article class="panel">
-            <div class="panel-head">
-              <div><p class="section-kicker">EXECUTIVE SUMMARY</p><h2>종합 판단</h2></div>
-            </div>
-            <div id="executiveSummary" class="summary-box"></div>
-          </article>
-        </div>
-      </section>
-
-      <section class="tab-panel" id="tab-stores">
-        <article class="panel">
-          <div class="panel-head store-filter-head">
-            <div><p class="section-kicker">RELATIVE PERFORMANCE</p><h2>점포별 상대평가</h2></div>
-            <select id="storeSelect" class="control" aria-label="점포 선택"></select>
-          </div>
-          <div id="storeKpis" class="kpi-grid compact"></div>
-        </article>
-        <div class="two-column equal">
-          <article class="panel">
-            <div class="panel-head has-expand"><div><p class="section-kicker">CATEGORY POSITION</p><h2>품목별 우위·열위</h2><span class="scroll-hint">표를 좌우로 밀어 전체 항목을 확인하세요.</span></div><div class="panel-tools"><button class="expand-btn" id="storeCategoryExpandBtn" type="button" data-expand-target="storeCategoryTable" data-expand-title="품목별 우위·열위" aria-label="품목별 우위·열위 전체화면으로 보기">전체화면</button></div></div>
-            <div id="storeCategoryTable" class="table-wrap"></div>
-          </article>
-          <article class="panel">
-            <div class="panel-head"><div><p class="section-kicker">MANAGER COMMENT</p><h2>점포 평가 문구</h2></div></div>
-            <div id="storeComment" class="summary-box"></div>
-          </article>
-        </div>
-      </section>
-
-      <section class="tab-panel" id="tab-compare">
-        <article class="panel">
-          <div class="panel-head">
-            <div><p class="section-kicker">STORE TO STORE</p><h2>점포 직접 비교</h2></div>
-          </div>
-          <div class="compare-controls">
-            <select id="compareStoreA" class="control"></select>
-            <span>VS</span>
-            <select id="compareStoreB" class="control"></select>
-          </div>
-          <div id="compareSummary" class="comparison-grid"></div>
-        </article>
-        <article class="panel">
-          <div class="panel-head has-expand"><div><p class="section-kicker">CATEGORY GAP</p><h2>품목별 격차</h2><span class="scroll-hint">표를 좌우로 밀어 전체 항목을 확인하세요.</span></div><div class="panel-tools"><button class="expand-btn" id="compareCategoryExpandBtn" type="button" data-expand-target="compareCategoryTable" data-expand-title="품목별 격차" aria-label="품목별 격차 전체화면으로 보기">전체화면</button></div></div>
-          <div id="compareCategoryTable" class="table-wrap"></div>
-        </article>
-      </section>
-
-      <section class="tab-panel" id="tab-categories">
-        <article class="panel">
-          <div class="panel-head filter-row has-expand">
-            <div><p class="section-kicker">DIVISION & CATEGORY</p><h2>부서·품목별 실적</h2><span class="scroll-hint">표를 좌우로 밀어 전체 항목을 확인하세요.</span></div>
-            <div class="panel-tools"><select id="divisionFilter" class="control"><option value="ALL">전체</option><option value="CE">CE</option><option value="MX">MX</option></select><button class="expand-btn" id="categoryExpandBtn" type="button" data-expand-target="categoryTable" data-expand-title="부서·품목별 실적" aria-label="부서·품목별 실적 전체화면으로 보기">전체화면</button></div>
-          </div>
-          <div id="categoryTable" class="table-wrap"></div>
-        </article>
-      </section>
-
-      <section class="tab-panel" id="tab-models">
-        <article class="panel">
-          <div class="panel-head has-expand">
-            <div><p class="section-kicker">MODEL TOP</p><h2>주요 모델 실적</h2><span class="scroll-hint">표를 좌우로 밀어 전체 항목을 확인하세요.</span></div>
-            <div class="panel-tools"><span class="hint">엑셀 ‘모델_TOP’ 시트 기준</span><button class="expand-btn" type="button" data-expand-target="modelTable" data-expand-title="주요 모델 실적" aria-label="주요 모델 실적 전체화면으로 보기">전체화면</button></div>
-          </div>
-          <div id="modelTable" class="table-wrap"></div>
-        </article>
-        <article class="panel">
-          <div class="panel-head">
-            <div><p class="section-kicker">AIR CONDITIONER QTY</p><h2>에어컨 모델군 판매수량</h2></div>
-            <span class="hint">전체 품목 수량이 아닌 에어컨 모델군만 제공</span>
-          </div>
-          <div id="airconTable" class="table-wrap"></div>
-        </article>
-      </section>
-
-      <section class="tab-panel" id="tab-briefing">
-        <article class="panel">
-          <div class="panel-head">
-            <div><p class="section-kicker">WEEKLY BRIEFING</p><h2>전체 브리핑</h2></div>
-            <button class="ghost-btn copy-btn" data-copy-target="overallBriefing" type="button">복사</button>
-          </div>
-          <div id="overallBriefing" class="briefing-box"></div>
-        </article>
-        <article class="panel">
-          <div class="panel-head filter-row">
-            <div><p class="section-kicker">STORE BRIEFING</p><h2 id="storeBriefingTitle">점포별 브리핑</h2></div>
-            <select id="briefingStoreSelect" class="control" aria-label="브리핑 점포 선택"></select>
-          </div>
-          <div id="allStoreBriefings" class="briefing-list"></div>
-        </article>
-      </section>
-    </section>
-  </main>
-
-
-  <div id="dataViewer" class="data-viewer" hidden aria-hidden="true">
-    <div class="viewer-backdrop" data-viewer-close></div>
-    <section class="viewer-dialog" role="dialog" aria-modal="true" aria-labelledby="viewerTitle">
-      <header class="viewer-header">
-        <div class="viewer-title-wrap">
-          <span class="viewer-kicker">FULL SCREEN DATA VIEW</span>
-          <h2 id="viewerTitle" class="viewer-title">확대 보기</h2>
-        </div>
-        <div class="viewer-controls" aria-label="확대 축소 도구">
-          <button id="viewerZoomOut" class="viewer-btn" type="button" aria-label="축소">−</button>
-          <span id="viewerZoomLabel" class="viewer-zoom-label">100%</span>
-          <button id="viewerZoomIn" class="viewer-btn" type="button" aria-label="확대">＋</button>
-          <button id="viewerFit" class="viewer-btn" type="button">맞춤</button>
-          <button class="viewer-btn viewer-close" type="button" data-viewer-close aria-label="닫기">×</button>
-        </div>
-      </header>
-      <div id="viewerViewport" class="viewer-viewport">
-        <div id="viewerContent" class="viewer-content"></div>
-      </div>
-      <footer class="viewer-footer">두 손가락으로 확대·축소하거나, 화면을 끌어서 이동할 수 있습니다.</footer>
-    </section>
-  </div>
-
-  <script>
-const $ = (s) => document.querySelector(s);
-const $$ = (s) => [...document.querySelectorAll(s)];
-const state = { weeks: [], current: null, previous: null, prior: null, demo: false, period: null, previousPeriod: null, metrics: [] };
-
-const money = (v) => {
-  const n = Number(v || 0); const sign = n < 0 ? "-" : ""; const a = Math.abs(n);
-  if (a >= 100000000) return `${sign}${(a / 100000000).toLocaleString("ko-KR", { maximumFractionDigits: 1 })}억원`;
-  return `${sign}${(a / 1000000).toLocaleString("ko-KR", { maximumFractionDigits: 1 })}백만원`;
+const M={
+  "윤재경":["송도점","일산점","고척점","청라점","천안점"],
+  "김현래":["하남점","상봉점","의정부점","양평점"],
+  "조재현":["양재점","광명점","공세점","평택점"],
+  "김영언":["세종점","대전점","대구점","혁신점"],
+  "심창보":["부산점","울산점","김해점"]
 };
-const num = (v, d = 0) => Number(v || 0).toLocaleString("ko-KR", { maximumFractionDigits: d });
-const pct = (v, d = 1) => `${Number(v || 0).toLocaleString("ko-KR", { maximumFractionDigits: d })}%`;
-const esc = (v) => String(v ?? "").replace(/[&<>'"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;" }[c]));
-const sum = (arr, key) => arr.reduce((a, x) => a + Number(typeof key === "function" ? key(x) : x[key] || 0), 0);
-const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
-const growth = (cur, prev) => prev ? ((cur - prev) / Math.abs(prev)) * 100 : null;
-const deltaClass = (v) => v == null ? "delta-flat" : v > .05 ? "delta-up" : v < -.05 ? "delta-down" : "delta-flat";
-const deltaText = (v) => v == null ? "비교자료 없음" : `${v > 0 ? "+" : ""}${pct(v)}`;
-const datePlus = (iso, days) => { const d = new Date(`${iso}T00:00:00`); d.setDate(d.getDate() + days); return d.toISOString().slice(0,10); };
-const koDate = (iso) => { if (!iso) return "-"; const [y,m,d] = iso.split("-"); return `${y}.${Number(m)}.${Number(d)}`; };
-const mapBy = (arr, keyFn) => new Map(arr.map((x) => [keyFn(x), x]));
+const C=[
+  ['TV','TV','(QLED/OLED/TV 집기)'],
+  ['REF','비네트','(냉장고/의류케어/온라인)'],
+  ['AC','에어컨','(스탠드/벽걸이/창문형/천장형)'],
+  ['MON','모니터','(무빙스타일/모니터)'],
+  ['COOK','조리기기','(전자레인지/큐커/2구 인덕션)'],
+  ['ETC','기타 품목','(제습기/청소기 등)']
+];
+const DATA=Object.fromEntries(Object.values(M).flat().map(s=>[s,{pool:[],cat:Object.fromEntries(C.map(c=>[c[0],[]]))}]));
+const CM=1/2.54, PIC=4*CM, MAIN_PER=3, OVERFLOW_PER=6;
+let mgr='김영언',st='세종점',page=0,dragId=null,dragFrom=null;
+const $=id=>document.getElementById(id);
 
-function grade(score) {
-  if (score >= 85) return ["최우수", "grade-excellent"];
-  if (score >= 70) return ["우수", "grade-good"];
-  if (score >= 55) return ["양호", "grade-normal"];
-  if (score >= 40) return ["개선 필요", "grade-watch"];
-  return ["집중 관리", "grade-risk"];
-}
-function position(index) {
-  if (index >= 120) return ["우위", "position-strong"];
-  if (index <= 80) return ["열위", "position-weak"];
-  return ["보통", "position-neutral"];
-}
-function elapsedRatio(snapshotDate) {
-  const d = new Date(`${snapshotDate}T00:00:00`);
-  const days = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-  return d.getDate() / days;
-}
-function sameMonth(a, b) { return a && b && a.month_key === b.month_key; }
-function diffList(current, previous, keyFn, numericKeys) {
-  const pm = mapBy(previous || [], keyFn);
-  return (current || []).map((row) => {
-    const p = pm.get(keyFn(row)) || {};
-    const out = { ...row };
-    numericKeys.forEach((k) => { out[k] = Number(row[k] || 0) - Number(p[k] || 0); });
-    return out;
-  });
-}
-function makePeriod(current, previous) {
-  const baseline = !sameMonth(current, previous);
-  const data = current.data || {};
-  const prev = baseline ? {} : (previous.data || {});
-  const stores = diffList(data.stores, prev.stores, (x) => x.storeName, ["totalSales","ceSales","mxSales"])
-    .map((x) => ({ ...x, cumulativeTotalSales: (data.stores.find((s) => s.storeName === x.storeName) || {}).totalSales || 0 }));
-  const categories = diffList(data.categories, prev.categories, (x) => `${x.storeName}|${x.division}|${x.category}`, ["sales"]);
-  const models = diffList(data.models, prev.models, (x) => `${x.storeName}|${x.division}|${x.category}|${x.model}`, ["sales"]);
-  const airconModels = diffList(data.airconModels, prev.airconModels, (x) => `${x.storeName}|${x.modelGroup}|${x.baseModel}`, ["sales","qty"]);
-  const start = baseline ? `${current.month_key}-01` : datePlus(previous.snapshot_date, 1);
-  return { baseline, stores, categories, models, airconModels, startDate: start, endDate: current.snapshot_date };
-}
-function aggregate(arr, keyFn, fields = ["sales"]) {
-  const m = new Map();
-  arr.forEach((x) => {
-    const k = keyFn(x); if (!m.has(k)) m.set(k, { key:k, rows:[], ...Object.fromEntries(fields.map((f) => [f,0])) });
-    const t = m.get(k); t.rows.push(x); fields.forEach((f) => { t[f] += Number(x[f] || 0); });
-  });
-  return [...m.values()];
-}
+init();
 
-function buildMetrics() {
-  const p = state.period; const pp = state.previousPeriod;
-  const prevMap = pp ? mapBy(pp.stores, (x) => x.storeName) : new Map();
-  const avg = p.stores.length ? sum(p.stores,"totalSales") / p.stores.length : 0;
-  const e = elapsedRatio(state.current.snapshot_date);
-  let rows = p.stores.map((s) => {
-    const currentStore = (state.current.data.stores || []).find((x) => x.storeName === s.storeName) || s;
-    const prev = prevMap.get(s.storeName);
-    const salesIndex = avg ? s.totalSales / avg * 100 : 0;
-    const attainment = currentStore.totalTarget ? currentStore.totalSales / currentStore.totalTarget * 100 : 0;
-    const pace = e ? attainment / (e * 100) * 100 : 0;
-    const wow = prev ? growth(s.totalSales, prev.totalSales) : null;
-    const salesScore = clamp(salesIndex,0,150) / 150 * 100;
-    const paceScore = clamp(pace,0,130) / 130 * 100;
-    const growthScore = wow == null ? 50 : clamp(50 + wow,0,100);
-    const score = Math.round(pp ? salesScore*.5 + paceScore*.3 + growthScore*.2 : salesScore*.65 + paceScore*.35);
-    const [gradeLabel, gradeClass] = grade(score);
-    return { ...s, currentStore, salesIndex, attainment, pace, wow, score, gradeLabel, gradeClass };
-  }).sort((a,b) => b.totalSales - a.totalSales);
-  rows = rows.map((x,i) => ({ ...x, rank:i+1 }));
-  state.metrics = rows;
-}
-
-function categoryPositions(storeName) {
-  const rows = state.period.categories;
-  const storeCount = Math.max(1, state.period.stores.length);
-  const national = aggregate(rows, (x) => `${x.division}|${x.category}`);
-  const storeMap = mapBy(rows.filter((x) => x.storeName === storeName), (x) => `${x.division}|${x.category}`);
-  return national.map((n) => {
-    const [division, category] = n.key.split("|");
-    const storeSales = Number(storeMap.get(n.key)?.sales || 0);
-    const avg = n.sales / storeCount;
-    const index = avg ? storeSales / avg * 100 : 0;
-    const [label, cls] = position(index);
-    return { division, category, storeSales, nationalSales:n.sales, avg, index, label, cls };
-  }).filter((x) => x.avg >= 100000).sort((a,b) => b.storeSales - a.storeSales);
-}
-function topStrongWeak(storeName) {
-  const c = categoryPositions(storeName);
-  const strong = c.filter((x) => x.index >= 120 && x.storeSales > 0).sort((a,b) => b.index-a.index).slice(0,3);
-  const weak = c.filter((x) => x.index <= 80).sort((a,b) => a.index-b.index).slice(0,3);
-  return { strong, weak, all:c };
-}
-function storeBriefing(metric) {
-  const sw = topStrongWeak(metric.storeName);
-  const periodWord = state.period.baseline ? "누계" : "이번 기간";
-  const strong = sw.strong.length ? sw.strong.map((x) => `${x.category}(${num(x.index)}%)`).join(", ") : "뚜렷한 우위 품목 없음";
-  const weak = sw.weak.length ? sw.weak.map((x) => `${x.category}(${num(x.index)}%)`).join(", ") : "뚜렷한 열위 품목 없음";
-  const wow = metric.wow == null ? "전주 비교자료는 아직 없습니다." : `직전 기간 대비 ${deltaText(metric.wow)}입니다.`;
-  return `${metric.storeName}점은 ${periodWord} ${money(metric.totalSales)}으로 20개 점포 중 ${metric.rank}위입니다. 월 목표 달성률은 ${pct(metric.attainment)}이며, 월 경과일 대비 진도율은 ${pct(metric.pace)}입니다. ${wow}\n품목별로는 ${strong}에서 상대 우위이며, ${weak}는 점포 평균 대비 보완이 필요합니다.`;
-}
-
-function renderOverview() {
-  const periodTotal = sum(state.period.stores,"totalSales");
-  const periodCE = sum(state.period.stores,"ceSales");
-  const periodMX = sum(state.period.stores,"mxSales");
-  const cumulative = sum(state.current.data.stores || [],"totalSales");
-  const target = sum(state.current.data.stores || [],"totalTarget");
-  const prevTotal = state.previousPeriod ? sum(state.previousPeriod.stores,"totalSales") : 0;
-  const wow = state.previousPeriod ? growth(periodTotal,prevTotal) : null;
-  const cards = [
-    [state.period.baseline ? "기준 누계 매출" : "이번 기간 추가 매출", money(periodTotal), state.period.baseline ? "첫 등록 자료는 비교 기준으로 사용" : `직전 기간 대비 ${deltaText(wow)}`],
-    ["월 누계 매출", money(cumulative), `월 목표 달성률 ${pct(target ? cumulative/target*100 : 0)}`],
-    ["CE 실적", money(periodCE), `기간 매출 비중 ${pct(periodTotal ? periodCE/periodTotal*100 : 0)}`],
-    ["MX 실적", money(periodMX), `기간 매출 비중 ${pct(periodTotal ? periodMX/periodTotal*100 : 0)}`],
-  ];
-  $("#kpiGrid").innerHTML = cards.map(([l,v,s]) => `<article class="kpi-card"><div class="kpi-label">${l}</div><div class="kpi-value">${v}</div><div class="kpi-sub">${s}</div></article>`).join("");
-  $("#rankingHint").textContent = state.period.baseline ? "현재 파일 누계 기준" : `${koDate(state.period.startDate)}~${koDate(state.period.endDate)} 추가 판매`;
-  $("#topStoreTable").innerHTML = `<table><thead><tr><th>순위</th><th class="text-left">점포</th><th>기간 실적</th><th>CE</th><th>MX</th><th>목표 달성</th><th>전주 대비</th><th>평가</th></tr></thead><tbody>${state.metrics.map((m) => `<tr><td class="rank">${m.rank}</td><td class="text-left"><strong>${esc(m.storeName)}점</strong><br><small>${esc(m.manager||"")}</small></td><td>${money(m.totalSales)}</td><td>${money(m.ceSales)}</td><td>${money(m.mxSales)}</td><td>${pct(m.attainment)}</td><td class="${deltaClass(m.wow)}">${deltaText(m.wow)}</td><td><span class="grade ${m.gradeClass}">${m.gradeLabel}</span></td></tr>`).join("")}</tbody></table>`;
-  const top = state.metrics[0], low = state.metrics[state.metrics.length-1];
-  const ceShare = periodTotal ? periodCE/periodTotal*100 : 0;
-  $("#executiveSummary").innerHTML = `<p><strong>${state.period.baseline ? "현재 자료는 최초 기준 누계입니다." : `이번 기간 추가 매출은 ${money(periodTotal)}입니다.`}</strong></p><p>${top ? `${top.storeName}점이 ${money(top.totalSales)}으로 1위이며, ${low.storeName}점은 ${money(low.totalSales)}으로 가장 낮습니다.` : ""}</p><p>부서 구성은 CE ${pct(ceShare)}, MX ${pct(100-ceShare)}입니다. 상대평가는 프리미엄 비중이나 전체 수량을 사용하지 않고 기간 매출, 목표 진도, 전주 증감만 반영합니다.</p>`;
-}
-
-function renderStore() {
-  const select = $("#storeSelect");
-  if (!select.options.length) select.innerHTML = state.metrics.map((m) => `<option value="${esc(m.storeName)}">${esc(m.storeName)}점</option>`).join("");
-  const name = select.value || state.metrics[0]?.storeName; select.value = name;
-  const m = state.metrics.find((x) => x.storeName === name); if (!m) return;
-  $("#storeKpis").innerHTML = [
-    ["기간 실적",money(m.totalSales),`전국 ${m.rank}위 · 평균 대비 ${pct(m.salesIndex)}`],
-    ["월 누계",money(m.currentStore.totalSales),`목표 달성률 ${pct(m.attainment)}`],
-    ["목표 진도",pct(m.pace),`월 경과일 대비 ${m.pace>=100?"정상 이상":"보강 필요"}`],
-  ].map(([l,v,s]) => `<article class="kpi-card"><div class="kpi-label">${l}</div><div class="kpi-value">${v}</div><div class="kpi-sub">${s}</div></article>`).join("");
-  const rows = categoryPositions(name);
-  const storeExpandBtn = $("#storeCategoryExpandBtn");
-  if (storeExpandBtn) storeExpandBtn.dataset.expandTitle = `${name}점 품목별 우위·열위`;
-  $("#storeCategoryTable").innerHTML = `<table><thead><tr><th class="text-left">구분</th><th class="text-left">품목</th><th>점포 실적</th><th>점포 평균</th><th>평균 대비</th><th>판정</th></tr></thead><tbody>${rows.map((x) => `<tr><td class="text-left">${x.division}</td><td class="text-left"><strong>${esc(x.category)}</strong></td><td>${money(x.storeSales)}</td><td>${money(x.avg)}</td><td>${pct(x.index)}</td><td><span class="position ${x.cls}">${x.label}</span></td></tr>`).join("")}</tbody></table>`;
-  $("#storeComment").textContent = storeBriefing(m);
-}
-
-function renderCompare() {
-  const aSel=$("#compareStoreA"), bSel=$("#compareStoreB");
-  if (!aSel.options.length) {
-    const opts=state.metrics.map((m)=>`<option value="${esc(m.storeName)}">${esc(m.storeName)}점</option>`).join("");
-    aSel.innerHTML=opts; bSel.innerHTML=opts; bSel.selectedIndex=Math.min(1,state.metrics.length-1);
-  }
-  const a=state.metrics.find((x)=>x.storeName===aSel.value)||state.metrics[0];
-  const b=state.metrics.find((x)=>x.storeName===bSel.value)||state.metrics[1]||a;
-  const metrics=[
-    ["기간 실적",money(a.totalSales),money(b.totalSales)],
-    ["CE",money(a.ceSales),money(b.ceSales)],
-    ["MX",money(a.mxSales),money(b.mxSales)],
-    ["월 목표 달성",pct(a.attainment),pct(b.attainment)],
-    ["목표 진도",pct(a.pace),pct(b.pace)],
-  ];
-  $("#compareSummary").innerHTML=metrics.map(([l,av,bv])=>`<div class="compare-card"><strong>${l}</strong><div class="compare-values"><span>${esc(a.storeName)}<br>${av}</span><span>${esc(b.storeName)}<br>${bv}</span></div></div>`).join("");
-  const ap=mapBy(categoryPositions(a.storeName),(x)=>`${x.division}|${x.category}`), bp=mapBy(categoryPositions(b.storeName),(x)=>`${x.division}|${x.category}`);
-  const keys=[...new Set([...ap.keys(),...bp.keys()])];
-  const rows=keys.map((k)=>({key:k,a:ap.get(k),b:bp.get(k)})).sort((x,y)=>Math.max(y.a?.storeSales||0,y.b?.storeSales||0)-Math.max(x.a?.storeSales||0,x.b?.storeSales||0));
-  const compareExpandBtn = $("#compareCategoryExpandBtn");
-  if (compareExpandBtn) compareExpandBtn.dataset.expandTitle = `${a.storeName}점 vs ${b.storeName}점 품목별 격차`;
-  $("#compareCategoryTable").innerHTML=`<table><thead><tr><th class="text-left">품목</th><th>${esc(a.storeName)} 실적</th><th>${esc(a.storeName)} 판정</th><th>${esc(b.storeName)} 실적</th><th>${esc(b.storeName)} 판정</th><th>격차</th></tr></thead><tbody>${rows.map((r)=>{const [d,c]=r.key.split("|");const av=r.a?.storeSales||0,bv=r.b?.storeSales||0;return `<tr><td class="text-left"><strong>${d} · ${esc(c)}</strong></td><td>${money(av)}</td><td><span class="position ${r.a?.cls||'position-neutral'}">${r.a?.label||'보통'}</span></td><td>${money(bv)}</td><td><span class="position ${r.b?.cls||'position-neutral'}">${r.b?.label||'보통'}</span></td><td class="${deltaClass(av-bv)}">${money(av-bv)}</td></tr>`}).join("")}</tbody></table>`;
-}
-
-function renderCategories() {
-  const filter=$("#divisionFilter").value;
-  const cur=aggregate(state.period.categories.filter((x)=>filter==="ALL"||x.division===filter),(x)=>`${x.division}|${x.category}`);
-  const prev=state.previousPeriod?mapBy(aggregate(state.previousPeriod.categories,(x)=>`${x.division}|${x.category}`),(x)=>x.key):new Map();
-  const total=sum(cur,"sales");
-  const rows=cur.map((x)=>{const [division,category]=x.key.split("|");const p=prev.get(x.key);const top=aggregate(x.rows,(r)=>r.storeName).sort((a,b)=>b.sales-a.sales)[0];return{division,category,sales:x.sales,share:total?x.sales/total*100:0,wow:p?growth(x.sales,p.sales):null,top};}).sort((a,b)=>b.sales-a.sales);
-  const categoryExpandBtn = $("#categoryExpandBtn");
-  if (categoryExpandBtn) categoryExpandBtn.dataset.expandTitle = `${filter === "ALL" ? "전체" : filter} 부서·품목별 실적`;
-  $("#categoryTable").innerHTML=`<table><thead><tr><th class="text-left">부서</th><th class="text-left">품목</th><th>기간 실적</th><th>구성비</th><th>전주 대비</th><th class="text-left">최상위 점포</th></tr></thead><tbody>${rows.map((x)=>`<tr><td class="text-left">${x.division}</td><td class="text-left"><strong>${esc(x.category)}</strong></td><td>${money(x.sales)}</td><td>${pct(x.share)}</td><td class="${deltaClass(x.wow)}">${deltaText(x.wow)}</td><td class="text-left">${esc(x.top?.key||"-")} · ${money(x.top?.sales||0)}</td></tr>`).join("")}</tbody></table>`;
-}
-
-function renderModels() {
-  const models=aggregate(state.period.models,(x)=>`${x.division}|${x.category}|${x.model}`).map((x)=>{const [division,category,model]=x.key.split("|");const top=aggregate(x.rows,(r)=>r.storeName).sort((a,b)=>b.sales-a.sales)[0];return{division,category,model,sales:x.sales,top};}).sort((a,b)=>b.sales-a.sales).slice(0,40);
-  $("#modelTable").innerHTML=`<table><thead><tr><th>순위</th><th class="text-left">부서</th><th class="text-left">품목</th><th class="text-left">모델/모델군</th><th>기간 실적</th><th class="text-left">최상위 점포</th></tr></thead><tbody>${models.map((x,i)=>`<tr><td class="rank">${i+1}</td><td class="text-left">${x.division}</td><td class="text-left">${esc(x.category)}</td><td class="text-left"><strong>${esc(x.model)}</strong></td><td>${money(x.sales)}</td><td class="text-left">${esc(x.top?.key||"-")}</td></tr>`).join("")}</tbody></table>`;
-  const air=aggregate(state.period.airconModels,(x)=>`${x.storeName}|${x.modelGroup}`,["sales","qty"]).map((x)=>{const [storeName,modelGroup]=x.key.split("|");return{storeName,modelGroup,sales:x.sales,qty:x.qty};}).sort((a,b)=>b.qty-a.qty||b.sales-a.sales).slice(0,50);
-  $("#airconTable").innerHTML=`<table><thead><tr><th>순위</th><th class="text-left">점포</th><th class="text-left">모델군</th><th>판매수량</th><th>매출</th></tr></thead><tbody>${air.map((x,i)=>`<tr><td>${i+1}</td><td class="text-left">${esc(x.storeName)}점</td><td class="text-left"><strong>${esc(x.modelGroup)}</strong></td><td>${num(x.qty)}대</td><td>${money(x.sales)}</td></tr>`).join("")}</tbody></table>`;
-}
-
-function overallBriefingText() {
-  const periodTotal=sum(state.period.stores,"totalSales"), ce=sum(state.period.stores,"ceSales"), mx=sum(state.period.stores,"mxSales");
-  const top=state.metrics[0], low=state.metrics[state.metrics.length-1];
-  const prev=state.previousPeriod?sum(state.previousPeriod.stores,"totalSales"):null;
-  const change=prev==null?"전주 비교는 다음 누계 파일 등록부터 가능합니다.":`직전 기간 대비 ${deltaText(growth(periodTotal,prev))}입니다.`;
-  return `${state.period.baseline?`${koDate(state.period.endDate)} 기준 월 누계 실적은 ${money(periodTotal)}입니다.`:`${koDate(state.period.startDate)}부터 ${koDate(state.period.endDate)}까지 추가 판매는 ${money(periodTotal)}입니다.`} ${change}\nCE는 ${money(ce)}, MX는 ${money(mx)}이며, ${top.storeName}점이 ${money(top.totalSales)}으로 1위입니다. ${low.storeName}점은 ${money(low.totalSales)}으로 최하위이며 주요 열위 품목 점검이 필요합니다.\n상대평가는 기간 매출 50%, 월 목표 진도 30%, 전주 증감 20% 기준이며 프리미엄 비중과 전체 판매수량은 반영하지 않았습니다.`;
-}
-function renderBriefing() {
-  $("#overallBriefing").textContent=overallBriefingText();
-  const select = $("#briefingStoreSelect");
-  const currentValue = select.value || "ALL";
-  const expectedOptions = state.metrics.length + 1;
-  if (select.options.length !== expectedOptions) {
-    select.innerHTML = `<option value="ALL">전체 점포</option>${state.metrics.map((m)=>`<option value="${esc(m.storeName)}">${esc(m.storeName)}점</option>`).join("")}`;
-  }
-  select.value = currentValue === "ALL" || state.metrics.some((m)=>m.storeName===currentValue) ? currentValue : "ALL";
-  const selected = select.value;
-  const rows = selected === "ALL" ? state.metrics : state.metrics.filter((m)=>m.storeName===selected);
-  $("#storeBriefingTitle").textContent = selected === "ALL" ? "점포별 브리핑" : `${selected}점 브리핑`;
-  $("#allStoreBriefings").innerHTML=rows.map((m)=>`<article class="briefing-item"><div class="briefing-item-head"><h3>${esc(m.storeName)}점 · ${m.rank}위</h3><button class="ghost-btn store-copy" type="button" data-store="${esc(m.storeName)}">복사</button></div><p>${esc(storeBriefing(m))}</p></article>`).join("");
-  $$(".store-copy").forEach((b)=>b.addEventListener("click",()=>copyText(storeBriefing(state.metrics.find((m)=>m.storeName===b.dataset.store)),b)));
-}
-function copyText(text,button){navigator.clipboard.writeText(text).then(()=>{const old=button.textContent;button.textContent="복사됨";setTimeout(()=>button.textContent=old,1200);});}
-
-
-const viewerState = { scale:1, x:0, y:0, min:.12, max:3.5, pointers:new Map(), lastCenter:null, lastDistance:0 };
-function applyViewerTransform() {
-  const content = $("#viewerContent");
-  content.style.transform = `translate(${viewerState.x}px,${viewerState.y}px) scale(${viewerState.scale})`;
-  $("#viewerZoomLabel").textContent = `${Math.round(viewerState.scale*100)}%`;
-}
-function setViewerScale(nextScale, clientX, clientY) {
-  const viewport = $("#viewerViewport");
-  const rect = viewport.getBoundingClientRect();
-  const px = (clientX ?? (rect.left + rect.width/2)) - rect.left;
-  const py = (clientY ?? (rect.top + rect.height/2)) - rect.top;
-  const oldScale = viewerState.scale;
-  const next = clamp(nextScale, viewerState.min, viewerState.max);
-  const localX = (px - viewerState.x) / oldScale;
-  const localY = (py - viewerState.y) / oldScale;
-  viewerState.scale = next;
-  viewerState.x = px - localX * next;
-  viewerState.y = py - localY * next;
-  applyViewerTransform();
-}
-function fitViewer() {
-  const viewport = $("#viewerViewport");
-  const content = $("#viewerContent");
-  if (!viewport.clientWidth || !content.scrollWidth) return;
-  const pad = window.innerWidth <= 720 ? 18 : 34;
-  const availableW = Math.max(100, viewport.clientWidth - pad*2);
-  const availableH = Math.max(100, viewport.clientHeight - pad*2);
-  const naturalW = content.scrollWidth;
-  const naturalH = content.scrollHeight;
-  viewerState.scale = clamp(Math.min(availableW/naturalW, availableH/naturalH, 1.25), viewerState.min, viewerState.max);
-  viewerState.x = Math.max(pad, (viewport.clientWidth - naturalW*viewerState.scale)/2);
-  viewerState.y = Math.max(pad, (viewport.clientHeight - naturalH*viewerState.scale)/2);
-  applyViewerTransform();
-}
-const VIEWER_HISTORY_KEY = "__costcoDataViewer";
-function openViewer(targetId, title, { fromHistory = false } = {}) {
-  const target = document.getElementById(targetId);
-  if (!target || !target.children.length) return;
-  const viewer = $("#dataViewer");
-  const content = $("#viewerContent");
-  const resolvedTitle = title || "확대 보기";
-  content.innerHTML = "";
-  const clone = target.cloneNode(true);
-  clone.removeAttribute("id");
-  clone.querySelectorAll("[id]").forEach((el)=>el.removeAttribute("id"));
-  content.appendChild(clone);
-  $("#viewerTitle").textContent = resolvedTitle;
-  viewer.hidden = false;
-  viewer.setAttribute("aria-hidden","false");
-  document.body.classList.add("viewer-open");
-  viewerState.pointers.clear();
-  viewerState.lastCenter = null;
-  viewerState.lastDistance = 0;
-
-  if (!fromHistory) {
-    const nextState = {
-      ...(history.state || {}),
-      [VIEWER_HISTORY_KEY]: { targetId, title: resolvedTitle }
-    };
-    if (history.state?.[VIEWER_HISTORY_KEY]) history.replaceState(nextState, "", location.href);
-    else history.pushState(nextState, "", location.href);
-  }
-
-  requestAnimationFrame(()=>requestAnimationFrame(fitViewer));
-}
-function closeViewer({ fromHistory = false } = {}) {
-  const viewer = $("#dataViewer");
-  if (viewer.hidden) return;
-  viewer.hidden = true;
-  viewer.setAttribute("aria-hidden","true");
-  document.body.classList.remove("viewer-open");
-  $("#viewerContent").innerHTML = "";
-
-  // 닫기 버튼·배경·ESC로 닫을 때도 확대 화면용 기록 한 단계만 제거한다.
-  if (!fromHistory && history.state?.[VIEWER_HISTORY_KEY]) history.back();
-}
-function pointerCenter(values) {
-  const points=[...values];
-  return {x:points.reduce((a,p)=>a+p.x,0)/points.length,y:points.reduce((a,p)=>a+p.y,0)/points.length};
-}
-function pointerDistance(values) {
-  const points=[...values];
-  if(points.length<2) return 0;
-  return Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y);
-}
-function initViewer() {
-  $$('[data-expand-target]').forEach((button)=>button.addEventListener('click',()=>openViewer(button.dataset.expandTarget,button.dataset.expandTitle)));
-  $$('[data-viewer-close]').forEach((el)=>el.addEventListener('click',()=>closeViewer()));
-  window.addEventListener("popstate",(event)=>{
-    const marker = event.state?.[VIEWER_HISTORY_KEY];
-    const viewer = $("#dataViewer");
-    if (marker && viewer.hidden) {
-      openViewer(marker.targetId, marker.title, { fromHistory:true });
-    } else if (!marker && !viewer.hidden) {
-      closeViewer({ fromHistory:true });
-    }
-  });
-  $("#viewerZoomIn").addEventListener("click",()=>setViewerScale(viewerState.scale*1.2));
-  $("#viewerZoomOut").addEventListener("click",()=>setViewerScale(viewerState.scale/1.2));
-  $("#viewerFit").addEventListener("click",fitViewer);
-  const viewport=$("#viewerViewport");
-  viewport.addEventListener("wheel",(e)=>{
-    if(!e.ctrlKey&&!e.metaKey) return;
-    e.preventDefault();
-    setViewerScale(viewerState.scale*(e.deltaY<0?1.12:.89),e.clientX,e.clientY);
-  },{passive:false});
-  viewport.addEventListener("dblclick",fitViewer);
-  viewport.addEventListener("pointerdown",(e)=>{
-    viewport.setPointerCapture(e.pointerId);
-    viewerState.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    viewerState.lastCenter=pointerCenter(viewerState.pointers.values());
-    viewerState.lastDistance=pointerDistance(viewerState.pointers.values());
-    viewport.classList.add("dragging");
-  });
-  viewport.addEventListener("pointermove",(e)=>{
-    if(!viewerState.pointers.has(e.pointerId)) return;
-    viewerState.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    const center=pointerCenter(viewerState.pointers.values());
-    if(viewerState.pointers.size===1 && viewerState.lastCenter){
-      viewerState.x += center.x-viewerState.lastCenter.x;
-      viewerState.y += center.y-viewerState.lastCenter.y;
-      applyViewerTransform();
-    } else if(viewerState.pointers.size>=2){
-      const distance=pointerDistance(viewerState.pointers.values());
-      if(viewerState.lastDistance>0) setViewerScale(viewerState.scale*(distance/viewerState.lastDistance),center.x,center.y);
-      if(viewerState.lastCenter){
-        viewerState.x += center.x-viewerState.lastCenter.x;
-        viewerState.y += center.y-viewerState.lastCenter.y;
-        applyViewerTransform();
-      }
-      viewerState.lastDistance=distance;
-    }
-    viewerState.lastCenter=center;
-  });
-  const endPointer=(e)=>{
-    viewerState.pointers.delete(e.pointerId);
-    viewerState.lastCenter=viewerState.pointers.size?pointerCenter(viewerState.pointers.values()):null;
-    viewerState.lastDistance=pointerDistance(viewerState.pointers.values());
-    if(!viewerState.pointers.size) viewport.classList.remove("dragging");
+function init(){
+  selInit();
+  populateWeekSelects();
+  $('shootDate').onchange=()=>{
+    const w=$('shootDate').selectedOptions[0]?.dataset.week;
+    if(w)$('week').value=w;
+    resetHubSyncState();
+    scheduleHubSync(true,150);
   };
-  viewport.addEventListener("pointerup",endPointer);
-  viewport.addEventListener("pointercancel",endPointer);
-  window.addEventListener("resize",()=>{if(!$("#dataViewer").hidden) fitViewer();});
-  document.addEventListener("keydown",(e)=>{if(e.key==="Escape"&&!$("#dataViewer").hidden) closeViewer();});
+  $('hubSyncBtn').onclick=()=>scheduleHubSync(true,0);
+  $('files').onchange=e=>{addFiles([...e.target.files],null,null);e.target.value=''};
+  $('drop').onclick=()=>$('files').click();
+  $('tpl').onchange=e=>{$('tplStatus').textContent=e.target.files[0]?`PPT 양식: ${e.target.files[0].name} 확인됨`:'PPT 양식: 미업로드'};
+  dropFiles($('drop'),fs=>addFiles(fs,null,null));
+  poolDrop();
+  document.addEventListener('paste',e=>{
+    const fs=[...(e.clipboardData?.files||[])].filter(f=>f.type.startsWith('image/'));
+    if(fs.length)addFiles(fs,null,null);
+  });
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleHubSync(false,100)});
+  window.addEventListener('load',()=>scheduleHubSync(true,250));
+  renderMgr();
+  scheduleHubSync(true,700);
+  hubSyncTimer=setInterval(()=>{if(!document.hidden)scheduleHubSync(false,0)},HUB_SYNC_INTERVAL_MS);
 }
 
-function renderAll() {
-  state.period=makePeriod(state.current,state.previous);
-  state.previousPeriod=(state.previous&&state.prior&&sameMonth(state.previous,state.prior))?makePeriod(state.previous,state.prior):null;
-  buildMetrics();
-  $("#periodLabel").textContent=state.period.baseline?`${koDate(state.current.snapshot_date)} 기준 월 누계(최초 기준)`: `${koDate(state.period.startDate)}~${koDate(state.period.endDate)} 추가 판매`;
-  $("#updatedAt").textContent=`원본: ${state.current.source_name||"-"} · 등록 ${state.current.uploaded_at?new Date(state.current.uploaded_at).toLocaleString("ko-KR"):"-"}`;
-  $("#modeBadge").textContent=state.demo?"업로드 파일 미리보기":"실데이터";
-  renderOverview(); renderStore(); renderCompare(); renderCategories(); renderModels(); renderBriefing();
+function resetHubSyncState(){
+  hubLastSyncKey='';
+  hubLastSyncVersion='';
+  hubAutoRetry=0;
 }
 
-async function loadData(snapshotDate="") {
-  try {
-    const res=await fetch(`/api/dashboard${snapshotDate?`?date=${encodeURIComponent(snapshotDate)}`:""}`,{cache:"no-store"});
-    const data=await res.json(); if(!res.ok||!data.ok) throw new Error(data.message||"조회 실패");
-    if(!data.current) throw new Error("EMPTY");
-    state.weeks=data.weeks||[]; state.current=data.current; state.previous=data.previous; state.prior=data.prior; state.demo=false;
-  } catch(e) {
-    const demo=window.COSTCO_DEMO_SNAPSHOT;
-    if(!demo){$("#emptyState").hidden=false;$("#dashboard").hidden=true;return;}
-    state.weeks=[{snapshot_date:demo.snapshot_date,snapshot_label:demo.snapshot_label}]; state.current=demo; state.previous=null; state.prior=null; state.demo=true;
+function scheduleHubSync(force=true,delay=250){
+  clearTimeout(hubAutoTimer);
+  hubAutoTimer=setTimeout(()=>{
+    if(hubSyncBusy){scheduleHubSync(force,700);return}
+    syncHubPhotos(force);
+  },Math.max(0,delay));
+}
+
+function selInit(){
+  $('mgr').innerHTML=Object.keys(M).map(x=>`<option>${x}</option>`).join('');
+  $('mgr').value=mgr;
+  $('mgr').onchange=()=>{
+    mgr=$('mgr').value;
+    st=M[mgr][0];
+    page=0;
+    resetHubSyncState();
+    renderMgr();
+    scheduleHubSync(true,120);
+  };
+  $('store').onchange=()=>{
+    st=$('store').value;
+    page=0;
+    resetHubSyncState();
+    render();
+    scheduleHubSync(true,120);
+  };
+}
+function renderMgr(){
+  $('store').innerHTML=M[mgr].map(x=>`<option>${x}</option>`).join('');
+  $('store').value=st;
+  render();
+}
+function selStore(x){
+  st=x;
+  $('store').value=x;
+  page=0;
+  resetHubSyncState();
+  render();
+  scheduleHubSync(true,120);
+}
+
+function buildStoreLayouts(store){
+  const pointers=Object.fromEntries(C.map(c=>[c[0],0]));
+  const layouts=[];
+  const hasRemaining=()=>C.some(c=>pointers[c[0]]<DATA[store].cat[c[0]].length);
+  do{
+    const main={},mainBase={};
+    C.forEach(c=>{
+      const cat=c[0],arr=DATA[store].cat[cat];
+      mainBase[cat]=pointers[cat];
+      main[cat]=[];
+      for(let r=0;r<MAIN_PER&&pointers[cat]<arr.length;r++){
+        const index=pointers[cat]++;
+        main[cat].push({cat,index,photo:arr[index]});
+      }
+    });
+    const overflow=[];
+    while(overflow.length<OVERFLOW_PER){
+      let added=false;
+      for(const c of C){
+        const cat=c[0],arr=DATA[store].cat[cat];
+        if(pointers[cat]<arr.length){
+          const index=pointers[cat]++;
+          overflow.push({cat,index,photo:arr[index]});
+          added=true;
+          if(overflow.length>=OVERFLOW_PER)break;
+        }
+      }
+      if(!added)break;
+    }
+    layouts.push({main,mainBase,overflow,overflowSlots:placeOverflowSlots(overflow)});
+  }while(hasRemaining());
+  return layouts;
+}
+
+function placeOverflowSlots(entries){
+  const slots=Array(OVERFLOW_PER).fill(null);
+  for(const entry of entries){
+    const preferred=Math.max(0,C.findIndex(c=>c[0]===entry.cat));
+    let target=preferred;
+    if(slots[target]){
+      target=-1;
+      for(let distance=1;distance<OVERFLOW_PER;distance++){
+        const right=preferred+distance,left=preferred-distance;
+        if(right<OVERFLOW_PER&&!slots[right]){target=right;break}
+        if(left>=0&&!slots[left]){target=left;break}
+      }
+      if(target<0)target=slots.findIndex(x=>!x);
+    }
+    if(target>=0)slots[target]=entry;
   }
-  $("#emptyState").hidden=true; $("#dashboard").hidden=false;
-  const select=$("#snapshotSelect"); select.innerHTML=state.weeks.map((w)=>`<option value="${w.snapshot_date}">${esc(w.snapshot_label||w.snapshot_date)}</option>`).join(""); select.value=state.current.snapshot_date;
-  renderAll();
+  return slots;
 }
 
-$$('.tab').forEach((b)=>b.addEventListener('click',()=>{$$('.tab').forEach((x)=>x.classList.remove('active'));$$('.tab-panel').forEach((x)=>x.classList.remove('active'));b.classList.add('active');$(`#tab-${b.dataset.tab}`).classList.add('active');}));
-$("#snapshotSelect").addEventListener("change",(e)=>loadData(e.target.value));
-$("#refreshBtn").addEventListener("click",()=>loadData($("#snapshotSelect").value));
-$("#storeSelect").addEventListener("change",renderStore);
-$("#compareStoreA").addEventListener("change",renderCompare); $("#compareStoreB").addEventListener("change",renderCompare);
-$("#divisionFilter").addEventListener("change",renderCategories);
-$("#briefingStoreSelect").addEventListener("change",renderBriefing);
-$$('.copy-btn').forEach((b)=>b.addEventListener('click',()=>copyText($(`#${b.dataset.copyTarget}`).textContent,b)));
-initViewer();
-loadData();
+function render(){
+  const ms=M[mgr];
+  $('tabs').innerHTML=ms.map(x=>`<button class="tab ${x===st?'on':''}" onclick="selStore('${x}')">${x.replace('점','')}</button>`).join('');
+  $('info').textContent=`${mgr} 담당 / 코스트코 ${st}`;
+  $('title').innerHTML=`코스트코 ${st}<span class="autoBadge">HUB 자동 연동</span>`;
+  const max=pages(st);
+  if(page>=max)page=max-1;
+  if(page<0)page=0;
+  $('pageNo').textContent=`${page+1} / ${max}`;
+  renderPool();
+  renderSheet();
+  summary();
+}
+function renderSheet(){
+  $('sheet').innerHTML=sheetHtml(st,page,true);
+  document.querySelectorAll('.slot[data-cat]').forEach(slotDrop);
+}
 
-  </script>
+function sheetHtml(store,p,live){
+  const layouts=buildStoreLayouts(store),layout=layouts[p]||layouts[0];
+  const hasOverflow=layout.overflow.length>0;
+  const h1=C.map(c=>`<th class="h1">${c[1]}</th>`).join('');
+  const h2=C.map(c=>`<th class="h2">${c[2]}</th>`).join('');
+  let rows='';
+  for(let r=0;r<MAIN_PER;r++){
+    rows+=`<tr class="photoRow">${r===0?`<td rowspan="${hasOverflow?4:3}" class="photoLab">현장<br>사진</td>`:''}`;
+    for(const c of C){
+      const cat=c[0],entry=layout.main[cat][r]||null;
+      const idx=entry?entry.index:Math.min(layout.mainBase[cat]+r,DATA[store].cat[cat].length);
+      rows+=`<td>${slotHtml(entry,cat,idx,live,hasOverflow,false)}</td>`;
+    }
+    rows+='</tr>';
+  }
+  if(hasOverflow){
+    rows+='<tr class="overflowRow">';
+    for(let i=0;i<OVERFLOW_PER;i++){
+      const entry=layout.overflowSlots[i];
+      rows+=`<td>${slotHtml(entry,entry?.cat||'',entry?.index??0,live,true,true)}</td>`;
+    }
+    rows+='</tr>';
+  }else{
+    rows+='<tr class="content"><td class="lab">내용</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+  }
+  return `<div class="top"><div class="store">코스트코 ${store}</div><div class="ttl">코스트코 진열·연출점검</div></div><table class="grid${hasOverflow?' hasOverflow':''}"><colgroup><col style="width:40px"><col span="6"></colgroup><tr><th class="lab" rowspan="2">품목</th>${h1}</tr><tr>${h2}</tr>${rows}</table>`;
+}
+
+function slotHtml(entry,cat,idx,live,compact,isOverflow){
+  const p=entry?.photo||null;
+  if(!p){
+    const attrs=live&&cat?`data-cat="${cat}" data-idx="${idx}"`:'';
+    return `<div class="slot" ${attrs}><span class="${isOverflow?'overflowHint':'hint'}">${isOverflow?'추가 사진':'4cm × 4cm'}</span></div>`;
+  }
+  const attrs=live?`data-cat="${entry.cat}" data-idx="${entry.index}"`:'';
+  const img=live?thumb(p,entry.cat):`<img src="${p.url}" style="width:${compact?142:151}px;height:${compact?142:151}px;object-fit:cover">`;
+  const label=!live&&isOverflow&&p.label?`<span class="overflowPhotoLabel">${escHtml(p.label)}</span>`:'';
+  return `<div class="slot" ${attrs}>${img}${label}</div>`;
+}
+
+function thumb(p,from){
+  return `<div class="thumb" draggable="true" data-id="${p.id}" data-from="${from}" title="${escHtml(p.label||'')}"><img src="${p.url}"><span class="kb">${fmt(p.size)}</span>${p.label?`<span class="remoteLabel">${escHtml(p.label)}</span>`:''}<span class="x" data-del="${p.id}" data-from="${from}">×</span></div>`;
+}
+function renderPool(){
+  const p=DATA[st].pool;
+  $('pool').innerHTML=p.length?p.map(x=>thumb(x,'pool')).join(''):'<div class="empty">사진을 넣으면<br>여기에 대기 사진으로 표시됩니다.</div>';
+}
+function dropFiles(el,cb){
+  el.ondragover=e=>{e.preventDefault();el.classList.add('drag')};
+  el.ondragleave=()=>el.classList.remove('drag');
+  el.ondrop=e=>{e.preventDefault();el.classList.remove('drag');const fs=getFiles(e);if(fs.length)cb(fs)};
+}
+function poolDrop(){
+  dropFiles($('pool'),fs=>addFiles(fs,null,null));
+  $('pool').ondrop=e=>{
+    e.preventDefault();$('pool').classList.remove('drag');
+    const fs=getFiles(e);
+    if(fs.length){addFiles(fs,null,null);return}
+    if(dragId)move(dragId,dragFrom,'pool',null);
+  };
+  document.addEventListener('dragstart',e=>{
+    const t=e.target.closest?.('.thumb');if(!t)return;
+    dragId=t.dataset.id;dragFrom=t.dataset.from;e.dataTransfer.setData('text/plain',dragId);
+  });
+  document.addEventListener('dragend',()=>{dragId=null;dragFrom=null});
+  document.addEventListener('click',e=>{
+    const x=e.target.closest?.('.x');if(!x)return;
+    e.stopPropagation();remove(x.dataset.del,x.dataset.from);render();
+  });
+}
+function slotDrop(el){
+  el.ondragover=e=>{e.preventDefault();el.classList.add('drag')};
+  el.ondragleave=()=>el.classList.remove('drag');
+  el.ondrop=e=>{
+    e.preventDefault();el.classList.remove('drag');
+    const fs=getFiles(e),cat=el.dataset.cat,idx=Number(el.dataset.idx||0);
+    if(fs.length){addFiles(fs,cat,idx);return}
+    if(dragId)move(dragId,dragFrom,cat,idx);
+  };
+}
+function getFiles(e){
+  const f=[...(e.dataTransfer?.files||[])].filter(x=>x.type.startsWith('image/'));
+  if(f.length)return f;
+  return [...(e.dataTransfer?.items||[])].filter(i=>i.kind==='file').map(i=>i.getAsFile()).filter(x=>x&&x.type.startsWith('image/'));
+}
+async function addFiles(fs,cat,idx){
+  fs=fs.filter(f=>f.type.startsWith('image/'));if(!fs.length)return;
+  const max=+$('max').value;
+  $('status').textContent=`${st} 사진 4cm 정사각형 처리 중...`;
+  $('prog').style.width='0%';
+  const arr=[];
+  for(let i=0;i<fs.length;i++){
+    const q=await squareImage(fs[i],max);
+    arr.push({id:uid(),url:q.url,size:q.size,orig:fs[i].size});
+    $('prog').style.width=Math.round((i+1)/fs.length*100)+'%';
+  }
+  if(cat){
+    const a=DATA[st].cat[cat],pos=Number.isFinite(idx)?Math.min(Math.max(idx,0),a.length):a.length;
+    a.splice(pos,0,...arr);
+  }else DATA[st].pool.push(...arr);
+  render();
+}
+function squareImage(file,max){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const s=Math.min(img.width,img.height),sx=(img.width-s)/2,sy=(img.height-s)/2,c=document.createElement('canvas');
+        c.width=max;c.height=max;
+        const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,max,max);ctx.drawImage(img,sx,sy,s,s,0,0,max,max);
+        const url=c.toDataURL('image/jpeg',.82);
+        res({url,size:Math.round((url.split(',')[1]||'').length*3/4)});
+      };
+      img.onerror=rej;img.src=r.result;
+    };
+    r.onerror=rej;r.readAsDataURL(file);
+  });
+}
+function move(id,from,to,idx){
+  if(from===to&&from!=='pool'){
+    const a=DATA[st].cat[from],old=a.findIndex(x=>x.id===id);
+    if(old<0)return;
+    const [p]=a.splice(old,1);
+    let pos=Number.isFinite(idx)?Math.min(Math.max(idx,0),a.length):a.length;
+    if(old<pos)pos=Math.max(0,pos-1);
+    a.splice(pos,0,p);render();return;
+  }
+  const p=take(id,from);if(!p)return;
+  if(to==='pool')DATA[st].pool.push(p);
+  else{
+    const a=DATA[st].cat[to],pos=Number.isFinite(idx)?Math.min(Math.max(idx,0),a.length):a.length;
+    a.splice(pos,0,p);
+  }
+  render();
+}
+function take(id,from){
+  const a=from==='pool'?DATA[st].pool:DATA[st].cat[from],i=a.findIndex(x=>x.id===id);
+  return i>-1?a.splice(i,1)[0]:null;
+}
+function remove(id,from){take(id,from)}
+function clearPool(){DATA[st].pool=[];render()}
+function autoPut(){
+  const d=DATA[st];let i=0;
+  while(d.pool.length){d.cat[C[i%C.length][0]].push(d.pool.shift());i++}
+  render();
+}
+function prev(){if(page>0){page--;render()}}
+function next(){if(page<pages(st)-1){page++;render()}}
+function summary(){
+  const d=DATA[st],ins=C.flatMap(c=>d.cat[c[0]]),all=[...d.pool,...ins],o=all.reduce((s,p)=>s+p.orig,0),co=all.reduce((s,p)=>s+p.size,0);
+  $('sAll').textContent=all.length+'장';$('sIn').textContent=ins.length+'장';$('sO').textContent=fmt(o);$('sC').textContent=fmt(co);
+  $('cnt').textContent=`배정 ${ins.length}장 / 대기 ${d.pool.length}장`;
+  $('status').textContent=all.length?`현재 점포 ${all.length}장 / 분류 초과 사진은 가장 아래 칸에 자동 배치`:'대기 중';
+}
+function pages(store){return buildStoreLayouts(store).length}
+function assigned(store){return C.reduce((s,c)=>s+DATA[store].cat[c[0]].length,0)}
+function fmt(b){if(!b)return'0MB';const m=b/1048576;return m>=1?m.toFixed(1)+'MB':Math.round(b/1024)+'KB'}
+function uid(){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}
+function fileName(){
+  const w=$('week').value.trim()||'W22',ss=M[mgr].map(x=>x.replace('점','')).join(', ');
+  return `(CE)${w}_코스트코_진열연출점검_(${ss})`;
+}
+
+function squareDataUrl(url,max){
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const s=Math.min(img.width,img.height),sx=(img.width-s)/2,sy=(img.height-s)/2,c=document.createElement('canvas');
+      c.width=max;c.height=max;
+      const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,max,max);ctx.drawImage(img,sx,sy,s,s,0,0,max,max);
+      const out=c.toDataURL('image/jpeg',.82);
+      res({url:out,size:Math.round((out.split(',')[1]||'').length*3/4)});
+    };
+    img.onerror=rej;img.src=url;
+  });
+}
+function isoWeekInfo(offset=0){
+  const k=new Date(Date.now()+9*60*60*1000),today=new Date(Date.UTC(k.getUTCFullYear(),k.getUTCMonth(),k.getUTCDate())),day=today.getUTCDay()||7,m=new Date(today);
+  m.setUTCDate(today.getUTCDate()-day+1+Number(offset||0)*7);
+  const su=new Date(m);su.setUTCDate(m.getUTCDate()+6);
+  const th=new Date(m);th.setUTCDate(m.getUTCDate()+3);
+  const ys=new Date(Date.UTC(th.getUTCFullYear(),0,1)),w=Math.ceil((((th-ys)/86400000)+1)/7),iso=x=>x.toISOString().slice(0,10),week='W'+String(w).padStart(2,'0');
+  return{week,start:iso(m),end:iso(su),label:`${week}(${m.getUTCMonth()+1}월${m.getUTCDate()}일~${su.getUTCMonth()+1}월${su.getUTCDate()}일)`};
+}
+function populateWeekSelects(){
+  const rows=[-1,0,1,2].map(isoWeekInfo);
+  $('shootDate').innerHTML=rows.map((x,i)=>`<option value="${x.start}" data-end="${x.end}" data-week="${x.week}" ${i===1?'selected':''}>${x.label}</option>`).join('');
+  $('week').innerHTML=rows.map((x,i)=>`<option value="${x.week}" ${i===1?'selected':''}>${x.label}</option>`).join('');
+}
+function selectedShootWeek(){
+  const o=$('shootDate').selectedOptions[0],f=isoWeekInfo(0);
+  return{start:o?.value||f.start,end:o?.dataset.end||f.end,week:o?.dataset.week||f.week,label:o?.textContent||f.label};
+}
+function escHtml(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function setHubSyncInfo(msg,type=''){
+  const el=$('hubSyncInfo');el.textContent=msg;el.className='hubSyncInfo'+(type?' '+type:'');
+}
+function hubJsonp(params,timeout=120000){
+  return new Promise((resolve,reject)=>{
+    const cb='__photoPptHub_'+Date.now()+'_'+Math.random().toString(36).slice(2),s=document.createElement('script');
+    const timer=setTimeout(()=>{cleanup();reject(new Error('HUB 응답 시간이 초과되었습니다.'))},timeout);
+    function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(e){window[cb]=undefined}s.remove()}
+    window[cb]=d=>{cleanup();resolve(d)};
+    s.onerror=()=>{cleanup();reject(new Error('HUB 서버에 연결하지 못했습니다.'))};
+    s.src=HUB_BACKEND_URL+'?'+new URLSearchParams({...params,callback:cb}).toString();
+    document.body.appendChild(s);
+  });
+}
+async function syncHubPhotos(force=false){
+  if(hubSyncBusy)return false;
+  const syncStore=st,range=selectedShootWeek(),date=range.start,key=syncStore+'|'+range.start;
+  hubSyncBusy=true;$('hubSyncBtn').disabled=true;
+  try{
+    if(!force&&hubLastSyncKey===key){
+      const meta=await hubJsonp({action:'displayCheckPhotoMeta',store:syncStore,shotDate:date},60000);
+      if(meta?.ok&&meta.version===hubLastSyncVersion){
+        if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.label} HUB 촬영사진은 최신 상태입니다. (${meta.count||0}장)`,'ok');
+        hubAutoRetry=0;return true;
+      }
+    }
+    if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.label} HUB 촬영사진을 자동으로 불러오는 중입니다…`);
+    const r=await hubJsonp({action:'displayCheckPhotos',store:syncStore,shotDate:date,latestOnly:'1',includeData:'1',max:'80'});
+    if(!r||!r.ok)throw new Error(r?.message||'HUB 촬영사진 조회 실패');
+    const byCat=Object.fromEntries(C.map(c=>[c[0],[]]));
+    let loaded=0,failed=0;
+    const remoteRows=r.photos||[],remoteMax=+$('max').value||900;
+    for(let i=0;i<remoteRows.length;i++){
+      const ph=remoteRows[i];
+      let cat=String(ph.pptCategory||'ETC').toUpperCase();if(!byCat[cat])cat='ETC';
+      if(!ph.dataUrl){failed++;continue}
+      try{
+        const sq=await squareDataUrl(ph.dataUrl,remoteMax);
+        byCat[cat].push({
+          id:'hub_'+(ph.fileId||ph.itemCode||i),url:sq.url,size:sq.size,orig:Number(ph.byteSize)||sq.size,
+          remoteId:ph.fileId||'',checkKey:ph.itemCode||'',label:ph.itemName||ph.itemCode||'HUB 촬영',sort:Number(ph.sort)||i+1
+        });
+        loaded++;
+        $('prog').style.width=Math.round((i+1)/Math.max(1,remoteRows.length)*100)+'%';
+      }catch(err){failed++}
+    }
+    C.forEach(c=>{
+      const manual=DATA[syncStore].cat[c[0]].filter(x=>!x.remoteId);
+      DATA[syncStore].cat[c[0]]=[...byCat[c[0]],...manual];
+    });
+    hubLastSyncKey=key;hubLastSyncVersion=r.version||'';hubAutoRetry=0;
+    if(st===syncStore){
+      page=0;render();
+      setHubSyncInfo(`${syncStore} ${range.label} HUB 촬영사진 ${loaded}장을 자동 배치했습니다.${failed?` (${failed}장 불러오기 실패)`:''}`,failed?'err':'ok');
+    }
+    return true;
+  }catch(e){
+    if(st===syncStore)setHubSyncInfo('HUB 사진 자동 불러오기 실패: '+(e.message||e),'err');
+    if(hubAutoRetry<2&&!document.hidden){hubAutoRetry++;scheduleHubSync(true,4000*hubAutoRetry)}
+    return false;
+  }finally{
+    hubSyncBusy=false;$('hubSyncBtn').disabled=false;
+  }
+}
+
+function printCurrent(){buildPrint([{s:st,p:page}]);setTimeout(()=>window.print(),100)}
+function printAll(){
+  const arr=[];
+  for(const s of M[mgr].filter(x=>assigned(x)>0))for(let p=0;p<pages(s);p++)arr.push({s,p});
+  if(!arr.length)return alert('PDF에 넣을 사진이 없습니다.');
+  buildPrint(arr);setTimeout(()=>window.print(),100);
+}
+function buildPrint(arr){$('print').innerHTML=arr.map(x=>`<div class="printPage"><div class="sheet">${sheetHtml(x.s,x.p,false)}</div></div>`).join('')}
+function getPptCtor(){return window.pptxgen||window.pptxgenjs||window.PptxGenJS||null}
+function loadScriptOnce(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
+async function ensurePptLib(){
+  if(getPptCtor())return;
+  try{await loadScriptOnce('./pptxgen.min.js?v='+Date.now())}catch(e){}
+  if(getPptCtor())return;
+  try{await loadScriptOnce('https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js')}catch(e){}
+  if(!getPptCtor())throw new Error('PPT 생성 라이브러리를 못 불러왔습니다. GitHub Pages에서 /pptxgen.min.js 주소가 열리는지 확인하세요. 파일명은 반드시 pptxgen.min.js 입니다.');
+}
+async function makePpt(){
+  try{
+    await ensurePptLib();
+    const stores=M[mgr].filter(x=>assigned(x)>0);
+    if(!stores.length)return alert('배정된 사진이 없습니다.');
+    const PptxCtor=getPptCtor(),pptx=new PptxCtor();
+    pptx.defineLayout({name:'WIDE',width:13.333,height:7.5});pptx.layout='WIDE';
+    pptx.author='Costco Display Check App';pptx.company='Samsung Electronics';pptx.subject='코스트코 진열·연출 점검';pptx.title=fileName();
+    const total=stores.reduce((s,x)=>s+pages(x),0);let done=0;
+    for(const store of stores){
+      for(let p=0;p<pages(store);p++){
+        drawSlide(pptx,pptx.addSlide(),store,p,pages(store));
+        done++;$('prog').style.width=Math.round(done/total*95)+'%';
+        $('status').textContent=`PPT 생성 중... ${store} ${p+1}/${pages(store)}`;
+        await wait(10);
+      }
+    }
+    await pptx.writeFile({fileName:fileName()+'.pptx'});
+    $('prog').style.width='100%';$('status').textContent='PPT 다운로드 완료';
+  }catch(e){console.error(e);alert('PPT 생성 오류: '+(e.message||e))}
+}
+function drawSlide(pptx,slide,store,p,totalPages){
+  const R=pptx.ShapeType?.rect||'rect',layout=buildStoreLayouts(store)[p],hasOverflow=layout.overflow.length>0;
+  slide.background={color:'FFFFFF'};
+  const x0=.10,tw=13.13,topH=.33,lab=.38,col=(tw-lab)/6,mainH=.25,subH=.25,photoY=topH+mainH+subH;
+  const rowH=hasOverflow?1.64:1.70,contH=1.30,cy=photoY+rowH*3;
+  box(slide,R,x0,0,tw,topH,'172033','172033');
+  txt(slide,x0+.08,.05,4.8,.22,`코스트코 ${store}`,15,true,'FFFFFF','left',true);
+  txt(slide,x0+tw-2.9,.07,2.8,.18,'코스트코 진열·연출점검',10.5,true,'FFFFFF','right');
+  if(totalPages>1)txt(slide,x0+tw-3.7,.08,.7,.15,`${p+1}/${totalPages}`,7,false,'D1D5DB','right');
+  box(slide,R,x0,topH,lab,mainH+subH,'D9D9D9');txt(slide,x0,topH,lab,mainH+subH,'품목',8.5,true,'111111','center');
+  C.forEach((c,i)=>{
+    const x=x0+lab+i*col;
+    box(slide,R,x,topH,col,mainH,'D9D9D9');box(slide,R,x,topH+mainH,col,subH,'D9D9D9');
+    txt(slide,x,topH+.04,col,.15,c[1],7.1,true,'111111','center');
+    txt(slide,x,topH+mainH+.04,col,.15,c[2],6.2,true,'1F5AA6','center',true);
+  });
+  box(slide,R,x0,photoY,lab,rowH*(hasOverflow?4:3),'D9D9D9');
+  txt(slide,x0+.01,photoY,lab-.02,rowH*(hasOverflow?4:3),'현장\n사진',8.5,true,'111111','center');
+  for(let r=0;r<MAIN_PER;r++){
+    for(let i=0;i<C.length;i++){
+      const x=x0+lab+i*col,y=photoY+r*rowH,entry=layout.main[C[i][0]][r];
+      box(slide,R,x,y,col,rowH,'FFFFFF');
+      if(entry?.photo)slide.addImage({data:entry.photo.url,x:x+(col-PIC)/2,y:y+(rowH-PIC)/2,w:PIC,h:PIC});
+    }
+  }
+  if(hasOverflow){
+    const y=photoY+MAIN_PER*rowH;
+    for(let i=0;i<C.length;i++){
+      const x=x0+lab+i*col,entry=layout.overflowSlots[i];
+      box(slide,R,x,y,col,rowH,'FFFFFF');
+      if(entry?.photo){
+        slide.addImage({data:entry.photo.url,x:x+(col-PIC)/2,y:y+(rowH-PIC)/2,w:PIC,h:PIC});
+        if(entry.photo.label)slide.addText(String(entry.photo.label),{
+          x:x+.05,y:y+rowH-.22,w:col-.10,h:.16,fontFace:'Malgun Gothic',fontSize:5.5,bold:true,
+          color:'1F3D67',align:'center',valign:'mid',margin:0,fit:'shrink',
+          fill:{color:'FFFFFF',transparency:8},line:{color:'D5DFEC',transparency:35,width:.4}
+        });
+      }
+    }
+  }else{
+    box(slide,R,x0,cy,lab,contH,'D9D9D9');txt(slide,x0,cy,lab,contH,'내용',8.5,true,'111111','center');
+    for(let i=0;i<C.length;i++)box(slide,R,x0+lab+i*col,cy,col,contH,'F3F3F3');
+  }
+}
+function box(slide,R,x,y,w,h,fill,line='222222'){slide.addShape(R,{x,y,w,h,fill:{color:fill},line:{color:line,width:1}})}
+function txt(slide,x,y,w,h,t,size=8,bold=false,color='111111',align='center',under=false){slide.addText(t,{x,y,w,h,fontFace:'Malgun Gothic',fontSize:size,bold,color,align,valign:'mid',margin:0,fit:'shrink',underline:under})}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+</script>
 </body>
 </html>
