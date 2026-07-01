@@ -14,7 +14,7 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 </style>
 </head>
 <body>
-<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v11</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
+<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v12</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
 <main>
 <section class="bar">
 <label>연도<select id="year"></select></label>
@@ -27,7 +27,7 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 <button id="hubSyncBtn" class="blue" type="button">HUB 사진 새로고침</button><button onclick="autoPut()">대기사진 자동배치</button><button class="blue" onclick="printCurrent()">현재 PDF</button><button class="primary" onclick="makePpt()">PPT 생성</button>
 </section>
 <div id="tabs" class="tabs"></div>
-<div class="notice"><b>자동 연동:</b> 연도별 전체 주차를 선택할 수 있으며, 점포와 HUB 촬영 주차를 선택하면 사진을 자동으로 불러옵니다. 기본 3×6칸을 초과한 비네트·에어컨 사진은 <b>가장 아래 추가 사진 칸</b>에 자동 배치되며, PPT 사진 크기는 <b>정확히 4cm × 4cm</b>로 유지됩니다.</div>
+<div class="notice"><b>고속 자동 연동:</b> 점포와 HUB 촬영 주차를 선택하면 가벼운 사진 주소를 먼저 받아 즉시 배치하고, PPT 생성 시에만 고화질 데이터를 준비합니다. 기본 3×6칸을 초과한 비네트·에어컨 사진은 <b>가장 아래 추가 사진 칸</b>에 자동 배치되며, PPT 사진 크기는 <b>정확히 4cm × 4cm</b>로 유지됩니다.</div>
 <section class="layout">
 <aside class="card"><div class="cardHead"><div><h2>사진 대기함</h2><span id="info" style="font-size:12px;color:#667085"></span></div><button class="danger small" onclick="clearPool()">대기함 비우기</button></div><div class="body">
 <label class="drop" id="drop"><input type="file" id="files" accept="image/*" multiple><span><b>사진을 여기에 넣기</b>드래그가 안 되면 클릭해서 선택<br>Ctrl+V 붙여넣기도 가능</span></label>
@@ -43,7 +43,9 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 <script>
 const HUB_BACKEND_URL='https://script.google.com/macros/s/AKfycbwtnE_Bwm4YwwBHdg-38aelzvlnR0ryZKo9zwLwVjkiehVFdaboxDBFdS8NsAg3ZeGhZQ/exec';
 const HUB_SYNC_INTERVAL_MS=60000;
-let hubSyncBusy=false,hubSyncTimer=0,hubAutoTimer=0,hubAutoRetry=0,hubLastSyncKey='',hubLastSyncVersion='';
+const HUB_LITE_CACHE_PREFIX='costcoPhotoHubLiteV12:';
+let hubSyncTimer=0,hubAutoTimer=0,hubAutoRetry=0,hubRequestSeq=0,hubActiveRequests=0;
+const hubMemoryCache=new Map();
 
 const M={
   "윤재경":["송도점","일산점","고척점","청라점","천안점"],
@@ -73,16 +75,14 @@ function init(){
   populateWeekSelects();
   $('year').onchange=()=>{
     populateWeekSelects();
-    resetHubSyncState();
-    scheduleHubSync(true,150);
+    beginHubSelectionSync(true,80);
   };
   $('shootDate').onchange=()=>{
     const w=$('shootDate').selectedOptions[0]?.dataset.week;
     if(w)$('week').value=w;
-    resetHubSyncState();
-    scheduleHubSync(true,150);
+    beginHubSelectionSync(true,80);
   };
-  $('hubSyncBtn').onclick=()=>scheduleHubSync(true,0);
+  $('hubSyncBtn').onclick=()=>beginHubSelectionSync(true,0);
   $('files').onchange=e=>{addFiles([...e.target.files],null,null);e.target.value=''};
   $('drop').onclick=()=>$('files').click();
   $('tpl').onchange=e=>{$('tplStatus').textContent=e.target.files[0]?`PPT 양식: ${e.target.files[0].name} 확인됨`:'PPT 양식: 미업로드'};
@@ -92,25 +92,35 @@ function init(){
     const fs=[...(e.clipboardData?.files||[])].filter(f=>f.type.startsWith('image/'));
     if(fs.length)addFiles(fs,null,null);
   });
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleHubSync(false,100)});
-  window.addEventListener('load',()=>scheduleHubSync(true,250));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)beginHubSelectionSync(false,50)});
   renderMgr();
-  scheduleHubSync(true,700);
+  beginHubSelectionSync(true,120);
   hubSyncTimer=setInterval(()=>{if(!document.hidden)scheduleHubSync(false,0)},HUB_SYNC_INTERVAL_MS);
 }
 
+function currentHubSelection(){
+  const range=selectedShootWeek();
+  return{store:st,range,key:st+'|'+range.start};
+}
 function resetHubSyncState(){
-  hubLastSyncKey='';
-  hubLastSyncVersion='';
+  clearTimeout(hubAutoTimer);
+  hubRequestSeq++;
   hubAutoRetry=0;
 }
-
+function beginHubSelectionSync(force=true,delay=100){
+  resetHubSyncState();
+  const sel=currentHubSelection(),cached=getHubCache(sel.key);
+  if(cached){
+    applyHubResponse(sel.store,sel.range,cached,true);
+    setHubSyncInfo(`${sel.store} ${sel.range.year}년 ${sel.range.label} 저장된 사진 ${cached.count||0}장을 먼저 표시했습니다. 최신 상태를 확인하는 중입니다…`,'ok');
+  }else{
+    setHubSyncInfo(`${sel.store} ${sel.range.year}년 ${sel.range.label} HUB 촬영사진을 확인하는 중입니다…`);
+  }
+  scheduleHubSync(force,delay);
+}
 function scheduleHubSync(force=true,delay=250){
   clearTimeout(hubAutoTimer);
-  hubAutoTimer=setTimeout(()=>{
-    if(hubSyncBusy){scheduleHubSync(force,700);return}
-    syncHubPhotos(force);
-  },Math.max(0,delay));
+  hubAutoTimer=setTimeout(()=>syncHubPhotos(force),Math.max(0,delay));
 }
 
 function selInit(){
@@ -120,16 +130,14 @@ function selInit(){
     mgr=$('mgr').value;
     st=M[mgr][0];
     page=0;
-    resetHubSyncState();
     renderMgr();
-    scheduleHubSync(true,120);
+    beginHubSelectionSync(true,80);
   };
   $('store').onchange=()=>{
     st=$('store').value;
     page=0;
-    resetHubSyncState();
     render();
-    scheduleHubSync(true,120);
+    beginHubSelectionSync(true,80);
   };
 }
 function renderMgr(){
@@ -141,9 +149,8 @@ function selStore(x){
   st=x;
   $('store').value=x;
   page=0;
-  resetHubSyncState();
   render();
-  scheduleHubSync(true,120);
+  beginHubSelectionSync(true,80);
 }
 
 function buildStoreLayouts(store){
@@ -258,7 +265,7 @@ function slotHtml(entry,cat,idx,live,compact,isOverflow){
 }
 
 function thumb(p,from){
-  return `<div class="thumb" draggable="true" data-id="${p.id}" data-from="${from}" title="${escHtml(p.label||'')}"><img src="${p.url}"><span class="kb">${fmt(p.size)}</span>${p.label?`<span class="remoteLabel">${escHtml(p.label)}</span>`:''}<span class="x" data-del="${p.id}" data-from="${from}">×</span></div>`;
+  return `<div class="thumb" draggable="true" data-id="${p.id}" data-from="${from}" title="${escHtml(p.label||'')}"><img src="${p.url}">${p.size?`<span class="kb">${fmt(p.size)}</span>`:''}${p.label?`<span class="remoteLabel">${escHtml(p.label)}</span>`:''}<span class="x" data-del="${p.id}" data-from="${from}">×</span></div>`;
 }
 function renderPool(){
   const p=DATA[st].pool;
@@ -450,64 +457,132 @@ function hubJsonp(params,timeout=120000){
     document.body.appendChild(s);
   });
 }
-async function syncHubPhotos(force=false){
-  if(hubSyncBusy)return false;
-  const syncStore=st,range=selectedShootWeek(),date=range.start,key=syncStore+'|'+range.start;
-  hubSyncBusy=true;$('hubSyncBtn').disabled=true;
+function hubCacheStorageKey(key){return HUB_LITE_CACHE_PREFIX+key}
+function getHubCache(key){
+  if(hubMemoryCache.has(key))return hubMemoryCache.get(key);
   try{
-    if(!force&&hubLastSyncKey===key){
-      const meta=await hubJsonp({action:'displayCheckPhotoMeta',store:syncStore,shotDate:date},60000);
-      if(meta?.ok&&meta.version===hubLastSyncVersion){
-        if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진은 최신 상태입니다. (${meta.count||0}장)`,'ok');
+    const raw=sessionStorage.getItem(hubCacheStorageKey(key));
+    if(!raw)return null;
+    const parsed=JSON.parse(raw);
+    if(!parsed||!Array.isArray(parsed.photos))return null;
+    hubMemoryCache.set(key,parsed);
+    return parsed;
+  }catch(e){return null}
+}
+function setHubCache(key,value){
+  hubMemoryCache.set(key,value);
+  try{sessionStorage.setItem(hubCacheStorageKey(key),JSON.stringify(value))}catch(e){}
+}
+function remotePhotoUrl(ph){
+  return String(ph.imageUrl||'').trim()||(ph.fileId?`https://drive.google.com/thumbnail?id=${encodeURIComponent(ph.fileId)}&sz=w1600`:'');
+}
+function applyHubResponse(syncStore,range,response,fromCache=false){
+  const byCat=Object.fromEntries(C.map(c=>[c[0],[]]));
+  const rows=Array.isArray(response?.photos)?response.photos:[];
+  let loaded=0,failed=0;
+  rows.forEach((ph,i)=>{
+    let cat=String(ph.pptCategory||'ETC').toUpperCase();if(!byCat[cat])cat='ETC';
+    const url=remotePhotoUrl(ph);
+    if(!url){failed++;return}
+    byCat[cat].push({
+      id:'hub_'+(ph.fileId||ph.itemCode||i),url,size:Number(ph.byteSize)||0,orig:Number(ph.byteSize)||0,
+      remoteId:ph.fileId||'',checkKey:ph.itemCode||'',label:ph.itemName||ph.itemCode||'HUB 촬영',sort:Number(ph.sort)||i+1,
+      sourceUrl:url,pptReady:String(url).startsWith('data:'),shotDate:range.start
+    });
+    loaded++;
+  });
+  C.forEach(c=>{
+    const manual=DATA[syncStore].cat[c[0]].filter(x=>!x.remoteId);
+    DATA[syncStore].cat[c[0]]=[...byCat[c[0]],...manual];
+  });
+  if(st===syncStore&&selectedShootWeek().start===range.start){page=0;render()}
+  return{loaded,failed,fromCache};
+}
+async function syncHubPhotos(force=false){
+  const syncStore=st,range=selectedShootWeek(),date=range.start,key=syncStore+'|'+range.start;
+  const requestSeq=++hubRequestSeq;
+  const cached=getHubCache(key);
+  hubActiveRequests++;
+  if(requestSeq===hubRequestSeq){$('hubSyncBtn').disabled=true;$('hubSyncBtn').textContent='사진 확인 중…'}
+  try{
+    if(!force&&cached?.version){
+      const meta=await hubJsonp({action:'displayCheckPhotoMeta',store:syncStore,shotDate:date,_ts:Date.now()},20000);
+      if(requestSeq!==hubRequestSeq)return false;
+      if(meta?.ok&&meta.version===cached.version){
+        setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진은 최신 상태입니다. (${meta.count||0}장)`,'ok');
         hubAutoRetry=0;return true;
       }
     }
-    if(st===syncStore)setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진을 자동으로 불러오는 중입니다…`);
-    const r=await hubJsonp({action:'displayCheckPhotos',store:syncStore,shotDate:date,latestOnly:'1',includeData:'1',max:'80'});
+    if(requestSeq===hubRequestSeq)setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} 사진 목록을 빠르게 불러오는 중입니다…`);
+    // 화면 표시에는 Drive 원본(base64)을 내려받지 않고 가벼운 사진 주소만 사용합니다.
+    const r=await hubJsonp({action:'displayCheckPhotos',store:syncStore,shotDate:date,latestOnly:'1',includeData:'0',max:'80',_ts:Date.now()},30000);
     if(!r||!r.ok)throw new Error(r?.message||'HUB 촬영사진 조회 실패');
-    const byCat=Object.fromEntries(C.map(c=>[c[0],[]]));
-    let loaded=0,failed=0;
-    const remoteRows=r.photos||[],remoteMax=+$('max').value||900;
-    for(let i=0;i<remoteRows.length;i++){
-      const ph=remoteRows[i];
-      let cat=String(ph.pptCategory||'ETC').toUpperCase();if(!byCat[cat])cat='ETC';
-      if(!ph.dataUrl){failed++;continue}
-      try{
-        const sq=await squareDataUrl(ph.dataUrl,remoteMax);
-        byCat[cat].push({
-          id:'hub_'+(ph.fileId||ph.itemCode||i),url:sq.url,size:sq.size,orig:Number(ph.byteSize)||sq.size,
-          remoteId:ph.fileId||'',checkKey:ph.itemCode||'',label:ph.itemName||ph.itemCode||'HUB 촬영',sort:Number(ph.sort)||i+1
-        });
-        loaded++;
-        $('prog').style.width=Math.round((i+1)/Math.max(1,remoteRows.length)*100)+'%';
-      }catch(err){failed++}
-    }
-    C.forEach(c=>{
-      const manual=DATA[syncStore].cat[c[0]].filter(x=>!x.remoteId);
-      DATA[syncStore].cat[c[0]]=[...byCat[c[0]],...manual];
-    });
-    hubLastSyncKey=key;hubLastSyncVersion=r.version||'';hubAutoRetry=0;
-    if(st===syncStore){
-      page=0;render();
-      setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진 ${loaded}장을 자동 배치했습니다.${failed?` (${failed}장 불러오기 실패)`:''}`,failed?'err':'ok');
-    }
+    const cacheEntry={ok:true,store:syncStore,shotDate:date,photos:r.photos||[],count:r.count||0,version:r.version||'',updatedAt:r.updatedAt||''};
+    setHubCache(key,cacheEntry);
+    if(requestSeq!==hubRequestSeq||st!==syncStore||selectedShootWeek().start!==date)return true;
+    const result=applyHubResponse(syncStore,range,cacheEntry,false);
+    hubAutoRetry=0;
+    setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진 ${result.loaded}장을 빠르게 배치했습니다.${result.failed?` (${result.failed}장 주소 확인 실패)`:''}`,result.failed?'err':'ok');
     return true;
   }catch(e){
-    if(st===syncStore)setHubSyncInfo('HUB 사진 자동 불러오기 실패: '+(e.message||e),'err');
-    if(hubAutoRetry<2&&!document.hidden){hubAutoRetry++;scheduleHubSync(true,4000*hubAutoRetry)}
+    if(requestSeq===hubRequestSeq&&st===syncStore&&selectedShootWeek().start===date){
+      setHubSyncInfo('HUB 사진 자동 불러오기 실패: '+(e.message||e),'err');
+      if(hubAutoRetry<2&&!document.hidden){hubAutoRetry++;scheduleHubSync(true,2500*hubAutoRetry)}
+    }
     return false;
   }finally{
-    hubSyncBusy=false;$('hubSyncBtn').disabled=false;
+    hubActiveRequests=Math.max(0,hubActiveRequests-1);
+    if(requestSeq===hubRequestSeq){$('hubSyncBtn').disabled=false;$('hubSyncBtn').textContent='HUB 사진 새로고침'}
   }
 }
 
-function printCurrent(){buildPrint([{s:st,p:page}]);setTimeout(()=>window.print(),100)}
-function printAll(){
+async function mapLimit(items,limit,worker){
+  const out=new Array(items.length);let next=0;
+  async function run(){
+    while(true){const i=next++;if(i>=items.length)return;out[i]=await worker(items[i],i)}
+  }
+  await Promise.all(Array.from({length:Math.min(limit,items.length)},run));
+  return out;
+}
+async function hydrateRemotePhotosForPpt(stores){
+  const range=selectedShootWeek(),max=+$('max').value||900;
+  let total=0,done=0;
+  stores.forEach(store=>C.forEach(c=>{total+=DATA[store].cat[c[0]].filter(p=>p.remoteId&&!String(p.url||'').startsWith('data:')).length}));
+  if(!total)return;
+  $('status').textContent='PPT용 고화질 사진을 준비하는 중...';$('prog').style.width='0%';
+  for(const store of stores){
+    const targets=C.flatMap(c=>DATA[store].cat[c[0]]).filter(p=>p.remoteId&&!String(p.url||'').startsWith('data:'));
+    if(!targets.length)continue;
+    const r=await hubJsonp({action:'displayCheckPhotos',store,shotDate:range.start,latestOnly:'1',includeData:'1',max:'80',_ts:Date.now()},120000);
+    if(!r?.ok)throw new Error(`${store} PPT용 사진 조회 실패: ${r?.message||'알 수 없는 오류'}`);
+    const rowsById=new Map((r.photos||[]).map(x=>[String(x.fileId||''),x]));
+    await mapLimit(targets,4,async p=>{
+      const row=rowsById.get(String(p.remoteId||''));
+      if(!row?.dataUrl)throw new Error(`${store} ${p.label||p.remoteId} 사진 데이터가 없습니다.`);
+      const sq=await squareDataUrl(row.dataUrl,max);
+      p.url=sq.url;p.size=sq.size;p.orig=Number(row.byteSize)||sq.size;p.pptReady=true;
+      done++;$('prog').style.width=Math.round(done/Math.max(1,total)*85)+'%';
+    });
+  }
+  render();
+}
+
+async function waitForPrintImages(root,timeout=15000){
+  const imgs=[...root.querySelectorAll('img')];
+  if(!imgs.length)return;
+  await Promise.race([
+    Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(res=>{img.onload=img.onerror=res}))),
+    new Promise(res=>setTimeout(res,timeout))
+  ]);
+}
+async function printCurrent(){buildPrint([{s:st,p:page}]);await waitForPrintImages($('print'));window.print()}
+async function printAll(){
   const arr=[];
   for(const s of M[mgr].filter(x=>assigned(x)>0))for(let p=0;p<pages(s);p++)arr.push({s,p});
   if(!arr.length)return alert('PDF에 넣을 사진이 없습니다.');
-  buildPrint(arr);setTimeout(()=>window.print(),100);
+  buildPrint(arr);await waitForPrintImages($('print'));window.print();
 }
+
 function buildPrint(arr){$('print').innerHTML=arr.map(x=>`<div class="printPage"><div class="sheet">${sheetHtml(x.s,x.p,false)}</div></div>`).join('')}
 function getPptCtor(){return window.pptxgen||window.pptxgenjs||window.PptxGenJS||null}
 function loadScriptOnce(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
@@ -523,6 +598,7 @@ async function makePpt(){
     await ensurePptLib();
     const stores=M[mgr].filter(x=>assigned(x)>0);
     if(!stores.length)return alert('배정된 사진이 없습니다.');
+    await hydrateRemotePhotosForPpt(stores);
     const PptxCtor=getPptCtor(),pptx=new PptxCtor();
     pptx.defineLayout({name:'WIDE',width:13.333,height:7.5});pptx.layout='WIDE';
     pptx.author='Costco Display Check App';pptx.company='Samsung Electronics';pptx.subject='코스트코 진열·연출 점검';pptx.title=fileName();
