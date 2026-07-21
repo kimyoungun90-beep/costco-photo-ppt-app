@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ko">
 <head>
@@ -14,7 +15,7 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 </style>
 </head>
 <body>
-<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v12</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
+<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v13</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
 <main>
 <section class="bar">
 <label>연도<select id="year"></select></label>
@@ -43,7 +44,7 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 <script>
 const HUB_BACKEND_URL='https://script.google.com/macros/s/AKfycbwtnE_Bwm4YwwBHdg-38aelzvlnR0ryZKo9zwLwVjkiehVFdaboxDBFdS8NsAg3ZeGhZQ/exec';
 const HUB_SYNC_INTERVAL_MS=60000;
-const HUB_LITE_CACHE_PREFIX='costcoPhotoHubLiteV12:';
+const HUB_LITE_CACHE_PREFIX='costcoPhotoHubLiteV13:';
 let hubSyncTimer=0,hubAutoTimer=0,hubAutoRetry=0,hubRequestSeq=0,hubActiveRequests=0;
 const hubMemoryCache=new Map();
 
@@ -506,7 +507,11 @@ async function syncHubPhotos(force=false){
   if(requestSeq===hubRequestSeq){$('hubSyncBtn').disabled=true;$('hubSyncBtn').textContent='사진 확인 중…'}
   try{
     if(!force&&cached?.version){
-      const meta=await hubJsonp({action:'displayCheckPhotoMeta',store:syncStore,shotDate:date,_ts:Date.now()},20000);
+      if(requestSeq===hubRequestSeq&&st===syncStore&&selectedShootWeek().start===date){
+        applyHubResponse(syncStore,range,cached,true);
+        setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} 저장된 사진을 즉시 표시하고 최신 여부를 확인 중입니다…`,'ok');
+      }
+      const meta=await hubJsonp({action:'displayCheckPhotoMeta',store:syncStore,shotDate:date,_ts:Date.now()},12000);
       if(requestSeq!==hubRequestSeq)return false;
       if(meta?.ok&&meta.version===cached.version){
         setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} HUB 촬영사진은 최신 상태입니다. (${meta.count||0}장)`,'ok');
@@ -515,7 +520,7 @@ async function syncHubPhotos(force=false){
     }
     if(requestSeq===hubRequestSeq)setHubSyncInfo(`${syncStore} ${range.year}년 ${range.label} 사진 목록을 빠르게 불러오는 중입니다…`);
     // 화면 표시에는 Drive 원본(base64)을 내려받지 않고 가벼운 사진 주소만 사용합니다.
-    const r=await hubJsonp({action:'displayCheckPhotos',store:syncStore,shotDate:date,latestOnly:'1',includeData:'0',max:'80',_ts:Date.now()},30000);
+    const r=await hubJsonp({action:'displayCheckPhotos',store:syncStore,shotDate:date,latestOnly:'1',includeData:'0',max:'80',_ts:Date.now()},15000);
     if(!r||!r.ok)throw new Error(r?.message||'HUB 촬영사진 조회 실패');
     const cacheEntry={ok:true,store:syncStore,shotDate:date,photos:r.photos||[],count:r.count||0,version:r.version||'',updatedAt:r.updatedAt||''};
     setHubCache(key,cacheEntry);
