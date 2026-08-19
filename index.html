@@ -1,10 +1,11 @@
 
+
 <!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>코스트코 진열·연출 점검 PPT 생성기 v11</title>
+<title>코스트코 진열·연출 점검 PPT 생성기 v14</title>
 <script src="./pptxgen.min.js?v=9"></script>
 <style>
 :root{--bg:#f3f5f9;--line:#cfd7e6;--navy:#172033;--head:#d9d9d9;--txt:#111827;--muted:#667085;--blue:#1d4ed8;--danger:#dc2626}
@@ -15,7 +16,7 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 </style>
 </head>
 <body>
-<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v13</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
+<header><h1>코스트코 진열·연출 점검 PPT 생성기 <small style="font-size:12px;color:#1d4ed8">v14</small></h1><p>HUB 촬영사진 자동 수신 → 점포·품목별 자동 배치 → PPT/PDF 생성</p></header>
 <main>
 <section class="bar">
 <label>연도<select id="year"></select></label>
@@ -44,7 +45,7 @@ main{max-width:1560px;margin:auto;padding:16px}.bar{display:grid;grid-template-c
 <script>
 const HUB_BACKEND_URL='https://script.google.com/macros/s/AKfycbwtnE_Bwm4YwwBHdg-38aelzvlnR0ryZKo9zwLwVjkiehVFdaboxDBFdS8NsAg3ZeGhZQ/exec';
 const HUB_SYNC_INTERVAL_MS=60000;
-const HUB_LITE_CACHE_PREFIX='costcoPhotoHubLiteV13:';
+const HUB_LITE_CACHE_PREFIX='costcoPhotoHubLiteV14:';
 let hubSyncTimer=0,hubAutoTimer=0,hubAutoRetry=0,hubRequestSeq=0,hubActiveRequests=0;
 const hubMemoryCache=new Map();
 
@@ -227,30 +228,25 @@ function renderSheet(){
 
 function sheetHtml(store,p,live){
   const layouts=buildStoreLayouts(store),layout=layouts[p]||layouts[0];
-  const hasOverflow=layout.overflow.length>0;
   const h1=C.map(c=>`<th class="h1">${c[1]}</th>`).join('');
   const h2=C.map(c=>`<th class="h2">${c[2]}</th>`).join('');
   let rows='';
   for(let r=0;r<MAIN_PER;r++){
-    rows+=`<tr class="photoRow">${r===0?`<td rowspan="${hasOverflow?4:3}" class="photoLab">현장<br>사진</td>`:''}`;
+    rows+=`<tr class="photoRow">${r===0?`<td rowspan="4" class="photoLab">현장<br>사진</td>`:''}`;
     for(const c of C){
       const cat=c[0],entry=layout.main[cat][r]||null;
       const idx=entry?entry.index:Math.min(layout.mainBase[cat]+r,DATA[store].cat[cat].length);
-      rows+=`<td>${slotHtml(entry,cat,idx,live,hasOverflow,false)}</td>`;
+      rows+=`<td>${slotHtml(entry,cat,idx,live,true,false)}</td>`;
     }
     rows+='</tr>';
   }
-  if(hasOverflow){
-    rows+='<tr class="overflowRow">';
-    for(let i=0;i<OVERFLOW_PER;i++){
-      const entry=layout.overflowSlots[i];
-      rows+=`<td>${slotHtml(entry,entry?.cat||'',entry?.index??0,live,true,true)}</td>`;
-    }
-    rows+='</tr>';
-  }else{
-    rows+='<tr class="content"><td class="lab">내용</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+  rows+='<tr class="overflowRow">';
+  for(let i=0;i<OVERFLOW_PER;i++){
+    const entry=layout.overflowSlots[i];
+    rows+=`<td>${slotHtml(entry,entry?.cat||'',entry?.index??0,live,true,true)}</td>`;
   }
-  return `<div class="top"><div class="store">코스트코 ${store}</div><div class="ttl">코스트코 진열·연출점검</div></div><table class="grid${hasOverflow?' hasOverflow':''}"><colgroup><col style="width:40px"><col span="6"></colgroup><tr><th class="lab" rowspan="2">품목</th>${h1}</tr><tr>${h2}</tr>${rows}</table>`;
+  rows+='</tr>';
+  return `<div class="top"><div class="store">코스트코 ${store}</div><div class="ttl">코스트코 진열·연출점검</div></div><table class="grid hasOverflow"><colgroup><col style="width:40px"><col span="6"></colgroup><tr><th class="lab" rowspan="2">품목</th>${h1}</tr><tr>${h2}</tr>${rows}</table>`;
 }
 
 function slotHtml(entry,cat,idx,live,compact,isOverflow){
@@ -549,23 +545,43 @@ async function mapLimit(items,limit,worker){
   await Promise.all(Array.from({length:Math.min(limit,items.length)},run));
   return out;
 }
+function blobToDataUrl(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=reject;
+    reader.readAsDataURL(blob);
+  });
+}
+async function remoteUrlToDataUrl(url){
+  const res=await fetch(url,{cache:'no-store'});
+  if(!res.ok)throw new Error(`원격 사진 다운로드 실패 (${res.status})`);
+  return await blobToDataUrl(await res.blob());
+}
 async function hydrateRemotePhotosForPpt(stores){
   const range=selectedShootWeek(),max=+$('max').value||900;
   let total=0,done=0;
-  stores.forEach(store=>C.forEach(c=>{total+=DATA[store].cat[c[0]].filter(p=>p.remoteId&&!String(p.url||'').startsWith('data:')).length}));
+  stores.forEach(store=>C.forEach(c=>{total+=DATA[store].cat[c[0]].filter(p=>!String(p.url||'').startsWith('data:')).length}));
   if(!total)return;
   $('status').textContent='PPT용 고화질 사진을 준비하는 중...';$('prog').style.width='0%';
   for(const store of stores){
-    const targets=C.flatMap(c=>DATA[store].cat[c[0]]).filter(p=>p.remoteId&&!String(p.url||'').startsWith('data:'));
+    const targets=C.flatMap(c=>DATA[store].cat[c[0]]).filter(p=>!String(p.url||'').startsWith('data:'));
     if(!targets.length)continue;
     const r=await hubJsonp({action:'displayCheckPhotos',store,shotDate:range.start,latestOnly:'1',includeData:'1',max:'80',_ts:Date.now()},120000);
     if(!r?.ok)throw new Error(`${store} PPT용 사진 조회 실패: ${r?.message||'알 수 없는 오류'}`);
     const rowsById=new Map((r.photos||[]).map(x=>[String(x.fileId||''),x]));
     await mapLimit(targets,4,async p=>{
       const row=rowsById.get(String(p.remoteId||''));
-      if(!row?.dataUrl)throw new Error(`${store} ${p.label||p.remoteId} 사진 데이터가 없습니다.`);
-      const sq=await squareDataUrl(row.dataUrl,max);
-      p.url=sq.url;p.size=sq.size;p.orig=Number(row.byteSize)||sq.size;p.pptReady=true;
+      let rawDataUrl=row?.dataUrl||'';
+      let origSize=Number(row?.byteSize)||0;
+      if(!rawDataUrl){
+        const remoteSrc=String(p.sourceUrl||p.url||'').trim();
+        if(!remoteSrc)throw new Error(`${store} ${p.label||p.remoteId||'사진'} 원본 주소가 없습니다.`);
+        rawDataUrl=await remoteUrlToDataUrl(remoteSrc);
+        if(!origSize)origSize=Math.round((String(rawDataUrl).split(',')[1]||'').length*3/4);
+      }
+      const sq=await squareDataUrl(rawDataUrl,max);
+      p.url=sq.url;p.size=sq.size;p.orig=origSize||sq.size;p.pptReady=true;
       done++;$('prog').style.width=Math.round(done/Math.max(1,total)*85)+'%';
     });
   }
@@ -621,10 +637,10 @@ async function makePpt(){
   }catch(e){console.error(e);alert('PPT 생성 오류: '+(e.message||e))}
 }
 function drawSlide(pptx,slide,store,p,totalPages){
-  const R=pptx.ShapeType?.rect||'rect',layout=buildStoreLayouts(store)[p],hasOverflow=layout.overflow.length>0;
+  const R=pptx.ShapeType?.rect||'rect',layout=buildStoreLayouts(store)[p];
   slide.background={color:'FFFFFF'};
   const x0=.10,tw=13.13,topH=.33,lab=.38,col=(tw-lab)/6,mainH=.25,subH=.25,photoY=topH+mainH+subH;
-  const rowH=hasOverflow?1.64:1.70,contH=1.30,cy=photoY+rowH*3;
+  const rowH=1.64;
   box(slide,R,x0,0,tw,topH,'172033','172033');
   txt(slide,x0+.08,.05,4.8,.22,`코스트코 ${store}`,15,true,'FFFFFF','left',true);
   txt(slide,x0+tw-2.9,.07,2.8,.18,'코스트코 진열·연출점검',10.5,true,'FFFFFF','right');
@@ -636,8 +652,8 @@ function drawSlide(pptx,slide,store,p,totalPages){
     txt(slide,x,topH+.04,col,.15,c[1],7.1,true,'111111','center');
     txt(slide,x,topH+mainH+.04,col,.15,c[2],6.2,true,'1F5AA6','center',true);
   });
-  box(slide,R,x0,photoY,lab,rowH*(hasOverflow?4:3),'D9D9D9');
-  txt(slide,x0+.01,photoY,lab-.02,rowH*(hasOverflow?4:3),'현장\n사진',8.5,true,'111111','center');
+  box(slide,R,x0,photoY,lab,rowH*4,'D9D9D9');
+  txt(slide,x0+.01,photoY,lab-.02,rowH*4,'현장\n사진',8.5,true,'111111','center');
   for(let r=0;r<MAIN_PER;r++){
     for(let i=0;i<C.length;i++){
       const x=x0+lab+i*col,y=photoY+r*rowH,entry=layout.main[C[i][0]][r];
@@ -645,23 +661,18 @@ function drawSlide(pptx,slide,store,p,totalPages){
       if(entry?.photo)slide.addImage({data:entry.photo.url,x:x+(col-PIC)/2,y:y+(rowH-PIC)/2,w:PIC,h:PIC});
     }
   }
-  if(hasOverflow){
-    const y=photoY+MAIN_PER*rowH;
-    for(let i=0;i<C.length;i++){
-      const x=x0+lab+i*col,entry=layout.overflowSlots[i];
-      box(slide,R,x,y,col,rowH,'FFFFFF');
-      if(entry?.photo){
-        slide.addImage({data:entry.photo.url,x:x+(col-PIC)/2,y:y+(rowH-PIC)/2,w:PIC,h:PIC});
-        if(entry.photo.label)slide.addText(String(entry.photo.label),{
-          x:x+.05,y:y+rowH-.22,w:col-.10,h:.16,fontFace:'Malgun Gothic',fontSize:5.5,bold:true,
-          color:'1F3D67',align:'center',valign:'mid',margin:0,fit:'shrink',
-          fill:{color:'FFFFFF',transparency:8},line:{color:'D5DFEC',transparency:35,width:.4}
-        });
-      }
+  const y=photoY+MAIN_PER*rowH;
+  for(let i=0;i<C.length;i++){
+    const x=x0+lab+i*col,entry=layout.overflowSlots[i];
+    box(slide,R,x,y,col,rowH,'FFFFFF');
+    if(entry?.photo){
+      slide.addImage({data:entry.photo.url,x:x+(col-PIC)/2,y:y+(rowH-PIC)/2,w:PIC,h:PIC});
+      if(entry.photo.label)slide.addText(String(entry.photo.label),{
+        x:x+.05,y:y+rowH-.22,w:col-.10,h:.16,fontFace:'Malgun Gothic',fontSize:5.5,bold:true,
+        color:'1F3D67',align:'center',valign:'mid',margin:0,fit:'shrink',
+        fill:{color:'FFFFFF',transparency:8},line:{color:'D5DFEC',transparency:35,width:.4}
+      });
     }
-  }else{
-    box(slide,R,x0,cy,lab,contH,'D9D9D9');txt(slide,x0,cy,lab,contH,'내용',8.5,true,'111111','center');
-    for(let i=0;i<C.length;i++)box(slide,R,x0+lab+i*col,cy,col,contH,'F3F3F3');
   }
 }
 function box(slide,R,x,y,w,h,fill,line='222222'){slide.addShape(R,{x,y,w,h,fill:{color:fill},line:{color:line,width:1}})}
